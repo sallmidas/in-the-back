@@ -54,11 +54,15 @@ npm run cap:open:ios
 
 ## Add to Home Screen (PWA basics)
 
-The web build ships a Web App Manifest, PNG icons (192 / 512 / maskable), Apple touch icon, and installable meta tags (`apple-mobile-web-app-*`, `theme-color`, `viewport-fit=cover`). A tiny production-only service worker (`public/sw.js`) registers from `src/main.tsx` so Chromium can treat the site as installable. It is network-only — it does not cache — so a `VITE_DEMO_SEED=0` build cannot serve a stale seeded board.
+The web build ships a Web App Manifest, PNG icons (192 / 512 / maskable), Apple touch icon, and installable meta tags (`apple-mobile-web-app-*`, `theme-color`, `viewport-fit=cover`). A tiny production-only service worker (`public/sw.js`) registers from `src/main.tsx` so Chromium can treat the site as installable.
+
+**Network-only on purpose.** The SW has a fetch handler (required for installability) but does not put the board in Cache Storage. A last-seen / offline cache would keep serving a stale seeded catalog after `VITE_DEMO_SEED=0`. Install still works over HTTPS (or localhost); there is no offline board. That is a demo-seed safety tradeoff, not a missing feature. UI copy must not claim last-seen or offline caching.
+
+Install stays optional: the browser's native Add to Home Screen UI only. This app does not intercept `beforeinstallprompt` and does not show a custom install nag.
 
 Icons are generated with `python3 scripts/generate-pwa-icons.py` from the door wordmark.
 
-Add to Home Screen still needs HTTPS (or localhost). Capacitor remains the native store path; this PWA layer is for the browser door.
+Capacitor remains the native store path; this PWA layer is for the browser door.
 
 ## Strip the demo seed (empty directory for launch)
 
