@@ -15,7 +15,20 @@
     <meta name="format-detection" content="telephone=no" />
     <meta
       name="description"
-      content="In the Back — anonymous room-level BOH workplace reviews. Cleanliness, safety, dignity — scored. Kitchens, dish pits, walk-ins, and the rest of the building."
+      content="In the Back — Cleanliness, safety, dignity — scored. Anonymous room-level BOH board. Public sees the room, the score, the shift, and the writing. Never the reviewer."
+    />
+    <meta property="og:site_name" content="In the Back" />
+    <meta property="og:title" content="In the Back — Cleanliness, safety, dignity — scored" />
+    <meta
+      property="og:description"
+      content="Anonymous room-level BOH board. Public sees the room, the score, the shift, and the writing. Never the reviewer."
+    />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="In the Back — Cleanliness, safety, dignity — scored" />
+    <meta
+      name="twitter:description"
+      content="Anonymous room-level BOH board. Public sees the room, the score, the shift, and the writing. Never the reviewer."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -23,10 +36,28 @@
       href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Mono:wght@500;600&display=swap"
       rel="stylesheet"
     />
-    <title>In the Back</title>
+    <title>In the Back — Cleanliness, safety, dignity — scored</title>
+    <style>
+      html,
+      body {
+        background: #1c1914;
+        color: #e8dfd0;
+        margin: 0;
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="board-boot" role="status" aria-live="polite">
+        <p class="board-boot-kicker">In the Back</p>
+        <p class="board-boot-title">Opening the board</p>
+        <div class="board-boot-skel" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

@@ -3,6 +3,8 @@ import { Menu } from "lucide-react"
 import { useState } from "react"
 import { Link, NavLink } from "react-router-dom"
 import { DemoBanner } from "@/components/layout/DemoBanner"
+import { DocumentTitle } from "@/components/layout/DocumentTitle"
+import { RouteErrorBoundary } from "@/components/layout/RouteErrorBoundary"
 import { Wordmark } from "@/components/layout/Wordmark"
 import { Button } from "@/components/ui/button"
 import { isDemoSeedEnabled } from "@/data/demo-flag"
@@ -127,7 +129,8 @@ export function AppShell({ children }: { children: ReactNode }) {
         </header>
       </div>
       <main id="main-content" tabIndex={-1} className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 outline-none sm:py-8">
-        {children}
+        <DocumentTitle />
+        <RouteErrorBoundary>{children}</RouteErrorBoundary>
       </main>
       <footer className="border-t border-border/80 bg-card/40">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-6 text-sm text-muted-foreground sm:py-8 md:flex-row md:items-start md:justify-between">

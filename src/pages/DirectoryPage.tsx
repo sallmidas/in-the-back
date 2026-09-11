@@ -63,7 +63,8 @@ export function DirectoryPage() {
         </p>
         <h1 className="font-heading text-4xl tracking-tight">Find a building, then a room</h1>
         <p className="max-w-2xl text-muted-foreground">
-          Search name, city, or room. Filters live in the URL so you can share a view.
+          Search name, city, or room. Filters live in the URL so you can share a view — never a
+          reviewer, never a chair.
           {isDemoSeedEnabled()
             ? " Every listing here is a labeled DEMO sample."
             : " The launch directory is empty until real workplaces are added."}
@@ -151,11 +152,11 @@ export function DirectoryPage() {
       ) : results.length === 0 ? (
         <EmptyState
           eyebrow="Filters"
-          title="Nothing matches."
+          title="Those filters came up empty."
           primaryTo="/workplaces"
           primaryLabel="Clear filters"
         >
-          <p>Loosen the filters, or open a room and leave the first score.</p>
+          <p>Loosen the cut, or open a room and leave the first score.</p>
         </EmptyState>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">
