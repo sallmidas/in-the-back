@@ -1,5 +1,6 @@
-/* Minimal fetch handler so Chromium treats the web build as installable.
-   Network-only — do not cache, so seed-on vs seed-off builds cannot go stale. */
+/* Production SW: fetch handler so Chromium treats the build as installable.
+   Network-only on purpose — no Cache Storage, no last-seen board.
+   Caching would keep a stale demo seed after VITE_DEMO_SEED=0. */
 self.addEventListener("install", (event) => {
   event.waitUntil(self.skipWaiting())
 })
