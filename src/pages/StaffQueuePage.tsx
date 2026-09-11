@@ -21,11 +21,13 @@ import {
   type StaffSession,
 } from "@/lib/staff-session"
 
+const UNSET_WORKPLACE = "unset"
+
 export function StaffQueuePage() {
   const [session, setSession] = useState<StaffSession | null>(() => getStaffSession())
   const [email, setEmail] = useState("")
   const [error, setError] = useState<string | null>(null)
-  const [claimSlug, setClaimSlug] = useState(session?.claimedSlug ?? "")
+  const [claimSlug, setClaimSlug] = useState(session?.claimedSlug ?? UNSET_WORKPLACE)
   const [notice, setNotice] = useState<string | null>(null)
 
   const workplaces = getWorkplaces()
@@ -49,7 +51,7 @@ export function StaffQueuePage() {
 
   function onClaim(event: FormEvent) {
     event.preventDefault()
-    if (!claimSlug) {
+    if (!claimSlug || claimSlug === UNSET_WORKPLACE) {
       setError("Pick a workplace to claim as staff chair.")
       return
     }
@@ -126,11 +128,12 @@ export function StaffQueuePage() {
           >
             <div>
               <Label>Claim a workplace</Label>
-              <Select value={claimSlug || undefined} onValueChange={setClaimSlug}>
+              <Select value={claimSlug} onValueChange={setClaimSlug}>
                 <SelectTrigger className="mt-1.5 w-full">
                   <SelectValue placeholder="Choose a DEMO workplace" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value={UNSET_WORKPLACE}>Choose a DEMO workplace</SelectItem>
                   {workplaces.map((workplace) => (
                     <SelectItem key={workplace.slug} value={workplace.slug}>
                       {workplace.name}
@@ -157,7 +160,7 @@ export function StaffQueuePage() {
                     size="sm"
                     onClick={() => {
                       setSession(releaseQueue())
-                      setClaimSlug("")
+                      setClaimSlug(UNSET_WORKPLACE)
                       setNotice("Chair released. Another staff chair can claim later.")
                     }}
                   >

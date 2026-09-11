@@ -34,7 +34,7 @@ export function WritePage() {
       >
         <div>
           <Label>Workplace</Label>
-          <Select disabled>
+          <Select disabled value={workplaces[0]?.id ?? "empty"}>
             <SelectTrigger className="mt-1.5 w-full">
               <SelectValue placeholder={workplaces[0]?.name ?? "Empty directory"} />
             </SelectTrigger>
@@ -49,7 +49,7 @@ export function WritePage() {
         </div>
         <div>
           <Label>Room</Label>
-          <Select disabled>
+          <Select disabled value={ROOM_KINDS[0]}>
             <SelectTrigger className="mt-1.5 w-full">
               <SelectValue placeholder={ROOM_LABELS[ROOM_KINDS[0]]} />
             </SelectTrigger>
