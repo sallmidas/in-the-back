@@ -123,8 +123,8 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
         <Separator />
         <p className="mx-auto max-w-6xl px-4 py-4 text-xs text-muted-foreground">
-          LLC first. No Stripe, no payouts, no live publish until then. Pay-on-publish is the
-          intended model after that — not billed in this demo.
+          LLC first. No Stripe. No card on file. No live publish until then. Looking at plans
+          costs nothing.
         </p>
       </footer>
     </div>

@@ -6,8 +6,8 @@ export function HoldNotice({ className = "" }: { className?: string }) {
     <p
       className={`rounded-xl border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-primary ${className}`}
     >
-      Filing and billing are held until the LLC exists. Stripe, payouts, and live publish stay
-      off.
+      Filing and billing are held until the LLC exists. No Stripe. No card on file. Live
+      publish stays off.
       {isDemoSeedEnabled()
         ? " The seeded board is the demo — not live reviews."
         : " Demo seed is off, so the catalog is the empty launch state."}
@@ -38,8 +38,8 @@ export function DemoWalk() {
     {
       n: "04",
       to: "/plans",
-      title: "Plans, not checkout",
-      body: "Free / Watch $129+$3 / Respond $249+$5. Preview only — no charges.",
+      title: "Browse plans",
+      body: "Free / Watch / Respond — preview only. Pricing after the LLC.",
     },
   ]
 

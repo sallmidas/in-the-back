@@ -31,7 +31,7 @@ export const PLANS: Plan[] = [
     name: "Watch",
     monthly: 129,
     perReport: 3,
-    tagline: "$129 / month + $3 per published report — preview only, no checkout",
+    tagline: "Watch the queue — numbers shown for later; nothing bills now",
     audience: "Operators who need to see volume, not argue it",
     features: [
       "Everything on Free",
@@ -45,13 +45,13 @@ export const PLANS: Plan[] = [
     name: "Respond",
     monthly: 249,
     perReport: 5,
-    tagline: "$249 / month + $5 per published report — preview only, no checkout",
+    tagline: "Claim chair + dispute badge — numbers shown for later; nothing bills now",
     audience: "The staff chair who will answer for the rooms",
     features: [
       "Everything on Watch",
       "Official replies (not implemented yet)",
       "Dispute a report into UNDER REVIEW (badge lives; filing is a stub)",
     ],
-    missing: ["Held until LLC", "No Stripe", "Pay-on-publish not billed"],
+    missing: ["Held until LLC", "No Stripe", "No card on file"],
   },
 ]

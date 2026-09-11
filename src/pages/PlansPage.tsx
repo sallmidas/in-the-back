@@ -17,13 +17,15 @@ export function PlansPage() {
   return (
     <div className="space-y-8">
       <header className="space-y-3">
-        <p className="font-mono text-[11px] tracking-[0.2em] text-primary uppercase">
-          Operator plans
-        </p>
+        <div className="flex flex-wrap items-center gap-2">
+          <p className="font-mono text-[11px] tracking-[0.2em] text-primary uppercase">
+            Operator plans
+          </p>
+          <Badge variant="outline">Preview only — no checkout yet</Badge>
+        </div>
         <h1 className="font-heading text-4xl tracking-tight">Free, Watch, Respond</h1>
         <p className="max-w-2xl text-muted-foreground">
-          Reading the board is free. Watch and Respond are for the staff chair. Nothing here
-          charges a card.
+          Pricing ships after In the Back LLC. Looking now costs nothing.
         </p>
         <HoldNotice />
       </header>
@@ -71,13 +73,17 @@ export function PlansPage() {
                 variant={plan.id === "free" ? "outline" : "default"}
               >
                 <Link to={plan.id === "free" ? "/workplaces" : "/staff"}>
-                  {plan.id === "free" ? "Read the board" : "Preview staff queue"}
+                  {plan.id === "free" ? "Read the board" : "Claim chair"}
                 </Link>
               </Button>
             </CardFooter>
           </Card>
         ))}
       </div>
+
+      <p className="text-xs text-muted-foreground">
+        No Stripe. No payouts. No card on file.
+      </p>
     </div>
   )
 }

@@ -91,7 +91,7 @@ export function HowItWorksPage() {
             <li>Reviewer name, handle, email, badge, or login.</li>
             <li>Staff chair identity, even after they claim a queue.</li>
             <li>Hiring copy, résumés, or “rate my boss.”</li>
-            <li>Live filing, Stripe, and payouts — held until the LLC exists.</li>
+            <li>Live filing and Stripe — held until the LLC exists. No card on file.</li>
           </ul>
         </div>
       </section>
