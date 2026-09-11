@@ -17,6 +17,14 @@ export function scoreClass(score: number): string {
   return "text-lime-300"
 }
 
+export function scoreRailClass(score: number): string {
+  const tone = scoreTone(score)
+  if (tone === "low") return "border-l-destructive"
+  if (tone === "mid") return "border-l-primary"
+  if (tone === "high") return "border-l-emerald-400"
+  return "border-l-lime-300"
+}
+
 export function formatPublishedAt(iso: string): string {
   const date = new Date(iso)
   const diff = Date.now() - date.getTime()

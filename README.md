@@ -2,6 +2,8 @@
 
 Anonymous, **room-level** back-of-house workplace review board. Kitchens, dish pits, walk-ins, staff bathrooms, break rooms, docks, stock, overnight.
 
+**Cleanliness, safety, dignity — scored.**
+
 The public sees the room, the score, the shift context, and the writing. **Never the reviewer.** This is not Glassdoor and not a résumé site.
 
 Phase 1 is a seeded board you can run in the browser and wrap as an installable app. Same TypeScript UI both times.
@@ -14,6 +16,7 @@ There is **one** Vite + React + TypeScript app. Capacitor is a shell around the 
 | --- | --- | --- |
 | Browser | `npm run dev` | Dev server at `http://127.0.0.1:43173` |
 | Installable app | `npm run build` then Capacitor (below) | iOS / Android WebView running the same routes |
+| Add to Home Screen | production `dist/` over HTTPS | PWA manifest, icons, and installable meta (see below) |
 
 On native platforms the app uses `HashRouter` so file / Capacitor URLs still route. In the browser it uses `BrowserRouter`.
 
@@ -24,7 +27,7 @@ npm install
 npm run dev
 ```
 
-Open [http://127.0.0.1:43173](http://127.0.0.1:43173). Use **Walk the demo** on the home board, or **Open demo** in the header (Harbor & Rye walk-in, disputed). Tap a room tile to filter excerpts.
+Open [http://127.0.0.1:43173](http://127.0.0.1:43173). Use **Walk the demo** on the home board, or **Open demo** in the header (Harbor & Rye walk-in, disputed). Tap a room tile to filter excerpts. **How it works** sells the product without hiring-board language.
 
 ```bash
 npm run build    # production bundle into dist/
@@ -49,9 +52,19 @@ npm run cap:open:ios
 
 `cap:sync` runs `npm run build` first. Live reload against `npm run dev` is optional later (`server.url` in Capacitor config) and is not required for Phase 1.
 
+## Add to Home Screen (PWA basics)
+
+The web build ships a Web App Manifest, PNG icons (192 / 512 / maskable), Apple touch icon, and installable meta tags (`apple-mobile-web-app-*`, `theme-color`, `viewport-fit=cover`). A tiny production-only service worker (`public/sw.js`) registers from `src/main.tsx` so Chromium can treat the site as installable. It is network-only — it does not cache — so a `VITE_DEMO_SEED=0` build cannot serve a stale seeded board.
+
+Icons are generated with `python3 scripts/generate-pwa-icons.py` from the door wordmark.
+
+Add to Home Screen still needs HTTPS (or localhost). Capacitor remains the native store path; this PWA layer is for the browser door.
+
 ## Strip the demo seed (empty directory for launch)
 
 The ten workplaces are **labeled DEMO**. They must not ship as if they were live reviews.
+
+When the seed is off, home, directory, workplace 404, staff queue, and write CTAs use a stronger empty catalog (restore steps + How it works). Demo-only links (Harbor & Rye, Walk the demo) hide.
 
 **Fast path (keeps the sample data in git, hides it at runtime):**
 
@@ -59,7 +72,7 @@ The ten workplaces are **labeled DEMO**. They must not ship as if they were live
 2. Set `VITE_DEMO_SEED=0`
 3. Restart `npm run dev`
 
-The home feed and directory render empty states.
+The home feed and directory render empty states. Restore with `VITE_DEMO_SEED=1` (or unset — default is on).
 
 **Hard path (data gone from the bundle):**
 
@@ -73,6 +86,7 @@ Switch lives in `src/data/demo-flag.ts`. Catalog helpers in `src/data/catalog.ts
 | Path | What it is |
 | --- | --- |
 | `/` | Home / recent reports |
+| `/how-it-works` | Product walkthrough — rooms, scores, anonymity, disputes, staff chair |
 | `/workplaces` | Directory with search + industry / room / score filters |
 | `/workplaces/:slug` | Rooms, scores, anonymous excerpts, dispute badges |
 | `/plans` | Free / Watch ($129 + $3/report) / Respond ($249 + $5/report) |

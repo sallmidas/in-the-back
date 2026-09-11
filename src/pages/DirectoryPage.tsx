@@ -1,4 +1,5 @@
 import { useSearchParams } from "react-router-dom"
+import { EmptyState } from "@/components/layout/EmptyState"
 import { WorkplaceCard } from "@/components/workplace/WorkplaceCard"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -62,11 +63,14 @@ export function DirectoryPage() {
         </p>
         <h1 className="font-heading text-4xl tracking-tight">Find a building, then a room</h1>
         <p className="max-w-2xl text-muted-foreground">
-          Search name, city, or room. Filters live in the URL so you can share a view. Every
-          listing is a labeled DEMO sample.
+          Search name, city, or room. Filters live in the URL so you can share a view.
+          {isDemoSeedEnabled()
+            ? " Every listing here is a labeled DEMO sample."
+            : " The launch directory is empty until real workplaces are added."}
         </p>
       </header>
 
+      {isDemoSeedEnabled() ? (
       <form
         className="grid gap-3 rounded-xl border border-border bg-card/60 p-4 sm:grid-cols-2 lg:grid-cols-4"
         onSubmit={(event) => event.preventDefault()}
@@ -138,24 +142,21 @@ export function DirectoryPage() {
           ) : null}
         </div>
       </form>
+      ) : null}
 
       {!isDemoSeedEnabled() ? (
-        <div className="rounded-xl border border-dashed border-border p-8 text-center">
-          <p className="font-heading text-xl">Empty directory</p>
-          <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-            Demo seed is stripped. This is the launch state — no workplaces until real ones are
-            added.
+        <EmptyState eyebrow="Launch directory" title="No workplaces listed">
+          <p>
+            Demo seed is stripped. This is the empty catalog you ship: no sample kitchens, no
+            fake scores. Real listings wait on the LLC and live publish.
           </p>
-        </div>
+        </EmptyState>
       ) : results.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-border p-8 text-center">
-          <p className="font-heading text-xl">No matches</p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Clear a filter or try another room.
-          </p>
-        </div>
+        <EmptyState eyebrow="Filters" title="No matches" restore={false}>
+          <p>Clear a filter or try another room. The DEMO seed is on; nothing matched this view.</p>
+        </EmptyState>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-2">
           {results.map((workplace) => (
             <WorkplaceCard key={workplace.id} workplace={workplace} />
           ))}

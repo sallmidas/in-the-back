@@ -1,9 +1,11 @@
 import { Link, useParams, useSearchParams } from "react-router-dom"
+import { EmptyState } from "@/components/layout/EmptyState"
 import { ReportCard } from "@/components/report/ReportCard"
 import { RoomScore } from "@/components/room/RoomScore"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { getWorkplaceBySlug, overallScore, reportsForWorkplace } from "@/data/catalog"
+import { isDemoSeedEnabled } from "@/data/demo-flag"
 import { INDUSTRY_LABELS, ROOM_LABELS, isRoomKind } from "@/data/types"
 import { formatScore, scoreClass } from "@/lib/format"
 
@@ -19,16 +21,14 @@ export function WorkplacePage() {
 
   if (!workplace) {
     return (
-      <div className="space-y-3">
-        <h1 className="font-heading text-3xl">Workplace not on the board</h1>
-        <p className="text-muted-foreground">
-          That slug isn&apos;t in the current catalog. If you stripped the demo seed, the
-          directory is supposed to be empty.
+      <EmptyState title="Workplace not on the board">
+        <p>
+          That slug isn&apos;t in the current catalog.
+          {isDemoSeedEnabled()
+            ? " Check the directory for labeled DEMO listings."
+            : " Demo seed is off, so the launch directory is empty on purpose."}
         </p>
-        <Button asChild variant="outline">
-          <Link to="/workplaces">Back to directory</Link>
-        </Button>
-      </div>
+      </EmptyState>
     )
   }
 
@@ -47,7 +47,7 @@ export function WorkplacePage() {
   return (
     <div className="space-y-8">
       <header className="flex flex-col gap-4 border-b border-border pb-6 sm:flex-row sm:items-start sm:justify-between">
-        <div className="space-y-3">
+        <div className="min-w-0 space-y-3">
           <div className="flex flex-wrap gap-2">
             <Badge variant="outline">DEMO</Badge>
             <Badge variant="secondary">{INDUSTRY_LABELS[workplace.industry]}</Badge>
@@ -55,17 +55,24 @@ export function WorkplacePage() {
               {workplace.listedPlan} · preview
             </Badge>
           </div>
-          <h1 className="font-heading text-4xl tracking-tight">{workplace.name}</h1>
+          <h1 className="font-heading text-3xl tracking-tight sm:text-4xl">{workplace.name}</h1>
           <p className="text-muted-foreground">
             {workplace.city}, {workplace.region}
           </p>
-          <p className="max-w-2xl text-sm leading-relaxed">{workplace.blurb}</p>
+          <p className="max-w-2xl text-sm leading-relaxed sm:text-[15px] sm:leading-7">
+            {workplace.blurb}
+          </p>
         </div>
-        <div className="rounded-xl border border-border bg-card px-5 py-4 sm:text-right">
+        <div className="shrink-0 rounded-xl border border-border bg-card px-5 py-4 sm:min-w-[9.5rem] sm:text-right">
           <p className="font-mono text-[11px] tracking-[0.16em] text-muted-foreground uppercase">
             Room average
           </p>
-          <p className={`font-mono text-5xl ${scoreClass(score)}`}>{formatScore(score)}</p>
+          <p className={`font-mono text-4xl sm:text-5xl ${scoreClass(score)}`}>
+            {formatScore(score)}
+            <span className="ml-1 text-xs tracking-widest text-muted-foreground uppercase">
+              /10
+            </span>
+          </p>
         </div>
       </header>
 
@@ -101,9 +108,9 @@ export function WorkplacePage() {
           </Button>
         </div>
         {reports.length === 0 ? (
-          <p className="rounded-xl border border-dashed border-border p-6 text-sm text-muted-foreground">
-            No published reports for this filter.
-          </p>
+          <EmptyState eyebrow="This room" title="No published excerpts" restore={false} cta={false}>
+            <p>Nothing is live for this filter. Tap another room, or show all rooms.</p>
+          </EmptyState>
         ) : (
           <div className="grid gap-3">
             {reports.map((report) => (

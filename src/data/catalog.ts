@@ -86,6 +86,11 @@ export function overallScore(workplace: Workplace): number {
   return Math.round((sum / workplace.rooms.length) * 10) / 10
 }
 
+export function weakestRoom(workplace: Workplace) {
+  if (workplace.rooms.length === 0) return undefined
+  return workplace.rooms.reduce((lowest, room) => (room.score < lowest.score ? room : lowest))
+}
+
 export function filterWorkplaces(filters: DirectoryFilters): Workplace[] {
   const query = filters.query?.trim().toLowerCase() ?? ""
   const industry = filters.industry ?? "all"

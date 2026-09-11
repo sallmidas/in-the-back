@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom"
+import { isDemoSeedEnabled } from "@/data/demo-flag"
 
 export function HoldNotice({ className = "" }: { className?: string }) {
   return (
@@ -6,7 +7,10 @@ export function HoldNotice({ className = "" }: { className?: string }) {
       className={`rounded-xl border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-primary ${className}`}
     >
       Filing and billing are held until the LLC exists. Stripe, payouts, and live publish stay
-      off. The seeded board below is the demo.
+      off.
+      {isDemoSeedEnabled()
+        ? " The seeded board is the demo — not live reviews."
+        : " Demo seed is off, so the catalog is the empty launch state."}
     </p>
   )
 }

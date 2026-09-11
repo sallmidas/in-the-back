@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom"
 import { HoldNotice } from "@/components/layout/HoldNotice"
 import { Button } from "@/components/ui/button"
+import { isDemoSeedEnabled } from "@/data/demo-flag"
 
 export function WritePage() {
   return (
@@ -28,9 +29,15 @@ export function WritePage() {
         </p>
       </div>
       <div className="flex flex-wrap gap-2">
-        <Button asChild>
-          <Link to="/workplaces/harbor-and-rye?room=walk-in">See a seeded report</Link>
-        </Button>
+        {isDemoSeedEnabled() ? (
+          <Button asChild>
+            <Link to="/workplaces/harbor-and-rye?room=walk-in">See a seeded report</Link>
+          </Button>
+        ) : (
+          <Button asChild>
+            <Link to="/how-it-works">How a report will read</Link>
+          </Button>
+        )}
         <Button asChild variant="outline">
           <Link to="/">Back to the board</Link>
         </Button>

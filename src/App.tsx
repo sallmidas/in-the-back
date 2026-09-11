@@ -3,6 +3,7 @@ import { AppShell } from "@/components/layout/AppShell"
 import { DeleteAccountPage } from "@/pages/DeleteAccountPage"
 import { DirectoryPage } from "@/pages/DirectoryPage"
 import { HomePage } from "@/pages/HomePage"
+import { HowItWorksPage } from "@/pages/HowItWorksPage"
 import { NotFoundPage } from "@/pages/NotFoundPage"
 import { PlansPage } from "@/pages/PlansPage"
 import { PrivacyPage } from "@/pages/PrivacyPage"
@@ -15,6 +16,7 @@ export default function App() {
     <AppShell>
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/how-it-works" element={<HowItWorksPage />} />
         <Route path="/workplaces" element={<DirectoryPage />} />
         <Route path="/workplaces/:slug" element={<WorkplacePage />} />
         <Route path="/plans" element={<PlansPage />} />

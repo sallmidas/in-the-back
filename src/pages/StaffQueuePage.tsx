@@ -1,5 +1,6 @@
 import { type FormEvent, useMemo, useState } from "react"
 import { Link } from "react-router-dom"
+import { EmptyState } from "@/components/layout/EmptyState"
 import { ReportCard } from "@/components/report/ReportCard"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -12,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { getWorkplaceBySlug, getWorkplaces, reportsForWorkplace } from "@/data/catalog"
+import { isDemoSeedEnabled } from "@/data/demo-flag"
 import {
   claimQueue,
   getStaffSession,
@@ -69,9 +71,9 @@ export function StaffQueuePage() {
         </p>
         <h1 className="font-heading text-4xl tracking-tight">This is my queue</h1>
         <p className="max-w-2xl text-muted-foreground">
-          Try the stub: sign in with any email, claim Harbor & Rye, read the queue. One chair per
-          workplace. This browser only — no OAuth, GPS, or digital ID. Filing a real dispute is
-          still a stub because publish/billing is held until the LLC.
+          {isDemoSeedEnabled()
+            ? "Try the stub: sign in with any email, claim Harbor & Rye, read the queue. One chair per workplace. This browser only — no OAuth, GPS, or digital ID. Filing a real dispute is still a stub because publish/billing is held until the LLC."
+            : "Staff chair claim needs a listed workplace. Demo seed is off, so there is nothing to claim until real listings exist (or you restore VITE_DEMO_SEED=1). Sign-in is still a local stub — no OAuth."}
         </p>
       </header>
 
@@ -82,6 +84,15 @@ export function StaffQueuePage() {
       ) : null}
       {notice ? (
         <p className="rounded-lg border border-border bg-muted/40 px-3 py-2 text-sm">{notice}</p>
+      ) : null}
+
+      {workplaces.length === 0 && !session ? (
+        <EmptyState title="No workplaces to claim">
+          <p>
+            Staff chair claim needs a listed workplace. With the demo seed stripped, the launch
+            catalog has none. You can still sign in the stub below after restoring the seed.
+          </p>
+        </EmptyState>
       ) : null}
 
       {!session ? (
@@ -123,30 +134,39 @@ export function StaffQueuePage() {
             </Button>
           </div>
 
-          <form
-            onSubmit={onClaim}
-            className="grid gap-3 rounded-xl border border-border bg-card/70 p-5 md:grid-cols-[1fr_auto] md:items-end"
-          >
-            <div>
-              <Label>Claim a workplace</Label>
-              <Select value={claimSlug} onValueChange={setClaimSlug}>
-                <SelectTrigger className="mt-1.5 w-full">
-                  <SelectValue placeholder="Choose a DEMO workplace" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={UNSET_WORKPLACE}>Choose a DEMO workplace</SelectItem>
-                  {workplaces.map((workplace) => (
-                    <SelectItem key={workplace.slug} value={workplace.slug}>
-                      {workplace.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <Button type="submit">This is my queue</Button>
-          </form>
+          {workplaces.length > 0 ? (
+            <form
+              onSubmit={onClaim}
+              className="grid gap-3 rounded-xl border border-border bg-card/70 p-5 md:grid-cols-[1fr_auto] md:items-end"
+            >
+              <div>
+                <Label>Claim a workplace</Label>
+                <Select value={claimSlug} onValueChange={setClaimSlug}>
+                  <SelectTrigger className="mt-1.5 w-full">
+                    <SelectValue placeholder="Choose a DEMO workplace" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={UNSET_WORKPLACE}>Choose a DEMO workplace</SelectItem>
+                    {workplaces.map((workplace) => (
+                      <SelectItem key={workplace.slug} value={workplace.slug}>
+                        {workplace.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button type="submit">This is my queue</Button>
+            </form>
+          ) : null}
 
-          {claimed ? (
+          {workplaces.length === 0 ? (
+            <EmptyState title="Queue is empty on purpose">
+              <p>
+                Restore <code className="font-mono text-xs text-foreground">VITE_DEMO_SEED=1</code>{" "}
+                to claim Harbor &amp; Rye and walk the staff chair stub.
+              </p>
+            </EmptyState>
+          ) : claimed ? (
             <section className="space-y-3">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <h2 className="font-heading text-2xl">

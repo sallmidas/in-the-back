@@ -1,21 +1,25 @@
 import { useEffect } from "react"
 import { Link } from "react-router-dom"
+import { EmptyState } from "@/components/layout/EmptyState"
+import { HowItWorksPreview } from "@/components/layout/HowItWorks"
 import { DemoWalk, HoldNotice } from "@/components/layout/HoldNotice"
 import { ReportCard } from "@/components/report/ReportCard"
 import { Button } from "@/components/ui/button"
-import { disputedReports, getWorkplaces, overallScore, recentReports } from "@/data/catalog"
+import { WorkplaceStripCard } from "@/components/workplace/WorkplaceCard"
+import { disputedReports, getWorkplaces, recentReports } from "@/data/catalog"
 import { isDemoSeedEnabled } from "@/data/demo-flag"
-import { formatScore, scoreClass } from "@/lib/format"
 
 export function HomePage() {
   const reports = recentReports(8)
   const featured = disputedReports()[0]
   const workplaces = getWorkplaces()
-  const empty = !isDemoSeedEnabled() || reports.length === 0
+  const seeded = isDemoSeedEnabled()
+  const empty = !seeded || reports.length === 0
 
   useEffect(() => {
-    if (window.location.hash !== "#demo-walk") return
-    document.getElementById("demo-walk")?.scrollIntoView({ behavior: "smooth", block: "start" })
+    const id = window.location.hash.replace("#", "")
+    if (id !== "demo-walk" && id !== "how-it-works") return
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" })
   }, [])
 
   return (
@@ -35,12 +39,30 @@ export function HomePage() {
           </p>
           <HoldNotice />
           <div className="flex flex-wrap gap-2">
-            <Button asChild>
-              <Link to="/workplaces/harbor-and-rye?room=walk-in">Open the demo room</Link>
-            </Button>
-            <Button asChild variant="outline">
-              <Link to="/workplaces">All 10 workplaces</Link>
-            </Button>
+            {seeded ? (
+              <>
+                <Button asChild>
+                  <Link to="/workplaces/harbor-and-rye?room=walk-in">Open the demo room</Link>
+                </Button>
+                <Button asChild variant="outline">
+                  <Link to="/workplaces">All 10 workplaces</Link>
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button asChild>
+                  <Link to="/how-it-works">How it works</Link>
+                </Button>
+                <Button asChild variant="outline">
+                  <Link to="/workplaces">Empty directory</Link>
+                </Button>
+              </>
+            )}
+            {seeded ? (
+              <Button asChild variant="ghost">
+                <Link to="/how-it-works">How it works</Link>
+              </Button>
+            ) : null}
           </div>
         </div>
         <aside className="rounded-xl border border-border bg-card/70 p-5 text-sm leading-relaxed text-muted-foreground">
@@ -56,7 +78,9 @@ export function HomePage() {
         </aside>
       </section>
 
-      <DemoWalk />
+      <HowItWorksPreview />
+
+      {seeded ? <DemoWalk /> : null}
 
       {featured ? (
         <section className="space-y-3">
@@ -73,25 +97,10 @@ export function HomePage() {
               Directory
             </Link>
           </div>
-          <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 md:mx-0 md:grid md:grid-cols-5 md:overflow-visible md:px-0">
-            {workplaces.map((workplace) => {
-              const score = overallScore(workplace)
-              return (
-                <Link
-                  key={workplace.id}
-                  to={`/workplaces/${workplace.slug}`}
-                  className="flex min-w-[9.5rem] flex-col rounded-lg border border-border bg-card/80 px-3 py-2 hover:border-primary/50"
-                >
-                  <span className="font-heading truncate text-sm">{workplace.name}</span>
-                  <span className={`font-mono text-lg ${scoreClass(score)}`}>
-                    {formatScore(score)}
-                  </span>
-                  <span className="text-[11px] text-muted-foreground">
-                    {workplace.city}, {workplace.region}
-                  </span>
-                </Link>
-              )
-            })}
+          <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:thin] md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0 lg:grid-cols-5">
+            {workplaces.map((workplace) => (
+              <WorkplaceStripCard key={workplace.id} workplace={workplace} />
+            ))}
           </div>
         </section>
       ) : null}
@@ -104,7 +113,23 @@ export function HomePage() {
           </Link>
         </div>
         {empty ? (
-          <EmptyBoard />
+          <EmptyState
+            eyebrow={seeded ? "No reports yet" : "Launch catalog"}
+            title={seeded ? "The board is empty" : "Waiting on live rooms"}
+          >
+            {seeded ? (
+              <p>
+                There are no published reports in this catalog. Restore sample data if you emptied{" "}
+                <code className="font-mono text-xs text-foreground">src/data/seed.ts</code>.
+              </p>
+            ) : (
+              <p>
+                Demo seed is off, so this is the real launch surface: no Harbor &amp; Rye, no
+                excerpts, no fake volume. When workplaces publish after the LLC, recent anonymous
+                room reports land here.
+              </p>
+            )}
+          </EmptyState>
         ) : (
           <div className="grid gap-3">
             {reports.map((report) => (
@@ -113,18 +138,6 @@ export function HomePage() {
           </div>
         )}
       </section>
-    </div>
-  )
-}
-
-function EmptyBoard() {
-  return (
-    <div className="rounded-xl border border-dashed border-border p-8 text-center">
-      <p className="font-heading text-xl">The board is empty</p>
-      <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-        Demo seed is off, or there are no published reports yet. Restore{" "}
-        <code className="font-mono text-xs">VITE_DEMO_SEED=1</code> to walk the sample board.
-      </p>
     </div>
   )
 }

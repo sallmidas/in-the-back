@@ -5,6 +5,7 @@ import { Link, NavLink } from "react-router-dom"
 import { DemoBanner } from "@/components/layout/DemoBanner"
 import { Wordmark } from "@/components/layout/Wordmark"
 import { Button } from "@/components/ui/button"
+import { isDemoSeedEnabled } from "@/data/demo-flag"
 import { Separator } from "@/components/ui/separator"
 import {
   Sheet,
@@ -17,6 +18,7 @@ import {
 const NAV = [
   { to: "/", label: "Board" },
   { to: "/workplaces", label: "Directory" },
+  { to: "/how-it-works", label: "How it works" },
   { to: "/plans", label: "Plans" },
   { to: "/staff", label: "Staff" },
 ]
@@ -30,6 +32,7 @@ function navClass({ isActive }: { isActive: boolean }) {
 
 export function AppShell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false)
+  const seeded = isDemoSeedEnabled()
 
   return (
     <div className="flex min-h-svh flex-col">
@@ -37,17 +40,19 @@ export function AppShell({ children }: { children: ReactNode }) {
       <header className="sticky top-0 z-40 border-b border-border/80 bg-background/90 backdrop-blur">
         <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between gap-3 px-4">
           <Wordmark />
-          <nav className="hidden items-center gap-1 md:flex">
+          <nav className="hidden items-center gap-1 lg:flex">
             {NAV.map((item) => (
               <NavLink key={item.to} to={item.to} end={item.to === "/"} className={navClass}>
                 {item.label}
               </NavLink>
             ))}
-            <Button asChild size="sm" className="ml-2">
-              <Link to="/workplaces/harbor-and-rye?room=walk-in">Open demo</Link>
-            </Button>
+            {seeded ? (
+              <Button asChild size="sm" className="ml-2">
+                <Link to="/workplaces/harbor-and-rye?room=walk-in">Open demo</Link>
+              </Button>
+            ) : null}
           </nav>
-          <div className="md:hidden">
+          <div className="lg:hidden">
             <Sheet open={open} onOpenChange={setOpen}>
               <SheetTrigger asChild>
                 <Button size="icon" variant="ghost" aria-label="Open menu">
@@ -70,13 +75,15 @@ export function AppShell({ children }: { children: ReactNode }) {
                       {item.label}
                     </NavLink>
                   ))}
-                  <NavLink
-                    to="/workplaces/harbor-and-rye?room=walk-in"
-                    className={navClass}
-                    onClick={() => setOpen(false)}
-                  >
-                    Open demo
-                  </NavLink>
+                  {seeded ? (
+                    <NavLink
+                      to="/workplaces/harbor-and-rye?room=walk-in"
+                      className={navClass}
+                      onClick={() => setOpen(false)}
+                    >
+                      Open demo
+                    </NavLink>
+                  ) : null}
                 </nav>
               </SheetContent>
             </Sheet>
@@ -94,6 +101,9 @@ export function AppShell({ children }: { children: ReactNode }) {
             </p>
           </div>
           <div className="flex flex-wrap gap-x-4 gap-y-2">
+            <Link to="/how-it-works" className="hover:text-foreground">
+              How it works
+            </Link>
             <Link to="/privacy" className="hover:text-foreground">
               Privacy
             </Link>

@@ -2,11 +2,15 @@
  * DEMO seed switch.
  *
  * Default: the ten labeled sample workplaces are visible.
- * For a real launch with an empty directory:
- *   1. Set VITE_DEMO_SEED=0 in `.env.local`, or
- *   2. Empty the arrays in `src/data/seed.ts`.
+ * For a real launch with an empty directory (fast path):
+ *   1. Copy `.env.example` to `.env.local`
+ *   2. Set VITE_DEMO_SEED=0
+ *   3. Restart `npm run dev`
  *
- * See README → “Strip the demo seed”.
+ * Hard path: empty the arrays in `src/data/seed.ts`.
+ *
+ * Home, directory, workplace 404, and staff render empty-catalog states
+ * when this is off. See README → “Strip the demo seed”.
  */
 export function isDemoSeedEnabled(): boolean {
   return import.meta.env.VITE_DEMO_SEED !== "0"
