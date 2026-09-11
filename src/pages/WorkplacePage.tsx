@@ -21,13 +21,12 @@ export function WorkplacePage() {
 
   if (!workplace) {
     return (
-      <EmptyState title="Workplace not on the board">
-        <p>
-          That slug isn&apos;t in the current catalog.
-          {isDemoSeedEnabled()
-            ? " Check the directory for labeled DEMO listings."
-            : " Demo seed is off, so the launch directory is empty on purpose."}
-        </p>
+      <EmptyState
+        title="No board for this place."
+        primaryTo="/workplaces"
+        primaryLabel="Back to directory"
+      >
+        <p>Might be a bad link, or it is not on In the Back yet.</p>
       </EmptyState>
     )
   }
@@ -108,8 +107,13 @@ export function WorkplacePage() {
           </Button>
         </div>
         {reports.length === 0 ? (
-          <EmptyState eyebrow="This room" title="No published excerpts" cta={false}>
-            <p>Nothing is live for this filter. Tap another room, or show all rooms.</p>
+          <EmptyState
+            eyebrow="This room"
+            title="This room is unscored."
+            primaryTo="/write")
+            primaryLabel="Score this room"
+          >
+            <p>First mark sets the tone. Keep it fair, keep it specific.</p>
           </EmptyState>
         ) : (
           <div className="grid gap-3">

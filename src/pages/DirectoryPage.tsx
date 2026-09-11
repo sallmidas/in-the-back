@@ -145,15 +145,19 @@ export function DirectoryPage() {
       ) : null}
 
       {!isDemoSeedEnabled() ? (
-        <EmptyState eyebrow="Directory" title="No workplaces on the board">
+        <EmptyState eyebrow="Directory" title="Board is quiet.">
           <p>
-            The directory is empty. When a real kitchen, dock, or pit is listed, it will show here
-            with room scores — not résumés, not manager rankings.
+            No rooms scored here yet. Be the first honest mark — cleanliness, safety, dignity.
           </p>
         </EmptyState>
       ) : results.length === 0 ? (
-        <EmptyState eyebrow="Filters" title="No matches" cta={false}>
-          <p>Clear a filter or try another room. Nothing matched this view.</p>
+        <EmptyState
+          eyebrow="Filters"
+          title="Nothing matches."
+          primaryTo="/workplaces"
+          primaryLabel="Clear filters"
+        >
+          <p>Loosen the filters, or open a room and leave the first score.</p>
         </EmptyState>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">

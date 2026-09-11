@@ -87,11 +87,10 @@ export function StaffQueuePage() {
       ) : null}
 
       {workplaces.length === 0 && !session ? (
-        <EmptyState title="No workplaces to claim yet" cta={false}>
+        <EmptyState title="Nothing to chair yet." cta={false}>
           <p>
-            The public board has no listings yet, so there is nothing for a chair to claim. You can
-            still sign in below to see how the stub works — the queue stays empty until workplaces
-            exist.
+            When workplaces land, claimed chairs show up here. Sign-in stub still works in this
+            browser.
           </p>
         </EmptyState>
       ) : null}
@@ -161,10 +160,10 @@ export function StaffQueuePage() {
           ) : null}
 
           {workplaces.length === 0 ? (
-            <EmptyState title="Nothing to claim yet" cta={false}>
+            <EmptyState title="Your queue is empty." cta={false}>
               <p>
-                You are signed in, but no workplaces are on the board. When a location is listed,
-                pick it below and tap This is my queue.
+                No workplaces to claim until listings exist. You are signed in — hang tight, or see
+                the README if you are restoring the demo seed for testing.
               </p>
             </EmptyState>
           ) : claimed ? (

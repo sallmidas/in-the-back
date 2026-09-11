@@ -7,6 +7,8 @@ type EmptyStateProps = {
   title: string
   children: ReactNode
   cta?: boolean
+  primaryTo?: string
+  primaryLabel?: string
 }
 
 /** User-facing empty board. Dev seed restore steps live in the README only. */
@@ -15,6 +17,8 @@ export function EmptyState({
   title,
   children,
   cta = true,
+  primaryTo = "/how-it-works",
+  primaryLabel = "How it works",
 }: EmptyStateProps) {
   return (
     <div className="space-y-5 rounded-xl border border-dashed border-border bg-card/50 px-5 py-8 sm:px-8">
@@ -28,13 +32,10 @@ export function EmptyState({
       {cta ? (
         <div className="flex flex-wrap gap-2">
           <Button asChild>
-            <Link to="/write">Be the first honest score</Link>
+            <Link to={primaryTo}>{primaryLabel}</Link>
           </Button>
           <Button asChild variant="outline">
-            <Link to="/how-it-works">How it works</Link>
-          </Button>
-          <Button asChild variant="outline">
-            <Link to="/plans">Plans (preview only)</Link>
+            <Link to="/plans">Browse plans</Link>
           </Button>
         </div>
       ) : null}
