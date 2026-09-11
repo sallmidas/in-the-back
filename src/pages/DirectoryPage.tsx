@@ -145,15 +145,15 @@ export function DirectoryPage() {
       ) : null}
 
       {!isDemoSeedEnabled() ? (
-        <EmptyState eyebrow="Launch directory" title="No workplaces listed">
+        <EmptyState eyebrow="Directory" title="No workplaces on the board">
           <p>
-            Demo seed is stripped. This is the empty catalog you ship: no sample kitchens, no
-            fake scores. Real listings wait on the LLC and live publish.
+            The directory is empty. When a real kitchen, dock, or pit is listed, it will show here
+            with room scores — not résumés, not manager rankings.
           </p>
         </EmptyState>
       ) : results.length === 0 ? (
-        <EmptyState eyebrow="Filters" title="No matches" restore={false}>
-          <p>Clear a filter or try another room. The DEMO seed is on; nothing matched this view.</p>
+        <EmptyState eyebrow="Filters" title="No matches" cta={false}>
+          <p>Clear a filter or try another room. Nothing matched this view.</p>
         </EmptyState>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">

@@ -72,8 +72,8 @@ export function StaffQueuePage() {
         <h1 className="font-heading text-4xl tracking-tight">This is my queue</h1>
         <p className="max-w-2xl text-muted-foreground">
           {isDemoSeedEnabled()
-            ? "Try the stub: sign in with any email, claim Harbor & Rye, read the queue. One chair per workplace. This browser only — no OAuth, GPS, or digital ID. Filing a real dispute is still a stub because publish/billing is held until the LLC."
-            : "Staff chair claim needs a listed workplace. Demo seed is off, so there is nothing to claim until real listings exist (or you restore VITE_DEMO_SEED=1). Sign-in is still a local stub — no OAuth."}
+            ? "Try the stub: sign in with any email, claim a DEMO workplace, read the queue. One chair per workplace. This browser only — no OAuth. Dispute filing stays a stub until the LLC."
+            : "One staff chair per workplace. Sign in below to practice the claim flow. Real workplaces to claim will appear here once listings are live — billing and publish stay held until the LLC."}
         </p>
       </header>
 
@@ -87,11 +87,11 @@ export function StaffQueuePage() {
       ) : null}
 
       {workplaces.length === 0 && !session ? (
-        <EmptyState title="No workplaces to claim">
+        <EmptyState title="No workplaces to claim yet" cta={false}>
           <p>
-            Staff chair claim needs a listed workplace. With the demo seed stripped, the launch
-            catalog has none. The sign-in stub below still works in this browser; there is just
-            nothing to claim.
+            The public board has no listings yet, so there is nothing for a chair to claim. You can
+            still sign in below to see how the stub works — the queue stays empty until workplaces
+            exist.
           </p>
         </EmptyState>
       ) : null}
@@ -161,10 +161,10 @@ export function StaffQueuePage() {
           ) : null}
 
           {workplaces.length === 0 ? (
-            <EmptyState title="Queue is empty on purpose">
+            <EmptyState title="Nothing to claim yet" cta={false}>
               <p>
-                Restore <code className="font-mono text-xs text-foreground">VITE_DEMO_SEED=1</code>{" "}
-                to claim Harbor &amp; Rye and walk the staff chair stub.
+                You are signed in, but no workplaces are on the board. When a location is listed,
+                pick it below and tap This is my queue.
               </p>
             </EmptyState>
           ) : claimed ? (

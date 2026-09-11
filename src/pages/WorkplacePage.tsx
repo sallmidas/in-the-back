@@ -108,7 +108,7 @@ export function WorkplacePage() {
           </Button>
         </div>
         {reports.length === 0 ? (
-          <EmptyState eyebrow="This room" title="No published excerpts" restore={false} cta={false}>
+          <EmptyState eyebrow="This room" title="No published excerpts" cta={false}>
             <p>Nothing is live for this filter. Tap another room, or show all rooms.</p>
           </EmptyState>
         ) : (

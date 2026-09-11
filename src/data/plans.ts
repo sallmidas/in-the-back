@@ -31,7 +31,7 @@ export const PLANS: Plan[] = [
     name: "Watch",
     monthly: 129,
     perReport: 3,
-        tagline: "$129 / month + $3 per published report — not billed in this demo",
+    tagline: "$129 / month + $3 per published report — preview only, no checkout",
     audience: "Operators who need to see volume, not argue it",
     features: [
       "Everything on Free",
@@ -45,7 +45,7 @@ export const PLANS: Plan[] = [
     name: "Respond",
     monthly: 249,
     perReport: 5,
-        tagline: "$249 / month + $5 per published report — not billed in this demo",
+    tagline: "$249 / month + $5 per published report — preview only, no checkout",
     audience: "The staff chair who will answer for the rooms",
     features: [
       "Everything on Watch",

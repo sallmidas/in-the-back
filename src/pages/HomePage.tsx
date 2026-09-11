@@ -114,21 +114,13 @@ export function HomePage() {
         </div>
         {empty ? (
           <EmptyState
-            eyebrow={seeded ? "No reports yet" : "Launch catalog"}
-            title={seeded ? "The board is empty" : "Waiting on live rooms"}
+            eyebrow={seeded ? "No reports yet" : "Quiet board"}
+            title={seeded ? "The board is quiet" : "No live rooms yet"}
           >
-            {seeded ? (
-              <p>
-                There are no published reports in this catalog. Restore sample data if you emptied{" "}
-                <code className="font-mono text-xs text-foreground">src/data/seed.ts</code>.
-              </p>
-            ) : (
-              <p>
-                Demo seed is off, so this is the real launch surface: no Harbor &amp; Rye, no
-                excerpts, no fake volume. When workplaces publish after the LLC, recent anonymous
-                room reports land here.
-              </p>
-            )}
+            <p>
+              Nothing published here yet. When someone files an honest room score — cleanliness,
+              safety, dignity — it shows up for the crew and the chair. Never a name.
+            </p>
           </EmptyState>
         ) : (
           <div className="grid gap-3">
