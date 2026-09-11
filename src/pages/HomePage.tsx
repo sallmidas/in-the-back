@@ -26,7 +26,7 @@ export function HomePage() {
             Room-level BOH board
           </p>
           <h1 className="font-heading max-w-xl text-4xl leading-[1.05] tracking-tight sm:text-5xl">
-            The rooms they don&apos;t put on the hiring flyer.
+            Cleanliness, safety, dignity — scored
           </h1>
           <p className="max-w-lg text-base leading-relaxed text-muted-foreground">
             Kitchens, dish pits, walk-ins, staff bathrooms, break rooms, docks, stock, overnight.
