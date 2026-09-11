@@ -15,13 +15,13 @@ export function PrivacyPage() {
         <li>Workplace name, city, industry, and room list.</li>
         <li>Room scores and anonymous excerpts.</li>
         <li>Shift/station context written without a name.</li>
-        <li>A dispute badge when a staff chair has flagged a report.</li>
+        <li>A dispute badge when a kitchen has flagged a report.</li>
       </ul>
       <h2 className="font-heading pt-2 text-2xl">What stays off the board</h2>
       <ul className="list-disc space-y-1 pl-5 text-muted-foreground">
         <li>Reviewer name, email, phone, badge, or login.</li>
-        <li>Staff chair identity, even after they claim a queue.</li>
-        <li>Precise GPS. Location is a workplace listing, not a pin drop.</li>
+        <li>Platform chair identity, even after they claim a queue.</li>
+        <li>Location is a workplace listing, not a pin drop.</li>
       </ul>
       <h2 className="font-heading pt-2 text-2xl">Accounts</h2>
       <p className="text-muted-foreground">

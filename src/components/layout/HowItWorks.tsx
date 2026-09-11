@@ -16,12 +16,12 @@ const HOW_IT_WORKS_STEPS = [
   {
     n: "03",
     title: "Disputes stay a badge",
-    body: "A staff chair can flag a report. The public sees DISPUTED — UNDER REVIEW, not a pile-on with a person.",
+    body: "The kitchen can flag a report. A flag leads to uphold or retract — never delete. The public sees DISPUTED — UNDER REVIEW, not a pile-on with a person.",
   },
   {
     n: "04",
     title: "One chair, privately",
-    body: "The designated staff chair claims a queue. Reading the board is free. Watch and Respond stay preview-only until the LLC.",
+    body: "In the Back's platform chair claims “This is my queue.” That chair is not Watch or Respond. Reading the board is free. Watch and Respond stay preview-only until the LLC.",
   },
 ] as const
 

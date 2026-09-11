@@ -25,7 +25,8 @@ export function PlansPage() {
         </div>
         <h1 className="font-heading text-4xl tracking-tight">Free, Watch, Respond</h1>
         <p className="max-w-2xl text-muted-foreground">
-          Pricing ships after In the Back LLC. Looking now costs nothing.
+          Pricing ships after In the Back LLC. Looking now costs nothing. Watch and Respond are
+          kitchen tools — they are not how you sit the platform chair.
         </p>
         <HoldNotice />
       </header>
@@ -34,10 +35,7 @@ export function PlansPage() {
         {PLANS.map((plan) => (
           <Card key={plan.id} className={plan.id === "respond" ? "ring-primary/40" : undefined}>
             <CardHeader>
-              <div className="flex items-center justify-between gap-2">
-                <CardTitle className="font-heading text-2xl">{plan.name}</CardTitle>
-                {plan.id === "respond" ? <Badge>Staff chair</Badge> : null}
-              </div>
+              <CardTitle className="font-heading text-2xl">{plan.name}</CardTitle>
               <CardDescription>{plan.tagline}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -72,8 +70,8 @@ export function PlansPage() {
                 className="w-full"
                 variant={plan.id === "free" ? "outline" : "default"}
               >
-                <Link to={plan.id === "free" ? "/workplaces" : "/staff"}>
-                  {plan.id === "free" ? "Read the board" : "Claim chair"}
+                <Link to={plan.id === "free" ? "/workplaces" : "/how-it-works"}>
+                  {plan.id === "free" ? "Read the board" : "Preview only"}
                 </Link>
               </Button>
             </CardFooter>
