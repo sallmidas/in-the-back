@@ -44,13 +44,10 @@ export function AppShell({ children }: { children: ReactNode }) {
               </NavLink>
             ))}
             <Button asChild size="sm" className="ml-2">
-              <Link to="/write">File a report</Link>
+              <Link to="/workplaces/harbor-and-rye?room=walk-in">Open demo</Link>
             </Button>
           </nav>
-          <div className="flex items-center gap-2 md:hidden">
-            <Button asChild size="sm" variant="outline">
-              <Link to="/write">File</Link>
-            </Button>
+          <div className="md:hidden">
             <Sheet open={open} onOpenChange={setOpen}>
               <SheetTrigger asChild>
                 <Button size="icon" variant="ghost" aria-label="Open menu">
@@ -61,7 +58,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <SheetHeader>
                   <SheetTitle>In the Back</SheetTitle>
                 </SheetHeader>
-                <nav className="mt-6 flex flex-col gap-1 px-4">
+                <nav className="mt-4 flex flex-col gap-1 px-4">
                   {NAV.map((item) => (
                     <NavLink
                       key={item.to}
@@ -73,6 +70,13 @@ export function AppShell({ children }: { children: ReactNode }) {
                       {item.label}
                     </NavLink>
                   ))}
+                  <NavLink
+                    to="/workplaces/harbor-and-rye?room=walk-in"
+                    className={navClass}
+                    onClick={() => setOpen(false)}
+                  >
+                    Open demo
+                  </NavLink>
                 </nav>
               </SheetContent>
             </Sheet>
@@ -102,12 +106,15 @@ export function AppShell({ children }: { children: ReactNode }) {
             <Link to="/staff" className="hover:text-foreground">
               Staff chair
             </Link>
+            <Link to="/write" className="hover:text-foreground">
+              Filing (held)
+            </Link>
           </div>
         </div>
         <Separator />
         <p className="mx-auto max-w-6xl px-4 py-4 text-xs text-muted-foreground">
-          Form an LLC before Stripe or payouts. Pay-on-publish is the billing model — not
-          implemented yet. Phase 1 is a seeded board plus stubs.
+          LLC first. No Stripe, no payouts, no live publish until then. Pay-on-publish is the
+          intended model after that — not billed in this demo.
         </p>
       </footer>
     </div>

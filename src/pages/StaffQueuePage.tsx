@@ -69,8 +69,9 @@ export function StaffQueuePage() {
         </p>
         <h1 className="font-heading text-4xl tracking-tight">This is my queue</h1>
         <p className="max-w-2xl text-muted-foreground">
-          Staff chair rule: one designated chair per workplace may claim the official queue.
-          Sign-in is local-only. GPS, digital ID, and real OAuth are out of scope.
+          Try the stub: sign in with any email, claim Harbor & Rye, read the queue. One chair per
+          workplace. This browser only — no OAuth, GPS, or digital ID. Filing a real dispute is
+          still a stub because publish/billing is held until the LLC.
         </p>
       </header>
 

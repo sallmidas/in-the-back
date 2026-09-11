@@ -24,7 +24,7 @@ npm install
 npm run dev
 ```
 
-Open [http://127.0.0.1:43173](http://127.0.0.1:43173). You should see the labeled **DEMO seed** board: Harbor & Rye, ParcelPath, Elmhurst Mercy, and the rest, with room scores and anonymous excerpts.
+Open [http://127.0.0.1:43173](http://127.0.0.1:43173). Use **Walk the demo** on the home board, or **Open demo** in the header (Harbor & Rye walk-in, disputed). Tap a room tile to filter excerpts.
 
 ```bash
 npm run build    # production bundle into dist/
@@ -91,9 +91,9 @@ Each has sample rooms, scores, and anonymous reports. Two seeded disputes (Harbo
 
 ## Product rules this repo is teaching
 
-- **LLC before Stripe / payouts.** Do not connect a payments product or send money until the company exists. This repo has no Stripe.
+- **LLC before Stripe / payouts / live publish.** Filing and billing stay off until the company exists. This repo has no Stripe.
 - **Staff chair rule.** One designated staff chair per workplace may claim the official queue. The public board never shows who claimed it. GPS / digital ID to prove the chair is out of scope here.
-- **Pay-on-publish.** Drafts are free. Watch / Respond are meant to pay when a report goes live, not when it is written. **Not implemented yet** — the write form does not submit and nothing is billed.
+- **Pay-on-publish.** After LLC: drafts are free; Watch / Respond pay when a report goes live. Not billed in this demo.
 
 ## Out of scope (stubs only)
 
@@ -103,14 +103,4 @@ Real Stripe, payouts, real OAuth, GPS, digital ID, production deploy.
 
 Vite, React 19, TypeScript, Tailwind v4, shadcn/ui, React Router, Capacitor 8. One web app. Two doors.
 
-## Publish this to Origin as `midas-engine/in-the-back`
-
-This agent workspace could not create the Origin repository (the session token is not scoped for `origin repo create` on `midas-engine`). From a machine where your Origin login can create private repos:
-
-```bash
-origin repo create midas-engine/in-the-back
-git remote add intheback https://origin.cursor.com/midas-engine/in-the-back.git
-git push -u intheback main
-```
-
-If you already emptied and created that repo in the Origin UI, point `origin` at it and push `main`.
+Private Origin repo: [midas-engine/in-the-back](https://cursor.com/codebase/midas-engine/in-the-back).

@@ -1,15 +1,39 @@
 import { ROOM_LABELS, type Room } from "@/data/types"
 import { formatScore, scoreClass } from "@/lib/format"
+import { cn } from "@/lib/utils"
 
-export function RoomScore({ room }: { room: Room }) {
-  return (
-    <div className="flex min-w-[7.5rem] flex-col gap-1 rounded-lg border border-border bg-background/60 px-3 py-2">
+type Props = {
+  room: Room
+  selected?: boolean
+  onSelect?: () => void
+}
+
+export function RoomScore({ room, selected = false, onSelect }: Props) {
+  const className = cn(
+    "flex flex-col gap-1 rounded-lg border px-3 py-2 text-left transition-colors",
+    selected
+      ? "border-primary bg-primary/10"
+      : "border-border bg-background/60 hover:border-primary/40",
+  )
+
+  const body = (
+    <>
       <span className="text-[11px] tracking-wide text-muted-foreground uppercase">
         {ROOM_LABELS[room.kind]}
       </span>
       <span className={`font-mono text-2xl leading-none ${scoreClass(room.score)}`}>
         {formatScore(room.score)}
       </span>
-    </div>
+    </>
+  )
+
+  if (!onSelect) {
+    return <div className={className}>{body}</div>
+  }
+
+  return (
+    <button type="button" className={className} onClick={onSelect} aria-pressed={selected}>
+      {body}
+    </button>
   )
 }

@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react"
+import { useSearchParams } from "react-router-dom"
 import { WorkplaceCard } from "@/components/workplace/WorkplaceCard"
+import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
@@ -16,23 +17,42 @@ import {
   INDUSTRY_LABELS,
   ROOM_KINDS,
   ROOM_LABELS,
+  isIndustry,
+  isRoomKind,
   type Industry,
   type RoomKind,
 } from "@/data/types"
 
 type Band = "all" | "struggling" | "mixed" | "solid"
+const BANDS: Band[] = ["all", "struggling", "mixed", "solid"]
+
+function asBand(value: string | null): Band {
+  if (value && (BANDS as string[]).includes(value)) return value as Band
+  return "all"
+}
 
 export function DirectoryPage() {
-  const [query, setQuery] = useState("")
-  const [industry, setIndustry] = useState<Industry | "all">("all")
-  const [room, setRoom] = useState<RoomKind | "all">("all")
-  const [band, setBand] = useState<Band>("all")
+  const [params, setParams] = useSearchParams()
+  const query = params.get("q") ?? ""
+  const industryParam = params.get("industry")
+  const roomParam = params.get("room")
+  const industry: Industry | "all" =
+    industryParam && isIndustry(industryParam) ? industryParam : "all"
+  const room: RoomKind | "all" = roomParam && isRoomKind(roomParam) ? roomParam : "all"
+  const band = asBand(params.get("band"))
 
   const seeded = getWorkplaces().length
-  const results = useMemo(
-    () => filterWorkplaces({ query, industry, room, band }),
-    [query, industry, room, band],
-  )
+  const results = filterWorkplaces({ query, industry, room, band })
+  const filtersOn = Boolean(query) || industry !== "all" || room !== "all" || band !== "all"
+
+  function patch(next: Record<string, string>) {
+    const merged = new URLSearchParams(params)
+    for (const [key, value] of Object.entries(next)) {
+      if (!value || value === "all") merged.delete(key)
+      else merged.set(key, value)
+    }
+    setParams(merged, { replace: true })
+  }
 
   return (
     <div className="space-y-6">
@@ -42,31 +62,28 @@ export function DirectoryPage() {
         </p>
         <h1 className="font-heading text-4xl tracking-tight">Find a building, then a room</h1>
         <p className="max-w-2xl text-muted-foreground">
-          Search by name or city. Filter by industry, room, or score band. Every listing here is
-          a labeled DEMO sample until you strip the seed.
+          Search name, city, or room. Filters live in the URL so you can share a view. Every
+          listing is a labeled DEMO sample.
         </p>
       </header>
 
       <form
-        className="grid gap-3 rounded-xl border border-border bg-card/60 p-4 md:grid-cols-4"
+        className="grid gap-3 rounded-xl border border-border bg-card/60 p-4 sm:grid-cols-2 lg:grid-cols-4"
         onSubmit={(event) => event.preventDefault()}
       >
-        <div className="md:col-span-4">
+        <div className="sm:col-span-2 lg:col-span-4">
           <Label htmlFor="q">Search</Label>
           <Input
             id="q"
             value={query}
-            onChange={(event) => setQuery(event.target.value)}
+            onChange={(event) => patch({ q: event.target.value })}
             placeholder="Harbor, Cicero, walk-in…"
             className="mt-1.5"
           />
         </div>
         <div>
           <Label>Industry</Label>
-          <Select
-            value={industry}
-            onValueChange={(value) => setIndustry(value as Industry | "all")}
-          >
+          <Select value={industry} onValueChange={(value) => patch({ industry: value })}>
             <SelectTrigger className="mt-1.5 w-full">
               <SelectValue placeholder="All industries" />
             </SelectTrigger>
@@ -82,10 +99,7 @@ export function DirectoryPage() {
         </div>
         <div>
           <Label>Room</Label>
-          <Select
-            value={room}
-            onValueChange={(value) => setRoom(value as RoomKind | "all")}
-          >
+          <Select value={room} onValueChange={(value) => patch({ room: value })}>
             <SelectTrigger className="mt-1.5 w-full">
               <SelectValue placeholder="Any room" />
             </SelectTrigger>
@@ -101,7 +115,7 @@ export function DirectoryPage() {
         </div>
         <div>
           <Label>Score band</Label>
-          <Select value={band} onValueChange={(value) => setBand(value as Band)}>
+          <Select value={band} onValueChange={(value) => patch({ band: value })}>
             <SelectTrigger className="mt-1.5 w-full">
               <SelectValue placeholder="Any score" />
             </SelectTrigger>
@@ -113,8 +127,15 @@ export function DirectoryPage() {
             </SelectContent>
           </Select>
         </div>
-        <div className="flex items-end text-sm text-muted-foreground">
-          {results.length} of {seeded} workplaces
+        <div className="flex items-end justify-between gap-2 text-sm text-muted-foreground">
+          <span>
+            {results.length} of {seeded}
+          </span>
+          {filtersOn ? (
+            <Button type="button" variant="ghost" size="sm" onClick={() => setParams({})}>
+              Clear
+            </Button>
+          ) : null}
         </div>
       </form>
 
@@ -130,8 +151,7 @@ export function DirectoryPage() {
         <div className="rounded-xl border border-dashed border-border p-8 text-center">
           <p className="font-heading text-xl">No matches</p>
           <p className="mt-2 text-sm text-muted-foreground">
-            Clear a filter or try another room. Seeded names include Harbor & Rye, ParcelPath,
-            and Northline Market.
+            Clear a filter or try another room.
           </p>
         </div>
       ) : (

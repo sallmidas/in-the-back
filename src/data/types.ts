@@ -83,3 +83,11 @@ export const INDUSTRY_LABELS: Record<Industry, string> = {
   auto: "Auto / overnight shop",
   banquet: "Banquet / catering",
 }
+
+export function isRoomKind(value: string): value is RoomKind {
+  return (ROOM_KINDS as readonly string[]).includes(value)
+}
+
+export function isIndustry(value: string): value is Industry {
+  return (INDUSTRIES as readonly string[]).includes(value)
+}

@@ -1,83 +1,40 @@
 import { Link } from "react-router-dom"
+import { HoldNotice } from "@/components/layout/HoldNotice"
 import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { getWorkplaces } from "@/data/catalog"
-import { ROOM_KINDS, ROOM_LABELS } from "@/data/types"
 
 export function WritePage() {
-  const workplaces = getWorkplaces()
-
   return (
     <div className="mx-auto max-w-xl space-y-6">
-      <header className="space-y-2">
+      <header className="space-y-3">
         <p className="font-mono text-[11px] tracking-[0.2em] text-primary uppercase">
-          Pay-on-publish — not implemented
+          Filing held
         </p>
-        <h1 className="font-heading text-4xl tracking-tight">File a report</h1>
+        <h1 className="font-heading text-4xl tracking-tight">No live reports yet</h1>
         <p className="text-muted-foreground">
-          Drafting is free. A report is meant to bill Watch/Respond workplaces only when it
-          publishes. That pipeline, Stripe, and reviewer identity checks are stubs. The form
-          below does not submit.
+          After the LLC, a filing will be anonymous (room, score, shift context, writing — never
+          a name) and Watch/Respond workplaces will be billed only if that report publishes.
+          Until then this form stays closed so a demo cannot be mistaken for a live board.
         </p>
+        <HoldNotice />
       </header>
-      <form
-        className="space-y-4 rounded-xl border border-border bg-card/70 p-5"
-        onSubmit={(event) => event.preventDefault()}
-      >
-        <div>
-          <Label>Workplace</Label>
-          <Select disabled value={workplaces[0]?.id ?? "empty"}>
-            <SelectTrigger className="mt-1.5 w-full">
-              <SelectValue placeholder={workplaces[0]?.name ?? "Empty directory"} />
-            </SelectTrigger>
-            <SelectContent>
-              {workplaces.map((workplace) => (
-                <SelectItem key={workplace.id} value={workplace.id}>
-                  {workplace.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          <Label>Room</Label>
-          <Select disabled value={ROOM_KINDS[0]}>
-            <SelectTrigger className="mt-1.5 w-full">
-              <SelectValue placeholder={ROOM_LABELS[ROOM_KINDS[0]]} />
-            </SelectTrigger>
-            <SelectContent>
-              {ROOM_KINDS.map((kind) => (
-                <SelectItem key={kind} value={kind}>
-                  {ROOM_LABELS[kind]}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          <Label htmlFor="excerpt">Writing</Label>
-          <Textarea
-            id="excerpt"
-            disabled
-            className="mt-1.5"
-            placeholder="Room, what happened, what it felt like. No names."
-          />
-        </div>
-        <Button type="button" disabled>
-          Publish (disabled)
+      <div className="rounded-xl border border-dashed border-border p-5 text-sm text-muted-foreground">
+        <p className="font-mono text-[11px] tracking-[0.16em] text-foreground uppercase">
+          What a report will look like
+        </p>
+        <p className="mt-3">
+          Workplace → room → score /10 → shift context (no identity) → excerpt. Disputes become{" "}
+          <span className="text-destructive">DISPUTED — UNDER REVIEW</span>, not a public argument
+          with a person.
+        </p>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        <Button asChild>
+          <Link to="/workplaces/harbor-and-rye?room=walk-in">See a seeded report</Link>
         </Button>
-      </form>
-      <Button asChild variant="outline">
-        <Link to="/">Read recent reports</Link>
-      </Button>
+        <Button asChild variant="outline">
+          <Link to="/">Back to the board</Link>
+        </Button>
+      </div>
     </div>
   )
 }
