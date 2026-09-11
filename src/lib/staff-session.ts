@@ -2,17 +2,34 @@ const KEY = "itb.staff.v1"
 
 export type StaffSession = {
   email: string
-  claimedSlug: string | null
+  /** Platform chair claimed once for In the Back — not a workplace listing. */
+  claimed: boolean
   signedInAt: string
+}
+
+type StoredSession = {
+  email?: string
+  claimed?: boolean
+  claimedSlug?: string | null
+  signedInAt?: string
+}
+
+function normalize(parsed: StoredSession): StaffSession | null {
+  if (!parsed.email) return null
+  const claimed =
+    typeof parsed.claimed === "boolean" ? parsed.claimed : Boolean(parsed.claimedSlug)
+  return {
+    email: parsed.email,
+    claimed,
+    signedInAt: parsed.signedInAt ?? new Date().toISOString(),
+  }
 }
 
 function read(): StaffSession | null {
   try {
     const raw = localStorage.getItem(KEY)
     if (!raw) return null
-    const parsed = JSON.parse(raw) as StaffSession
-    if (!parsed.email) return null
-    return parsed
+    return normalize(JSON.parse(raw) as StoredSession)
   } catch {
     return null
   }
@@ -34,7 +51,7 @@ export function getStaffSession(): StaffSession | null {
 export function signInStaff(email: string): StaffSession {
   const session: StaffSession = {
     email: email.trim().toLowerCase(),
-    claimedSlug: read()?.claimedSlug ?? null,
+    claimed: read()?.claimed ?? false,
     signedInAt: new Date().toISOString(),
   }
   write(session)
@@ -45,10 +62,10 @@ export function signOutStaff() {
   write(null)
 }
 
-export function claimQueue(slug: string): StaffSession | null {
+export function claimQueue(): StaffSession | null {
   const current = read()
   if (!current) return null
-  const next = { ...current, claimedSlug: slug }
+  const next = { ...current, claimed: true }
   write(next)
   return next
 }
@@ -56,7 +73,7 @@ export function claimQueue(slug: string): StaffSession | null {
 export function releaseQueue(): StaffSession | null {
   const current = read()
   if (!current) return null
-  const next = { ...current, claimedSlug: null }
+  const next = { ...current, claimed: false }
   write(next)
   return next
 }

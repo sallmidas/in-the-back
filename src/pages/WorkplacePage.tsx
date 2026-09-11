@@ -108,14 +108,21 @@ export function WorkplacePage() {
           <h2 className="font-heading text-2xl tracking-tight">
             {roomFilter ? `${ROOM_LABELS[roomFilter]} excerpts` : "Anonymous excerpts"}
           </h2>
-          <Button
-            asChild
-            variant="outline"
-            size="sm"
-            className="h-auto min-h-11 w-full whitespace-normal md:w-auto"
-          >
-            <Link to="/staff">This is my queue</Link>
-          </Button>
+          <div className="flex w-full flex-col items-stretch gap-1 sm:w-auto sm:items-end">
+            <Button
+              asChild
+              variant="outline"
+              size="sm"
+              className="h-auto min-h-11 w-full whitespace-normal md:w-auto"
+            >
+              <Link to="/staff" aria-label="This is my queue — claim In the Back's platform chair, not this listing">
+                This is my queue
+              </Link>
+            </Button>
+            <p className="text-center text-[11px] leading-snug text-muted-foreground sm:text-right">
+              Platform chair once — not this listing.
+            </p>
+          </div>
         </div>
         {reports.length === 0 ? (
           <EmptyState

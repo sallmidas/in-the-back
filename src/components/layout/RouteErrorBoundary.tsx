@@ -28,7 +28,7 @@ class ErrorBoundary extends Component<BoundaryProps, BoundaryState> {
         >
           <p>
             Something in this screen broke. The rest of the house is still up. Try the board or
-            the directory. This is not a live filing.
+            the directory.
           </p>
         </EmptyState>
       )

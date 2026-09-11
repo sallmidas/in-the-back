@@ -22,7 +22,7 @@ const HOW_IT_WORKS_STEPS = [
   {
     n: "04",
     title: "One chair, privately",
-    body: "In the Back's platform chair claims “This is my queue.” That chair is not Watch or Respond. Reading the board is free. Watch and Respond stay preview-only until the LLC.",
+    body: "In the Back's platform chair claims “This is my queue” once — not a workplace listing. That chair is not Watch or Respond. Reading the board is free. Watch billing stays preview-only until the LLC.",
   },
 ] as const
 

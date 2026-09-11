@@ -158,14 +158,14 @@ export function AppShell({ children }: { children: ReactNode }) {
               This is my queue
             </Link>
             <Link to="/write" className={footerLinkClass}>
-              Filing (held)
+              File a report
             </Link>
           </nav>
         </div>
         <Separator />
         <p className="mx-auto max-w-6xl px-4 py-4 text-xs text-muted-foreground">
-          LLC first. No Stripe. No card on file. No live publish until then. Looking at plans
-          costs nothing.
+          LLC first. No Stripe. No card on file. Payouts and Watch billing stay held until
+          then. Filing is open. Looking at plans costs nothing.
         </p>
       </footer>
     </div>
