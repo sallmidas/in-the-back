@@ -86,16 +86,16 @@ Switch lives in `src/data/demo-flag.ts`. Catalog helpers in `src/data/catalog.ts
 | Path | What it is |
 | --- | --- |
 | `/` | Home / recent reports |
-| `/how-it-works` | Product walkthrough — rooms, scores, anonymity, disputes, staff chair |
+| `/how-it-works` | Product walkthrough — rooms, scores, anonymity, flags, platform chair |
 | `/workplaces` | Directory with search + industry / room / score filters |
 | `/workplaces/:slug` | Rooms, scores, anonymous excerpts, dispute badges |
-| `/plans` | Free / Watch ($129 + $3/report) / Respond ($249 + $5/report) |
-| `/staff` | Sign-in stub + **This is my queue** claim |
+| `/plans` | Free / Watch / Respond (preview only). Watch = kitchen sees files land. Respond = kitchen can flag. Not the platform chair. |
+| `/staff` | In the Back's platform chair — **This is my queue** (not a Watch/Respond plan) |
 | `/privacy` | Privacy placeholder |
 | `/account/delete` | Delete-account placeholder |
-| `/write` | File-a-report stub (disabled; pay-on-publish not live) |
+| `/write` | File-a-report stub (disabled; filing held until LLC) |
 
-Dispute copy on the board is exactly: **DISPUTED — UNDER REVIEW**.
+Dispute copy on the board is exactly: **DISPUTED — UNDER REVIEW**. A flag leads to uphold or retract — never delete.
 
 ## Labeled DEMO workplaces
 
@@ -105,13 +105,13 @@ Each has sample rooms, scores, and anonymous reports. Two seeded disputes (Harbo
 
 ## Product rules this repo is teaching
 
-- **LLC before Stripe / payouts / live publish.** Filing and billing stay off until the company exists. This repo has no Stripe.
-- **Staff chair rule.** One designated staff chair per workplace may claim the official queue. The public board never shows who claimed it. GPS / digital ID to prove the chair is out of scope here.
-- **Pay-on-publish.** After LLC: drafts are free; Watch / Respond pay when a report goes live. Not billed in this demo.
+- **LLC before Stripe / live publish.** Filing and billing stay off until the company exists. This repo has no Stripe. Numbers on `/plans` are preview only.
+- **Platform chair.** In the Back's chair claims **This is my queue**. It is not Watch or Respond. Operators do not buy a plan to sit it. The public board never shows who claimed it.
+- **Watch / Respond (preview).** Watch: the kitchen can see new files as they land. Respond: the kitchen can flag a report. A flag leads to uphold or retract — never delete.
 
 ## Out of scope (stubs only)
 
-Real Stripe, payouts, real OAuth, GPS, digital ID, production deploy.
+Real Stripe, real OAuth, production deploy.
 
 ## Stack
 

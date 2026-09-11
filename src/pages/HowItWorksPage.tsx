@@ -80,7 +80,7 @@ export function HowItWorksPage() {
             <li>Room scores and anonymous excerpts.</li>
             <li>Shift or station context written without a name.</li>
             <li>
-              A dispute badge when a chair has flagged a report — exactly{" "}
+              A dispute badge when a kitchen has flagged a report — exactly{" "}
               <span className="text-destructive">DISPUTED — UNDER REVIEW</span>.
             </li>
           </ul>
@@ -89,7 +89,7 @@ export function HowItWorksPage() {
           <h2 className="font-heading text-xl tracking-tight">What stays off</h2>
           <ul className="mt-3 space-y-2 text-sm leading-relaxed text-muted-foreground">
             <li>Reviewer name, handle, email, badge, or login.</li>
-            <li>Staff chair identity, even after they claim a queue.</li>
+            <li>Platform chair identity, even after they claim a queue.</li>
             <li>Hiring copy, résumés, or “rate my boss.”</li>
             <li>Live filing and Stripe — held until the LLC exists. No card on file.</li>
           </ul>

@@ -60,7 +60,7 @@ export function StaffQueuePage() {
     setError(null)
     const next = claimQueue(claimSlug)
     setSession(next)
-    setNotice("Queue claimed under the staff chair rule. Public still never sees you.")
+    setNotice("Queue claimed as In the Back's platform chair. Public still never sees you. This is not Watch or Respond.")
   }
 
   return (
@@ -72,8 +72,8 @@ export function StaffQueuePage() {
         <h1 className="font-heading text-4xl tracking-tight">This is my queue</h1>
         <p className="max-w-2xl text-muted-foreground">
           {isDemoSeedEnabled()
-            ? "Try the stub: sign in with any email, claim a DEMO workplace, read the queue. One chair per workplace. This browser only — no OAuth. Dispute filing stays a stub until the LLC."
-            : "One staff chair per workplace. Sign in below to practice the claim flow. Real workplaces to claim will appear here once listings are live — billing and publish stay held until the LLC."}
+            ? "In the Back's platform chair — not Watch, not Respond. Sign in with any email, claim a DEMO workplace, read the queue. One chair per workplace. This browser only — no OAuth. Flagging is a stub: uphold or retract, never delete."
+            : "In the Back's platform chair — not a Watch or Respond plan. One chair per workplace. Sign in below to practice the claim flow. Real workplaces to claim will appear here once listings are live — billing and publish stay held until the LLC."}
         </p>
       </header>
 
@@ -203,11 +203,11 @@ export function StaffQueuePage() {
                         size="sm"
                         onClick={() =>
                           setNotice(
-                            "Dispute filing is a stub. Production would open an under-review case without naming the reviewer. Seeded disputes already show DISPUTED — UNDER REVIEW.",
+                            "Flagging is a stub. A flag leads to uphold or retract — it does not delete the report. Seeded flags already show DISPUTED — UNDER REVIEW.",
                           )
                         }
                       >
-                        Flag dispute (stub)
+                        Flag (stub)
                       </Button>
                     </div>
                   ))}

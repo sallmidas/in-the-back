@@ -13,8 +13,8 @@ export function WritePage() {
         <h1 className="font-heading text-4xl tracking-tight">No live reports yet</h1>
         <p className="text-muted-foreground">
           After the LLC, a filing will be anonymous (room, score, shift context, writing — never
-          a name) and Watch/Respond workplaces will be billed only if that report publishes.
-          Until then this form stays closed so a demo cannot be mistaken for a live board.
+          a name). Watch is the kitchen seeing files land; Respond is the kitchen flagging a
+          report. Until then this form stays closed so a demo cannot be mistaken for a live board.
         </p>
         <HoldNotice />
       </header>

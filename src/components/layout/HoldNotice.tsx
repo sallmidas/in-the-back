@@ -32,8 +32,8 @@ export function DemoWalk() {
     {
       n: "03",
       to: "/staff",
-      title: "Staff chair stub",
-      body: "Sign in locally, claim “This is my queue.” Public still never sees you.",
+      title: "Platform chair stub",
+      body: "In the Back's chair — not Watch or Respond. Sign in locally, claim “This is my queue.” Public still never sees you.",
     },
     {
       n: "04",
