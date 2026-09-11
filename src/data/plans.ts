@@ -31,7 +31,7 @@ export const PLANS: Plan[] = [
     name: "Watch",
     monthly: 129,
     perReport: 3,
-    tagline: "The kitchen can see new files as they land — numbers shown for later; nothing bills now",
+    tagline: "The kitchen can see new files as they land.",
     audience: "Operators who need to see reports as they land",
     features: [
       "Everything on Free",
@@ -45,7 +45,7 @@ export const PLANS: Plan[] = [
     name: "Respond",
     monthly: 249,
     perReport: 5,
-    tagline: "The kitchen can flag a report — numbers shown for later; nothing bills now",
+    tagline: "The kitchen can flag a report.",
     audience: "Operators who need to flag a report",
     features: [
       "Everything on Watch",

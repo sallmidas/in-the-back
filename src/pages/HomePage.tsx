@@ -20,7 +20,11 @@ export function HomePage() {
   useEffect(() => {
     const id = window.location.hash.replace("#", "")
     if (id !== "demo-walk" && id !== "how-it-works") return
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" })
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    document.getElementById(id)?.scrollIntoView({
+      behavior: reduce ? "auto" : "smooth",
+      block: "start",
+    })
   }, [])
 
   return (
@@ -39,28 +43,28 @@ export function HomePage() {
             reviewer. This is not Glassdoor.
           </p>
           <HoldNotice />
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
             {seeded ? (
               <>
-                <Button asChild>
+                <Button asChild className="w-full sm:w-auto">
                   <Link to="/workplaces/harbor-and-rye?room=walk-in">Open the demo room</Link>
                 </Button>
-                <Button asChild variant="outline">
+                <Button asChild variant="outline" className="w-full sm:w-auto">
                   <Link to="/workplaces">All 10 workplaces</Link>
                 </Button>
               </>
             ) : (
               <>
-                <Button asChild>
+                <Button asChild className="w-full sm:w-auto">
                   <Link to="/how-it-works">How it works</Link>
                 </Button>
-                <Button asChild variant="outline">
-                  <Link to="/workplaces">Empty directory</Link>
+                <Button asChild variant="outline" className="w-full sm:w-auto">
+                  <Link to="/workplaces">Open directory</Link>
                 </Button>
               </>
             )}
             {seeded ? (
-              <Button asChild variant="ghost">
+              <Button asChild variant="ghost" className="w-full sm:w-auto">
                 <Link to="/how-it-works">How it works</Link>
               </Button>
             ) : null}
@@ -129,10 +133,10 @@ export function HomePage() {
           <EmptyState
             eyebrow={seeded ? "No reports yet" : "Quiet board"}
             title="Board's quiet."
+            primaryTo="/write"
+            primaryLabel="Score a room"
           >
-            <p>
-              No rooms scored here yet. Be the first honest mark — cleanliness, safety, dignity.
-            </p>
+            <p>No rooms scored yet. First mark: cleanliness, safety, dignity.</p>
           </EmptyState>
         ) : (
           <div className="grid gap-3">

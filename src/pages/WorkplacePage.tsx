@@ -24,6 +24,7 @@ export function WorkplacePage() {
         title="No board for this place."
         primaryTo="/workplaces"
         primaryLabel="Back to directory"
+        titleAs="h1"
       >
         <p>Might be a bad link, or it isn't on In the Back yet.</p>
       </EmptyState>
@@ -90,7 +91,13 @@ export function WorkplacePage() {
           ))}
         </div>
         {roomFilter ? (
-          <Button type="button" variant="ghost" size="sm" onClick={() => setParams({})}>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="w-full sm:w-auto"
+            onClick={() => setParams({})}
+          >
             Show all rooms
           </Button>
         ) : null}
@@ -101,8 +108,13 @@ export function WorkplacePage() {
           <h2 className="font-heading text-2xl tracking-tight">
             {roomFilter ? `${ROOM_LABELS[roomFilter]} excerpts` : "Anonymous excerpts"}
           </h2>
-          <Button asChild variant="outline" size="sm">
-            <Link to="/staff">Platform chair? This is my queue</Link>
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="h-auto min-h-11 w-full whitespace-normal md:w-auto"
+          >
+            <Link to="/staff">This is my queue</Link>
           </Button>
         </div>
         {reports.length === 0 ? (

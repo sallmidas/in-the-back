@@ -28,17 +28,17 @@ export function WritePage() {
           with a person.
         </p>
       </div>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
         {isDemoSeedEnabled() ? (
-          <Button asChild>
+          <Button asChild className="w-full sm:w-auto">
             <Link to="/workplaces/harbor-and-rye?room=walk-in">See a seeded report</Link>
           </Button>
         ) : (
-          <Button asChild>
+          <Button asChild className="w-full sm:w-auto">
             <Link to="/how-it-works">How a report will read</Link>
           </Button>
         )}
-        <Button asChild variant="outline">
+        <Button asChild variant="outline" className="w-full sm:w-auto">
           <Link to="/">Back to the board</Link>
         </Button>
       </div>

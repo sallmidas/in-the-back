@@ -78,12 +78,17 @@ export function StaffQueuePage() {
       </header>
 
       {error ? (
-        <p className="rounded-lg border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+        <p
+          role="alert"
+          className="rounded-lg border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+        >
           {error}
         </p>
       ) : null}
       {notice ? (
-        <p className="rounded-lg border border-border bg-muted/40 px-3 py-2 text-sm">{notice}</p>
+        <p role="status" className="rounded-lg border border-border bg-muted/40 px-3 py-2 text-sm">
+          {notice}
+        </p>
       ) : null}
 
       {workplaces.length === 0 && !session ? (
@@ -106,7 +111,9 @@ export function StaffQueuePage() {
             value={email}
             onChange={(event) => setEmail(event.target.value)}
           />
-          <Button type="submit">Sign in</Button>
+          <Button type="submit" className="w-full sm:w-auto">
+            Sign in
+          </Button>
           <p className="text-xs text-muted-foreground">
             No password, no provider. We store an email string in localStorage so you can demo
             the claim flow.
@@ -124,6 +131,7 @@ export function StaffQueuePage() {
             <Button
               variant="outline"
               size="sm"
+              className="w-full sm:w-auto"
               onClick={() => {
                 signOutStaff()
                 setSession(null)
@@ -140,9 +148,9 @@ export function StaffQueuePage() {
               className="grid gap-3 rounded-xl border border-border bg-card/70 p-5 md:grid-cols-[1fr_auto] md:items-end"
             >
               <div>
-                <Label>Claim a workplace</Label>
+                <Label htmlFor="claim-workplace">Claim a workplace</Label>
                 <Select value={claimSlug} onValueChange={setClaimSlug}>
-                  <SelectTrigger className="mt-1.5 w-full">
+                  <SelectTrigger id="claim-workplace" className="mt-1.5 w-full">
                     <SelectValue placeholder="Choose a DEMO workplace" />
                   </SelectTrigger>
                   <SelectContent>
@@ -155,7 +163,9 @@ export function StaffQueuePage() {
                   </SelectContent>
                 </Select>
               </div>
-              <Button type="submit">This is my queue</Button>
+              <Button type="submit" className="w-full md:w-auto">
+                This is my queue
+              </Button>
             </form>
           ) : null}
 
@@ -173,13 +183,14 @@ export function StaffQueuePage() {
                 <h2 className="font-heading text-2xl">
                   Queue · {claimed.name}
                 </h2>
-                <div className="flex gap-2">
-                  <Button asChild variant="outline" size="sm">
+                <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+                  <Button asChild variant="outline" size="sm" className="w-full sm:w-auto">
                     <Link to={`/workplaces/${claimed.slug}`}>Public page</Link>
                   </Button>
                   <Button
                     variant="ghost"
                     size="sm"
+                    className="w-full sm:w-auto"
                     onClick={() => {
                       setSession(releaseQueue())
                       setClaimSlug(UNSET_WORKPLACE)
@@ -202,6 +213,7 @@ export function StaffQueuePage() {
                       <Button
                         variant="outline"
                         size="sm"
+                        className="w-full sm:w-auto"
                         onClick={() =>
                           setNotice(
                             "Flagging is a stub. A flag leads to uphold or retract — it does not delete the report. Seeded flags already show DISPUTED — UNDER REVIEW.",

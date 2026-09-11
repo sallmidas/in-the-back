@@ -33,7 +33,13 @@ export function RoomScore({ room, selected = false, onSelect }: Props) {
   }
 
   return (
-    <button type="button" className={className} onClick={onSelect} aria-pressed={selected}>
+    <button
+      type="button"
+      className={className}
+      onClick={onSelect}
+      aria-pressed={selected}
+      aria-label={`${ROOM_LABELS[room.kind]}, ${formatScore(room.score)} out of 10`}
+    >
       {body}
     </button>
   )
