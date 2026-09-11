@@ -78,7 +78,7 @@ export function HomePage() {
             <li>No names, handles, or badge numbers.</li>
             <li>No star-rating of a CEO. Rooms only.</li>
             <li>Disputes become a public badge, not a pile-on.</li>
-            <li>In the Back's platform chair can claim a queue. The public still never sees who.</li>
+            <li>In the Back's platform chair claims the queue once. The public still never sees who.</li>
           </ul>
         </aside>
       </section>

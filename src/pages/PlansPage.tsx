@@ -77,14 +77,15 @@ export function PlansPage() {
       </div>
 
       <p className="text-xs text-muted-foreground">
-        No Stripe. No card on file. Pay stays held until the LLC. Platform chair is{" "}
+        No Stripe. No card on file. Payouts and Watch billing stay held until the LLC. Platform
+        chair is{" "}
         <Link
           to="/staff"
           className={cn("rounded-sm underline-offset-4 hover:underline", focusRingClass)}
         >
           This is my queue
         </Link>
-        , not a Watch or Respond plan.
+        , claimed once — not a workplace listing, not a Watch or Respond plan.
       </p>
     </div>
   )

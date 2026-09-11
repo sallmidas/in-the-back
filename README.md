@@ -94,10 +94,10 @@ Switch lives in `src/data/demo-flag.ts`. Catalog helpers in `src/data/catalog.ts
 | `/workplaces` | Directory with search + industry / room / score filters |
 | `/workplaces/:slug` | Rooms, scores, anonymous excerpts, dispute badges |
 | `/plans` | Free / Watch / Respond (preview only). Watch = kitchen sees files land. Respond = kitchen can flag. Not the platform chair. |
-| `/staff` | In the Back's platform chair — **This is my queue** (not a Watch/Respond plan) |
+| `/staff` | In the Back's platform chair — **This is my queue** once (not a workplace, not Watch/Respond) |
 | `/privacy` | Privacy placeholder |
 | `/account/delete` | Delete-account placeholder |
-| `/write` | File-a-report stub (disabled; filing held until LLC) |
+| `/write` | File a report (open stub; no Stripe on send) |
 
 Dispute copy on the board is exactly: **DISPUTED — UNDER REVIEW**. A flag leads to uphold or retract — never delete.
 
@@ -109,8 +109,8 @@ Each has sample rooms, scores, and anonymous reports. Two seeded disputes (Harbo
 
 ## Product rules this repo is teaching
 
-- **LLC before Stripe / live publish.** Filing and billing stay off until the company exists. This repo has no Stripe. Numbers on `/plans` are preview only.
-- **Platform chair.** In the Back's chair claims **This is my queue**. It is not Watch or Respond. Operators do not buy a plan to sit it. The public board never shows who claimed it.
+- **LLC before Stripe / payouts / Watch billing.** Filing stays open. Pay stays off until the company exists. This repo has no Stripe. Numbers on `/plans` are preview only.
+- **Platform chair.** In the Back's chair claims **This is my queue** once. It is not a per-workplace claim. It is not Watch or Respond. Operators do not buy a plan to sit it. The public board never shows who claimed it.
 - **Watch / Respond (preview).** Watch: the kitchen can see new files as they land. Respond: the kitchen can flag a report. A flag leads to uphold or retract — never delete.
 - **Share cards.** Static OG/Twitter title and description use the slogan. Tab titles follow the route (works with HashRouter). No reviewer or chair identity in share payloads.
 

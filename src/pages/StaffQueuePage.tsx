@@ -1,19 +1,11 @@
 import { type FormEvent, useMemo, useState } from "react"
-import { Link } from "react-router-dom"
 import { EmptyState } from "@/components/layout/EmptyState"
 import { ReportCard } from "@/components/report/ReportCard"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { getWorkplaceBySlug, getWorkplaces, reportsForWorkplace } from "@/data/catalog"
 import { isDemoSeedEnabled } from "@/data/demo-flag"
+import { recentReports } from "@/data/catalog"
 import {
   claimQueue,
   getStaffSession,
@@ -23,21 +15,14 @@ import {
   type StaffSession,
 } from "@/lib/staff-session"
 
-const UNSET_WORKPLACE = "unset"
-
 export function StaffQueuePage() {
   const [session, setSession] = useState<StaffSession | null>(() => getStaffSession())
   const [email, setEmail] = useState("")
   const [error, setError] = useState<string | null>(null)
-  const [claimSlug, setClaimSlug] = useState(session?.claimedSlug ?? UNSET_WORKPLACE)
   const [notice, setNotice] = useState<string | null>(null)
 
-  const workplaces = getWorkplaces()
-  const claimed = session?.claimedSlug ? getWorkplaceBySlug(session.claimedSlug) : undefined
-  const queue = useMemo(
-    () => (claimed ? reportsForWorkplace(claimed.id) : []),
-    [claimed],
-  )
+  const claimed = Boolean(session?.claimed)
+  const queue = useMemo(() => (claimed ? recentReports(99) : []), [claimed])
 
   function onSignIn(event: FormEvent) {
     event.preventDefault()
@@ -53,14 +38,16 @@ export function StaffQueuePage() {
 
   function onClaim(event: FormEvent) {
     event.preventDefault()
-    if (!claimSlug || claimSlug === UNSET_WORKPLACE) {
-      setError("Pick a workplace to claim as the platform chair.")
+    const next = claimQueue()
+    if (!next) {
+      setError("Sign in first, then claim the platform chair.")
       return
     }
     setError(null)
-    const next = claimQueue(claimSlug)
     setSession(next)
-    setNotice("Queue claimed as In the Back's platform chair. Public still never sees you. This is not Watch or Respond.")
+    setNotice(
+      "Platform chair claimed once for In the Back. Public still never sees you. This is not Watch, not Respond, and not a workplace listing.",
+    )
   }
 
   return (
@@ -72,8 +59,8 @@ export function StaffQueuePage() {
         <h1 className="font-heading text-4xl tracking-tight">This is my queue</h1>
         <p className="max-w-2xl text-muted-foreground">
           {isDemoSeedEnabled()
-            ? "In the Back's platform chair — not Watch, not Respond. Sign in with any email, claim a DEMO workplace, read the queue. One chair per workplace. This browser only — no OAuth. Flagging is a stub: uphold or retract, never delete."
-            : "In the Back's platform chair — not a Watch or Respond plan. One chair per workplace. Sign in below to practice the claim flow. Real workplaces to claim will appear here once listings are live — billing and publish stay held until the LLC."}
+            ? "In the Back's platform chair — claimed once, not per workplace, not Watch, not Respond. Sign in with any email, then This is my queue. This browser only — no OAuth. Flagging is a stub: uphold or retract, never delete."
+            : "In the Back's platform chair — claimed once for the platform, not a workplace listing, not a Watch or Respond plan. Sign in below to practice the claim flow. Payouts and Watch billing stay held until the LLC."}
         </p>
       </header>
 
@@ -91,20 +78,11 @@ export function StaffQueuePage() {
         </p>
       ) : null}
 
-      {workplaces.length === 0 && !session ? (
-        <EmptyState title="No queue yet." cta={false}>
-          <p>
-            When workplaces land, In the Back's platform chair claims them here — not Watch or
-            Respond. Sign-in stub still works in this browser.
-          </p>
-        </EmptyState>
-      ) : null}
-
       {!session ? (
         <form onSubmit={onSignIn} className="max-w-md space-y-3 rounded-xl border border-border bg-card/70 p-5">
-          <Label htmlFor="chair-email">Chair email (stub)</Label>
+          <Label htmlFor="staff-email">Chair email (stub)</Label>
           <Input
-            id="chair-email"
+            id="staff-email"
             type="email"
             autoComplete="username"
             placeholder="chair@example.com"
@@ -142,75 +120,52 @@ export function StaffQueuePage() {
             </Button>
           </div>
 
-          {workplaces.length > 0 ? (
+          {!claimed ? (
             <form
               onSubmit={onClaim}
-              className="grid gap-3 rounded-xl border border-border bg-card/70 p-5 md:grid-cols-[1fr_auto] md:items-end"
+              className="space-y-3 rounded-xl border border-border bg-card/70 p-5"
             >
-              <div>
-                <Label htmlFor="claim-workplace">Claim a workplace</Label>
-                <Select value={claimSlug} onValueChange={setClaimSlug}>
-                  <SelectTrigger id="claim-workplace" className="mt-1.5 w-full">
-                    <SelectValue placeholder="Choose a DEMO workplace" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={UNSET_WORKPLACE}>Choose a DEMO workplace</SelectItem>
-                    {workplaces.map((workplace) => (
-                      <SelectItem key={workplace.slug} value={workplace.slug}>
-                        {workplace.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <Button type="submit" className="w-full md:w-auto">
+              <p className="text-sm text-muted-foreground">
+                Claim In the Back&apos;s platform chair once. This is not a workplace to pick, and
+                not Watch or Respond.
+              </p>
+              <Button type="submit" className="w-full sm:w-auto">
                 This is my queue
               </Button>
             </form>
-          ) : null}
-
-          {workplaces.length === 0 ? (
-            <EmptyState title="Your queue is empty." cta={false}>
-              <p>
-                No workplaces to claim until listings exist. This is the platform chair, not a
-                Watch or Respond plan. You're signed in — hang tight or restore demo seed from the
-                README if you're testing.
-              </p>
-            </EmptyState>
-          ) : claimed ? (
+          ) : (
             <section className="space-y-3">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <h2 className="font-heading text-2xl">
-                  Queue · {claimed.name}
-                </h2>
-                <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-                  <Button asChild variant="outline" size="sm" className="w-full sm:w-auto">
-                    <Link to={`/workplaces/${claimed.slug}`}>Public page</Link>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="w-full sm:w-auto"
-                    onClick={() => {
-                      setSession(releaseQueue())
-                      setClaimSlug(UNSET_WORKPLACE)
-                      setNotice("Chair released. Another platform chair can claim later.")
-                    }}
-                  >
-                    Release chair
-                  </Button>
+                <div>
+                  <h2 className="font-heading text-2xl">Queue</h2>
+                  <p className="text-sm text-muted-foreground">
+                    Platform chair — files across the board. Public still never sees you.
+                  </p>
                 </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full sm:w-auto"
+                  onClick={() => {
+                    setSession(releaseQueue())
+                    setNotice("Chair released. Another platform chair can claim later.")
+                  }}
+                >
+                  Release chair
+                </Button>
               </div>
               {queue.length === 0 ? (
-                <p className="rounded-xl border border-dashed border-border p-6 text-sm text-muted-foreground">
-                  Quiet queue. No files in this chair yet. Flagging still does not delete — a flag
-                  leads to uphold or retract.
-                </p>
+                <EmptyState title="Your queue is empty." cta={false}>
+                  <p>
+                    No published reports in the platform queue yet. You already claimed the chair —
+                    hang tight, or restore demo seed from the README if you&apos;re testing.
+                  </p>
+                </EmptyState>
               ) : (
                 <div className="grid gap-3">
                   {queue.map((report) => (
                     <div key={report.id} className="space-y-2">
-                      <ReportCard report={report} workplace={claimed} showWorkplace={false} />
+                      <ReportCard report={report} workplace={report.workplace} />
                       <Button
                         variant="outline"
                         size="sm"
@@ -228,11 +183,6 @@ export function StaffQueuePage() {
                 </div>
               )}
             </section>
-          ) : (
-            <p className="text-sm text-muted-foreground">
-              Claim a workplace to see its published reports. You are not visible on the public
-              board either way.
-            </p>
           )}
         </div>
       )}

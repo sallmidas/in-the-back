@@ -7,8 +7,8 @@ export function HoldNotice({ className = "" }: { className?: string }) {
     <p
       className={`rounded-xl border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-primary ${className}`}
     >
-      Filing and billing are held until the LLC exists. No Stripe. No card on file. Live
-      publish stays off.
+      Payouts and Watch billing are held until the LLC exists. No Stripe. No card on file.
+      Filing stays open.
       {isDemoSeedEnabled()
         ? " The seeded board is the demo — not live reviews."
         : " Demo seed is off, so the catalog is the empty launch state."}
@@ -34,7 +34,7 @@ export function DemoWalk() {
       n: "03",
       to: "/staff",
       title: "Platform chair stub",
-      body: "In the Back's chair — not Watch or Respond. Sign in locally, claim “This is my queue.” Public still never sees you.",
+      body: "In the Back's chair, claimed once — not a workplace, not Watch or Respond. Sign in locally, then “This is my queue.” Public still never sees you.",
     },
     {
       n: "04",

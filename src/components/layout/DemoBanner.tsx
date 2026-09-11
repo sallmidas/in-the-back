@@ -11,7 +11,7 @@ export function DemoBanner() {
         <>
           <span className="font-mono text-[11px] tracking-[0.16em] uppercase">Demo seed</span>
           <span className="mx-2 text-primary/40">/</span>
-          Sample board only. Filing and billing held until LLC.{" "}
+          Sample board only. Payouts and Watch billing held until LLC.{" "}
           <Link
             to="/#demo-walk"
             className={cn("rounded-sm underline-offset-4 hover:underline", focusRingClass)}
