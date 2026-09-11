@@ -110,7 +110,7 @@ export function WorkplacePage() {
           <EmptyState
             eyebrow="This room"
             title="This room is unscored."
-            primaryTo="/write")
+            primaryTo="/write"
             primaryLabel="Score this room"
           >
             <p>First mark sets the tone. Keep it fair, keep it specific.</p>
