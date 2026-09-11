@@ -121,3 +121,62 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* First paint + React BoardSkeleton bars. Reduced-motion: static cards, no shimmer. */
+.board-boot {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 2.5rem 1rem 1rem;
+}
+.board-boot-kicker {
+  margin: 0 0 0.75rem;
+  font-family: ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: oklch(0.78 0.12 75);
+}
+.board-boot-title {
+  margin: 0 0 1.5rem;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.75rem;
+  letter-spacing: -0.02em;
+  color: oklch(0.93 0.02 85);
+}
+.board-boot-skel {
+  display: grid;
+  gap: 0.75rem;
+}
+.board-boot-skel > span,
+.board-skel-bar {
+  background-color: oklch(0.21 0.018 75);
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    oklch(0.28 0.02 75 / 0.85) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: board-skel-shimmer 1.4s ease-in-out infinite;
+}
+.board-boot-skel > span {
+  display: block;
+  height: 5.5rem;
+  border: 1px solid oklch(0.32 0.02 75);
+  border-radius: 0.75rem;
+}
+@keyframes board-skel-shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .board-boot-skel > span,
+  .board-skel-bar {
+    animation: none;
+    background-image: none;
+  }
+}

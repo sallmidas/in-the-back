@@ -112,6 +112,7 @@ Each has sample rooms, scores, and anonymous reports. Two seeded disputes (Harbo
 - **LLC before Stripe / live publish.** Filing and billing stay off until the company exists. This repo has no Stripe. Numbers on `/plans` are preview only.
 - **Platform chair.** In the Back's chair claims **This is my queue**. It is not Watch or Respond. Operators do not buy a plan to sit it. The public board never shows who claimed it.
 - **Watch / Respond (preview).** Watch: the kitchen can see new files as they land. Respond: the kitchen can flag a report. A flag leads to uphold or retract — never delete.
+- **Share cards.** Static OG/Twitter title and description use the slogan. Tab titles follow the route (works with HashRouter). No reviewer or chair identity in share payloads.
 
 ## Out of scope (stubs only)
 

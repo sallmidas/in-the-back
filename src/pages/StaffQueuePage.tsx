@@ -102,9 +102,9 @@ export function StaffQueuePage() {
 
       {!session ? (
         <form onSubmit={onSignIn} className="max-w-md space-y-3 rounded-xl border border-border bg-card/70 p-5">
-          <Label htmlFor="staff-email">Chair email (stub)</Label>
+          <Label htmlFor="chair-email">Chair email (stub)</Label>
           <Input
-            id="staff-email"
+            id="chair-email"
             type="email"
             autoComplete="username"
             placeholder="chair@example.com"
@@ -203,7 +203,8 @@ export function StaffQueuePage() {
               </div>
               {queue.length === 0 ? (
                 <p className="rounded-xl border border-dashed border-border p-6 text-sm text-muted-foreground">
-                  No published reports in this queue.
+                  Quiet queue. No files in this chair yet. Flagging still does not delete — a flag
+                  leads to uphold or retract.
                 </p>
               ) : (
                 <div className="grid gap-3">
