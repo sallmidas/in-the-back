@@ -10,7 +10,7 @@ type Props = {
 
 export function RoomScore({ room, selected = false, onSelect }: Props) {
   const className = cn(
-    "flex flex-col gap-1 rounded-lg border px-3 py-2 text-left transition-colors",
+    "flex min-h-11 w-full min-w-0 flex-col justify-center gap-1 rounded-lg border px-3 py-2.5 text-left transition-colors",
     selected
       ? "border-primary bg-primary/10"
       : "border-border bg-background/60 hover:border-primary/40",
@@ -18,10 +18,10 @@ export function RoomScore({ room, selected = false, onSelect }: Props) {
 
   const body = (
     <>
-      <span className="text-[11px] tracking-wide text-muted-foreground uppercase">
+      <span className="text-xs leading-tight text-muted-foreground">
         {ROOM_LABELS[room.kind]}
       </span>
-      <span className={`font-mono text-2xl leading-none ${scoreClass(room.score)}`}>
+      <span className={`font-mono text-2xl leading-none tabular-nums ${scoreClass(room.score)}`}>
         {formatScore(room.score)}
       </span>
     </>

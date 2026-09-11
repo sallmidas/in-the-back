@@ -79,7 +79,7 @@ export function WorkplacePage() {
           <h2 className="font-heading text-2xl tracking-tight">Rooms</h2>
           <p className="text-sm text-muted-foreground">Tap a room to filter excerpts.</p>
         </div>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
           {workplace.rooms.map((room) => (
             <RoomScore
               key={room.kind}
