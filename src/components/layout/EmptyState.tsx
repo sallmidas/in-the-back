@@ -21,7 +21,7 @@ export function EmptyState({
   primaryLabel = "How it works",
 }: EmptyStateProps) {
   return (
-    <div className="space-y-5 rounded-xl border border-dashed border-border bg-card/50 px-5 py-8 sm:px-8">
+    <div className="space-y-5 rounded-xl border border-dashed border-border bg-card/50 px-4 py-6 sm:px-8 sm:py-8">
       <div className="space-y-2">
         <p className="font-mono text-[11px] tracking-[0.18em] text-primary uppercase">{eyebrow}</p>
         <p className="font-heading text-2xl tracking-tight sm:text-3xl">{title}</p>

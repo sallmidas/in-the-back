@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge"
 import { overallScore, weakestRoom } from "@/data/catalog"
 import { INDUSTRY_LABELS, ROOM_LABELS, type Workplace } from "@/data/types"
 import { formatScore, scoreClass, scoreRailClass } from "@/lib/format"
-import { cn } from "@/lib/utils"
+import { cn, focusRingClass } from "@/lib/utils"
 
 export function WorkplaceCard({ workplace }: { workplace: Workplace }) {
   const score = overallScore(workplace)
@@ -14,6 +14,7 @@ export function WorkplaceCard({ workplace }: { workplace: Workplace }) {
       to={`/workplaces/${workplace.slug}`}
       className={cn(
         "group flex h-full flex-col rounded-xl border border-border border-l-4 bg-card/80 p-4 transition-colors hover:border-primary/50 hover:bg-card sm:p-5",
+        focusRingClass,
         scoreRailClass(score),
       )}
     >
@@ -84,6 +85,7 @@ export function WorkplaceStripCard({ workplace }: { workplace: Workplace }) {
       to={`/workplaces/${workplace.slug}`}
       className={cn(
         "flex min-w-[17rem] snap-start flex-col rounded-xl border border-border border-l-4 bg-card/80 px-3 py-3 hover:border-primary/50 md:min-w-0",
+        focusRingClass,
         scoreRailClass(score),
       )}
     >

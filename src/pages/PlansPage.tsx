@@ -80,7 +80,7 @@ export function PlansPage() {
       </div>
 
       <p className="text-xs text-muted-foreground">
-        No Stripe. No payouts. No card on file.
+        No Stripe. No card on file. Pay stays held until the LLC.
       </p>
     </div>
   )

@@ -68,7 +68,7 @@ Capacitor remains the native store path; this PWA layer is for the browser door.
 
 The ten workplaces are **labeled DEMO**. They must not ship as if they were live reviews.
 
-When the seed is off, home, directory, workplace 404, staff queue, and write CTAs use a stronger empty catalog (restore steps + How it works). Demo-only links (Harbor & Rye, Walk the demo) hide.
+When the seed is off, home, directory, workplace 404, platform-chair queue, and write CTAs use a stronger empty catalog (restore steps + How it works). Demo-only links (Harbor & Rye, Walk the demo) hide.
 
 **Fast path (keeps the sample data in git, hides it at runtime):**
 

@@ -9,7 +9,7 @@
  *
  * Hard path: empty the arrays in `src/data/seed.ts`.
  *
- * Home, directory, workplace 404, and staff render empty-catalog states
+ * Home, directory, workplace 404, and the platform-chair queue render empty-catalog states
  * when this is off. See README → “Strip the demo seed”.
  */
 export function isDemoSeedEnabled(): boolean {

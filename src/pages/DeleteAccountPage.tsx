@@ -19,7 +19,7 @@ export function DeleteAccountPage() {
       <div className="max-w-lg space-y-3">
         <h1 className="font-heading text-4xl tracking-tight">Request recorded (stub)</h1>
         <p className="text-muted-foreground">
-          This build cleared the local staff session only. There is no production account store
+          This build cleared the local platform-chair session only. There is no production account store
           to delete. When identity exists, this page will queue a deletion and confirm by email.
         </p>
       </div>
@@ -31,7 +31,7 @@ export function DeleteAccountPage() {
       <p className="font-mono text-[11px] tracking-[0.2em] text-primary uppercase">Placeholder</p>
       <h1 className="font-heading text-4xl tracking-tight">Delete account</h1>
       <p className="text-muted-foreground">
-        There are no live accounts yet. Submitting this form signs out the staff stub in this
+        There are no live accounts yet. Submitting this form signs out the queue stub in this
         browser so you can demo the empty state.
       </p>
       <form onSubmit={onSubmit} className="space-y-3 rounded-xl border border-border bg-card/70 p-5">

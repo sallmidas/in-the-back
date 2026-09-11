@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom"
 import { isDemoSeedEnabled } from "@/data/demo-flag"
+import { cn, focusRingClass } from "@/lib/utils"
 
 export function HoldNotice({ className = "" }: { className?: string }) {
   return (
@@ -39,7 +40,7 @@ export function DemoWalk() {
       n: "04",
       to: "/plans",
       title: "Browse plans",
-      body: "Free / Watch / Respond — preview only. Pricing after the LLC.",
+      body: "Free / Watch / Respond — kitchen tools, preview only. Not the platform chair.",
     },
   ]
 
@@ -54,7 +55,10 @@ export function DemoWalk() {
           <li key={step.n}>
             <Link
               to={step.to}
-              className="flex h-full flex-col rounded-xl border border-border bg-card/80 p-4 transition-colors hover:border-primary/50"
+              className={cn(
+                "flex h-full flex-col rounded-xl border border-border bg-card/80 p-4 transition-colors hover:border-primary/50",
+                focusRingClass,
+              )}
             >
               <span className="font-mono text-[11px] tracking-[0.18em] text-primary">
                 {step.n}
