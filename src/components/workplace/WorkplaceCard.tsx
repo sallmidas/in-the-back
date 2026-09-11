@@ -56,7 +56,7 @@ export function WorkplaceCard({ workplace }: { workplace: Workplace }) {
             key={room.kind}
             className="flex min-h-11 min-w-0 flex-col justify-center gap-0.5 rounded-md bg-muted/55 px-2.5 py-2"
           >
-            <span className="text-xs leading-tight text-muted-foreground">
+            <span className="text-xs leading-tight text-pretty text-muted-foreground">
               {ROOM_LABELS[room.kind]}
             </span>
             <span className={`font-mono text-base leading-none tabular-nums ${scoreClass(room.score)}`}>
@@ -83,7 +83,7 @@ export function WorkplaceStripCard({ workplace }: { workplace: Workplace }) {
     <Link
       to={`/workplaces/${workplace.slug}`}
       className={cn(
-        "flex min-w-[15.5rem] snap-start flex-col rounded-xl border border-border border-l-4 bg-card/80 px-3 py-3 hover:border-primary/50 md:min-w-0",
+        "flex min-w-[17rem] snap-start flex-col rounded-xl border border-border border-l-4 bg-card/80 px-3 py-3 hover:border-primary/50 md:min-w-0",
         scoreRailClass(score),
       )}
     >
@@ -98,8 +98,8 @@ export function WorkplaceStripCard({ workplace }: { workplace: Workplace }) {
         {workplace.city}, {workplace.region}
       </span>
       {weak ? (
-        <span className="mt-2 text-xs leading-snug">
-          <span className="text-muted-foreground">Lowest </span>
+        <span className="mt-2 flex w-full flex-col gap-0.5 text-xs leading-snug">
+          <span className="text-muted-foreground">Lowest room</span>
           <span className={scoreClass(weak.score)}>
             {ROOM_LABELS[weak.kind]} {formatScore(weak.score)}
           </span>
