@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom"
 import { RoomScore } from "@/components/room/RoomScore"
 import type { Room } from "@/data/types"
+import { cn, focusRingClass } from "@/lib/utils"
 
 const HOW_IT_WORKS_STEPS = [
   {
@@ -59,7 +60,13 @@ export function HowItWorksPreview() {
           </p>
           <h2 className="font-heading text-2xl tracking-tight">Rooms. Scores. No names.</h2>
         </div>
-        <Link to="/how-it-works" className="text-sm text-muted-foreground hover:text-foreground">
+        <Link
+          to="/how-it-works"
+          className={cn(
+            "rounded-sm text-sm text-muted-foreground hover:text-foreground",
+            focusRingClass,
+          )}
+        >
           Full walkthrough
         </Link>
       </div>

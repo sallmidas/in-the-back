@@ -14,21 +14,28 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
+import { cn, focusRingClass } from "@/lib/utils"
 
 const NAV = [
   { to: "/", label: "Board" },
   { to: "/workplaces", label: "Directory" },
   { to: "/how-it-works", label: "How it works" },
   { to: "/plans", label: "Plans" },
-  { to: "/staff", label: "Staff" },
+  { to: "/staff", label: "Queue" },
 ]
 
 function navClass({ isActive }: { isActive: boolean }) {
-  return [
+  return cn(
     "rounded-md px-2.5 py-1.5 text-sm transition-colors",
+    focusRingClass,
     isActive ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground",
-  ].join(" ")
+  )
 }
+
+const footerLinkClass = cn(
+  "rounded-md px-1 py-1 hover:text-foreground",
+  focusRingClass,
+)
 
 export function AppShell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false)
@@ -90,9 +97,9 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         </div>
       </header>
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">{children}</main>
+      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:py-8">{children}</main>
       <footer className="border-t border-border/80 bg-card/40">
-        <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-8 text-sm text-muted-foreground md:flex-row md:items-start md:justify-between">
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-6 text-sm text-muted-foreground sm:py-8 md:flex-row md:items-start md:justify-between">
           <div className="max-w-md space-y-2">
             <Wordmark compact />
             <p>
@@ -100,23 +107,23 @@ export function AppShell({ children }: { children: ReactNode }) {
               never who wrote it. Not a résumé site.
             </p>
           </div>
-          <div className="flex flex-wrap gap-x-4 gap-y-2">
-            <Link to="/how-it-works" className="hover:text-foreground">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <Link to="/how-it-works" className={footerLinkClass}>
               How it works
             </Link>
-            <Link to="/privacy" className="hover:text-foreground">
+            <Link to="/privacy" className={footerLinkClass}>
               Privacy
             </Link>
-            <Link to="/account/delete" className="hover:text-foreground">
+            <Link to="/account/delete" className={footerLinkClass}>
               Delete account
             </Link>
-            <Link to="/plans" className="hover:text-foreground">
+            <Link to="/plans" className={footerLinkClass}>
               Plans
             </Link>
-            <Link to="/staff" className="hover:text-foreground">
-              Staff chair
+            <Link to="/staff" className={footerLinkClass}>
+              This is my queue
             </Link>
-            <Link to="/write" className="hover:text-foreground">
+            <Link to="/write" className={footerLinkClass}>
               Filing (held)
             </Link>
           </div>

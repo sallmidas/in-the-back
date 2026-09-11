@@ -1,6 +1,6 @@
 import { ROOM_LABELS, type Room } from "@/data/types"
 import { formatScore, scoreClass } from "@/lib/format"
-import { cn } from "@/lib/utils"
+import { cn, focusRingClass } from "@/lib/utils"
 
 type Props = {
   room: Room
@@ -14,6 +14,7 @@ export function RoomScore({ room, selected = false, onSelect }: Props) {
     selected
       ? "border-primary bg-primary/10"
       : "border-border bg-background/60 hover:border-primary/40",
+    onSelect && focusRingClass,
   )
 
   const body = (

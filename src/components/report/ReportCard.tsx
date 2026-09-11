@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge"
 import type { Report, Workplace } from "@/data/types"
 import { ROOM_LABELS } from "@/data/types"
 import { formatPublishedAt, formatScore, scoreClass, scoreRailClass } from "@/lib/format"
-import { cn } from "@/lib/utils"
+import { cn, focusRingClass } from "@/lib/utils"
 
 type Props = {
   report: Report
@@ -27,7 +27,10 @@ export function ReportCard({ report, workplace, showWorkplace = true }: Props) {
           {showWorkplace ? (
             <Link
               to={`/workplaces/${workplace.slug}`}
-              className="font-heading text-lg tracking-tight text-foreground hover:text-primary"
+              className={cn(
+                "font-heading rounded-sm text-lg tracking-tight text-foreground hover:text-primary",
+                focusRingClass,
+              )}
             >
               {workplace.name}
             </Link>
@@ -57,7 +60,10 @@ export function ReportCard({ report, workplace, showWorkplace = true }: Props) {
         {report.disputed ? <DisputeBadge /> : <span />}
         <Link
           to={roomHref}
-          className="text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+          className={cn(
+            "rounded-sm text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline",
+            focusRingClass,
+          )}
         >
           Open {ROOM_LABELS[report.roomKind]}
         </Link>

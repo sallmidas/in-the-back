@@ -102,7 +102,7 @@ export function WorkplacePage() {
             {roomFilter ? `${ROOM_LABELS[roomFilter]} excerpts` : "Anonymous excerpts"}
           </h2>
           <Button asChild variant="outline" size="sm">
-            <Link to="/staff">Staff chair? This is my queue</Link>
+            <Link to="/staff">Platform chair? This is my queue</Link>
           </Button>
         </div>
         {reports.length === 0 ? (

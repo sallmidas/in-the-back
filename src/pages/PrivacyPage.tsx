@@ -25,7 +25,7 @@ export function PrivacyPage() {
       </ul>
       <h2 className="font-heading pt-2 text-2xl">Accounts</h2>
       <p className="text-muted-foreground">
-        Staff sign-in in this build is a local stub. Delete-account is a placeholder until a
+        Platform-chair sign-in in this build is a local stub. Delete-account is a placeholder until a
         real identity provider exists. Form an LLC before you collect production PII or take
         payments.
       </p>

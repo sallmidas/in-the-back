@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { WorkplaceStripCard } from "@/components/workplace/WorkplaceCard"
 import { disputedReports, getWorkplaces, recentReports } from "@/data/catalog"
 import { isDemoSeedEnabled } from "@/data/demo-flag"
+import { cn, focusRingClass } from "@/lib/utils"
 
 export function HomePage() {
   const reports = recentReports(8)
@@ -93,7 +94,13 @@ export function HomePage() {
         <section className="space-y-3">
           <div className="flex items-end justify-between gap-3">
             <h2 className="font-heading text-2xl tracking-tight">DEMO workplaces</h2>
-            <Link to="/workplaces" className="text-sm text-muted-foreground hover:text-foreground">
+            <Link
+              to="/workplaces"
+              className={cn(
+                "rounded-sm text-sm text-muted-foreground hover:text-foreground",
+                focusRingClass,
+              )}
+            >
               Directory
             </Link>
           </div>
@@ -108,7 +115,13 @@ export function HomePage() {
       <section className="space-y-4">
         <div className="flex items-end justify-between gap-3">
           <h2 className="font-heading text-2xl tracking-tight">Recent reports</h2>
-          <Link to="/workplaces" className="text-sm text-muted-foreground hover:text-foreground">
+          <Link
+            to="/workplaces"
+            className={cn(
+              "rounded-sm text-sm text-muted-foreground hover:text-foreground",
+              focusRingClass,
+            )}
+          >
             Full directory
           </Link>
         </div>

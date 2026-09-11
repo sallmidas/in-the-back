@@ -54,7 +54,7 @@ export function StaffQueuePage() {
   function onClaim(event: FormEvent) {
     event.preventDefault()
     if (!claimSlug || claimSlug === UNSET_WORKPLACE) {
-      setError("Pick a workplace to claim as staff chair.")
+      setError("Pick a workplace to claim as the platform chair.")
       return
     }
     setError(null)
@@ -67,7 +67,7 @@ export function StaffQueuePage() {
     <div className="space-y-8">
       <header className="space-y-2">
         <p className="font-mono text-[11px] tracking-[0.2em] text-primary uppercase">
-          Staff queue stub
+          Platform chair stub
         </p>
         <h1 className="font-heading text-4xl tracking-tight">This is my queue</h1>
         <p className="max-w-2xl text-muted-foreground">
@@ -87,17 +87,17 @@ export function StaffQueuePage() {
       ) : null}
 
       {workplaces.length === 0 && !session ? (
-        <EmptyState title="Nothing to chair yet." cta={false}>
+        <EmptyState title="No queue yet." cta={false}>
           <p>
-            When workplaces land, claimed chairs show up here. Sign-in stub still works in this
-            browser.
+            When workplaces land, In the Back's platform chair claims them here — not Watch or
+            Respond. Sign-in stub still works in this browser.
           </p>
         </EmptyState>
       ) : null}
 
       {!session ? (
         <form onSubmit={onSignIn} className="max-w-md space-y-3 rounded-xl border border-border bg-card/70 p-5">
-          <Label htmlFor="staff-email">Staff email (stub)</Label>
+          <Label htmlFor="staff-email">Chair email (stub)</Label>
           <Input
             id="staff-email"
             type="email"
@@ -162,8 +162,9 @@ export function StaffQueuePage() {
           {workplaces.length === 0 ? (
             <EmptyState title="Your queue is empty." cta={false}>
               <p>
-                No workplaces to claim until listings exist. You're signed in — hang tight or restore
-                demo seed from the README if you're testing.
+                No workplaces to claim until listings exist. This is the platform chair, not a
+                Watch or Respond plan. You're signed in — hang tight or restore demo seed from the
+                README if you're testing.
               </p>
             </EmptyState>
           ) : claimed ? (
@@ -182,7 +183,7 @@ export function StaffQueuePage() {
                     onClick={() => {
                       setSession(releaseQueue())
                       setClaimSlug(UNSET_WORKPLACE)
-                      setNotice("Chair released. Another staff chair can claim later.")
+                      setNotice("Chair released. Another platform chair can claim later.")
                     }}
                   >
                     Release chair

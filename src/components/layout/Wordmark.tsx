@@ -1,8 +1,12 @@
 import { Link } from "react-router-dom"
+import { cn, focusRingClass } from "@/lib/utils"
 
 export function Wordmark({ compact = false }: { compact?: boolean }) {
   return (
-    <Link to="/" className="flex items-center gap-2 text-foreground">
+    <Link
+      to="/"
+      className={cn("flex items-center gap-2 rounded-md text-foreground", focusRingClass)}
+    >
       <svg
         viewBox="0 0 32 32"
         className="size-8 shrink-0"
