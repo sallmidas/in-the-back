@@ -1,0 +1,57 @@
+import type { PlanId } from "./types"
+
+export type Plan = {
+  id: PlanId
+  name: string
+  monthly: number
+  perReport: number
+  tagline: string
+  audience: string
+  features: string[]
+  missing: string[]
+}
+
+export const PLANS: Plan[] = [
+  {
+    id: "free",
+    name: "Free",
+    monthly: 0,
+    perReport: 0,
+    tagline: "The public board. Rooms, scores, writing.",
+    audience: "Anyone reading the board",
+    features: [
+      "Workplace directory and room scores",
+      "Anonymous excerpts — never reviewer identity",
+      "Dispute badges when a chair has flagged a report",
+    ],
+    missing: ["No alerts", "No official replies", "No queue"],
+  },
+  {
+    id: "watch",
+    name: "Watch",
+    monthly: 129,
+    perReport: 3,
+    tagline: "$129 / month + $3 per published report",
+    audience: "Operators who need to see volume, not argue it",
+    features: [
+      "Everything on Free",
+      "Staff queue of incoming published reports",
+      "Volume alerts (stub in Phase 1)",
+    ],
+    missing: ["No public replies yet", "No dispute filing yet"],
+  },
+  {
+    id: "respond",
+    name: "Respond",
+    monthly: 249,
+    perReport: 5,
+    tagline: "$249 / month + $5 per published report",
+    audience: "The staff chair who will answer for the rooms",
+    features: [
+      "Everything on Watch",
+      "Official replies (not implemented yet)",
+      "Dispute a report into UNDER REVIEW (badge lives; filing is a stub)",
+    ],
+    missing: ["Stripe not connected", "Pay-on-publish not billed yet"],
+  },
+]
