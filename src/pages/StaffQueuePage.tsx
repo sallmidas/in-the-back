@@ -162,8 +162,8 @@ export function StaffQueuePage() {
           {workplaces.length === 0 ? (
             <EmptyState title="Your queue is empty." cta={false}>
               <p>
-                No workplaces to claim until listings exist. You are signed in — hang tight, or see
-                the README if you are restoring the demo seed for testing.
+                No workplaces to claim until listings exist. You're signed in — hang tight or restore
+                demo seed from the README if you're testing.
               </p>
             </EmptyState>
           ) : claimed ? (

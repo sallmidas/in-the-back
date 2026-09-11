@@ -145,7 +145,7 @@ export function DirectoryPage() {
       ) : null}
 
       {!isDemoSeedEnabled() ? (
-        <EmptyState eyebrow="Directory" title="Board is quiet.">
+        <EmptyState eyebrow="Directory" title="Board's quiet.">
           <p>
             No rooms scored here yet. Be the first honest mark — cleanliness, safety, dignity.
           </p>

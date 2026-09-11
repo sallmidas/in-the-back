@@ -115,7 +115,7 @@ export function HomePage() {
         {empty ? (
           <EmptyState
             eyebrow={seeded ? "No reports yet" : "Quiet board"}
-            title="Board is quiet."
+            title="Board's quiet."
           >
             <p>
               No rooms scored here yet. Be the first honest mark — cleanliness, safety, dignity.

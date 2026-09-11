@@ -5,7 +5,6 @@ import { RoomScore } from "@/components/room/RoomScore"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { getWorkplaceBySlug, overallScore, reportsForWorkplace } from "@/data/catalog"
-import { isDemoSeedEnabled } from "@/data/demo-flag"
 import { INDUSTRY_LABELS, ROOM_LABELS, isRoomKind } from "@/data/types"
 import { formatScore, scoreClass } from "@/lib/format"
 
@@ -26,7 +25,7 @@ export function WorkplacePage() {
         primaryTo="/workplaces"
         primaryLabel="Back to directory"
       >
-        <p>Might be a bad link, or it is not on In the Back yet.</p>
+        <p>Might be a bad link, or it isn't on In the Back yet.</p>
       </EmptyState>
     )
   }
@@ -109,7 +108,7 @@ export function WorkplacePage() {
         {reports.length === 0 ? (
           <EmptyState
             eyebrow="This room"
-            title="This room is unscored."
+            title="This room's unscored."
             primaryTo="/write"
             primaryLabel="Score this room"
           >
