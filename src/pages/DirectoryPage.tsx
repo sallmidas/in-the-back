@@ -86,9 +86,9 @@ export function DirectoryPage() {
           />
         </div>
         <div>
-          <Label>Industry</Label>
+          <Label htmlFor="industry">Industry</Label>
           <Select value={industry} onValueChange={(value) => patch({ industry: value })}>
-            <SelectTrigger className="mt-1.5 w-full">
+            <SelectTrigger id="industry" className="mt-1.5 w-full">
               <SelectValue placeholder="All industries" />
             </SelectTrigger>
             <SelectContent>
@@ -102,9 +102,9 @@ export function DirectoryPage() {
           </Select>
         </div>
         <div>
-          <Label>Room</Label>
+          <Label htmlFor="room">Room</Label>
           <Select value={room} onValueChange={(value) => patch({ room: value })}>
-            <SelectTrigger className="mt-1.5 w-full">
+            <SelectTrigger id="room" className="mt-1.5 w-full">
               <SelectValue placeholder="Any room" />
             </SelectTrigger>
             <SelectContent>
@@ -118,9 +118,9 @@ export function DirectoryPage() {
           </Select>
         </div>
         <div>
-          <Label>Score band</Label>
+          <Label htmlFor="band">Score band</Label>
           <Select value={band} onValueChange={(value) => patch({ band: value })}>
-            <SelectTrigger className="mt-1.5 w-full">
+            <SelectTrigger id="band" className="mt-1.5 w-full">
               <SelectValue placeholder="Any score" />
             </SelectTrigger>
             <SelectContent>
@@ -146,9 +146,7 @@ export function DirectoryPage() {
 
       {!isDemoSeedEnabled() ? (
         <EmptyState eyebrow="Directory" title="Board's quiet.">
-          <p>
-            No rooms scored here yet. Be the first honest mark — cleanliness, safety, dignity.
-          </p>
+          <p>No rooms scored yet. First mark: cleanliness, safety, dignity.</p>
         </EmptyState>
       ) : results.length === 0 ? (
         <EmptyState

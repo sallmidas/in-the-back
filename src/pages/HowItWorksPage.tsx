@@ -23,17 +23,17 @@ export function HowItWorksPage() {
           not a job board and not a place to rank a CEO.
         </p>
         <HoldNotice />
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
           {seeded ? (
-            <Button asChild>
+            <Button asChild className="w-full sm:w-auto">
               <Link to="/workplaces/harbor-and-rye?room=walk-in">Open a sample room</Link>
             </Button>
           ) : (
-            <Button asChild>
-              <Link to="/workplaces">See the empty directory</Link>
+            <Button asChild className="w-full sm:w-auto">
+              <Link to="/workplaces">Open directory</Link>
             </Button>
           )}
-          <Button asChild variant="outline">
+          <Button asChild variant="outline" className="w-full sm:w-auto">
             <Link to="/plans">Plans (preview only)</Link>
           </Button>
         </div>
