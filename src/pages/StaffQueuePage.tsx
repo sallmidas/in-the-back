@@ -90,7 +90,8 @@ export function StaffQueuePage() {
         <EmptyState title="No workplaces to claim">
           <p>
             Staff chair claim needs a listed workplace. With the demo seed stripped, the launch
-            catalog has none. You can still sign in the stub below after restoring the seed.
+            catalog has none. The sign-in stub below still works in this browser; there is just
+            nothing to claim.
           </p>
         </EmptyState>
       ) : null}

@@ -71,10 +71,10 @@ export function DirectoryPage() {
       </header>
 
       {isDemoSeedEnabled() ? (
-      <form
-        className="grid gap-3 rounded-xl border border-border bg-card/60 p-4 sm:grid-cols-2 lg:grid-cols-4"
-        onSubmit={(event) => event.preventDefault()}
-      >
+        <form
+          className="grid gap-3 rounded-xl border border-border bg-card/60 p-4 sm:grid-cols-2 lg:grid-cols-4"
+          onSubmit={(event) => event.preventDefault()}
+        >
         <div className="sm:col-span-2 lg:col-span-4">
           <Label htmlFor="q">Search</Label>
           <Input
@@ -141,7 +141,7 @@ export function DirectoryPage() {
             </Button>
           ) : null}
         </div>
-      </form>
+        </form>
       ) : null}
 
       {!isDemoSeedEnabled() ? (
