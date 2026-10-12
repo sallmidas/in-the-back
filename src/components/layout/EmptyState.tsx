@@ -19,7 +19,7 @@ export function EmptyState({
   children,
   cta = true,
   primaryTo = "/write",
-  primaryLabel = "Score a room",
+  primaryLabel = "File a report",
   titleAs: TitleTag = "h2",
 }: EmptyStateProps) {
   return (

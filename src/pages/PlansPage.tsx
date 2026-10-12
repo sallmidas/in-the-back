@@ -26,8 +26,9 @@ export function PlansPage() {
         </div>
         <h1 className="font-heading text-4xl tracking-tight">Free, Watch, Respond</h1>
         <p className="max-w-2xl text-muted-foreground">
-          Pricing is a preview. Looking now costs nothing. Watch and Respond are kitchen
-          tools — they are not how you sit the platform chair.
+          Kitchen plans are a flat monthly price. Reporter pay comes out of that subscription.
+          It is not an extra charge on each file. Nothing is billed until the LLC exists. The
+          chair is not a plan.
         </p>
         <HoldNotice />
       </header>
@@ -42,26 +43,14 @@ export function PlansPage() {
             <CardContent className="space-y-4">
               <p className="font-mono text-3xl">
                 {formatMoney(plan.monthly)}
-                <span className="text-sm text-muted-foreground">/mo preview</span>
-                {plan.perReport > 0 ? (
-                  <span className="block text-sm font-sans text-muted-foreground">
-                    + {formatMoney(plan.perReport)} / published report · preview
-                  </span>
-                ) : (
-                  <span className="block text-sm font-sans text-muted-foreground">
-                    No per-report fee
-                  </span>
-                )}
+                <span className="text-sm text-muted-foreground">/mo</span>
               </p>
+              <p className="text-sm leading-relaxed">{plan.priceLabel}</p>
+              {plan.held ? <p className="text-xs text-muted-foreground">{plan.held}</p> : null}
               <p className="text-sm text-muted-foreground">{plan.audience}</p>
               <ul className="space-y-1.5 text-sm">
                 {plan.features.map((feature) => (
                   <li key={feature}>— {feature}</li>
-                ))}
-              </ul>
-              <ul className="space-y-1 text-xs text-muted-foreground">
-                {plan.missing.map((item) => (
-                  <li key={item}>{item}</li>
                 ))}
               </ul>
             </CardContent>
@@ -77,15 +66,14 @@ export function PlansPage() {
       </div>
 
       <p className="text-xs text-muted-foreground">
-        No Stripe. No card on file. Payouts and Watch billing stay held until the LLC. Platform
-        chair is{" "}
+        No Stripe. No card on file. Payouts and Watch billing stay held until the LLC. The{" "}
         <Link
           to="/staff"
           className={cn("rounded-sm underline-offset-4 hover:underline", focusRingClass)}
         >
-          This is my queue
-        </Link>
-        , claimed once — not a workplace listing, not a Watch or Respond plan.
+          platform chair
+        </Link>{" "}
+        is claimed once for In the Back, not for a workplace.
       </p>
     </div>
   )

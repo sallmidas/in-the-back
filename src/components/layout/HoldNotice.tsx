@@ -9,9 +9,7 @@ export function HoldNotice({ className = "" }: { className?: string }) {
     >
       Payouts and Watch billing are held until the LLC exists. No Stripe. No card on file.
       Filing stays open.
-      {isDemoSeedEnabled()
-        ? " The seeded board is the demo — not live reviews."
-        : " Demo seed is off, so the catalog is the empty launch state."}
+      {isDemoSeedEnabled() ? " The sample workplaces are labeled DEMO." : ""}
     </p>
   )
 }
@@ -33,14 +31,14 @@ export function DemoWalk() {
     {
       n: "03",
       to: "/staff",
-      title: "Platform chair stub",
-      body: "In the Back's chair, claimed once — not a workplace, not Watch or Respond. Sign in locally, then “This is my queue.” Public still never sees you.",
+      title: "Platform chair",
+      body: "Sign in and claim the one platform queue. It is not a workplace. The public never sees who.",
     },
     {
       n: "04",
       to: "/plans",
       title: "Browse plans",
-      body: "Free / Watch / Respond — kitchen tools, preview only. Not the platform chair.",
+      body: "Flat monthly prices. Billing stays off until the LLC.",
     },
   ]
 

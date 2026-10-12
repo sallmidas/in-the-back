@@ -41,6 +41,34 @@ export function HowItWorksPage() {
 
       <HowItWorksSteps />
 
+      <section className="max-w-2xl space-y-4">
+        <h2 className="font-heading text-2xl tracking-tight">Plain words</h2>
+        <div className="space-y-2">
+          <h3 className="font-heading text-xl tracking-tight">Back of house</h3>
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            Back of house means the rooms guests do not sit in: the kitchen, the dish pit, the
+            walk-in, the dock, stock, overnight. People sometimes shorten that to BOH. This board
+            scores those rooms. It does not score a person.
+          </p>
+        </div>
+        <div className="space-y-2">
+          <h3 className="font-heading text-xl tracking-tight">Chair</h3>
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            The chair is one seat for the whole platform. The first person to sign in and claim it
+            holds the staff queue. That happens once. A workplace does not get its own queue, and
+            the public board never shows who claimed the seat.
+          </p>
+        </div>
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          Watch and Respond are kitchen plans, not the chair. What each one does, and the flat
+          monthly price, is on{" "}
+          <Link to="/plans" className="underline-offset-4 hover:underline">
+            Plans
+          </Link>
+          . Billing is held until the LLC exists.
+        </p>
+      </section>
+
       <section className="grid gap-8 lg:grid-cols-2">
         <div className="space-y-3">
           <h2 className="font-heading text-2xl tracking-tight">What a room looks like</h2>

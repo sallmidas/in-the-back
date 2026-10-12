@@ -1,17 +1,22 @@
-import { Link, useParams, useSearchParams } from "react-router-dom"
+import { useParams, useSearchParams } from "react-router-dom"
+import { BoardSkeleton } from "@/components/layout/BoardSkeleton"
 import { EmptyState } from "@/components/layout/EmptyState"
 import { ReportCard } from "@/components/report/ReportCard"
 import { RoomScore } from "@/components/room/RoomScore"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { getWorkplaceBySlug, overallScore, reportsForWorkplace } from "@/data/catalog"
+import { overallScore } from "@/data/catalog"
 import { INDUSTRY_LABELS, ROOM_LABELS, isRoomKind } from "@/data/types"
+import { useBoard } from "@/lib/board"
 import { formatScore, scoreClass } from "@/lib/format"
 
 export function WorkplacePage() {
   const { slug = "" } = useParams()
   const [params, setParams] = useSearchParams()
-  const workplace = getWorkplaceBySlug(slug)
+  const board = useBoard()
+  const workplace = board.workplaceBySlug(slug)
+
+  if (!board.ready) return <BoardSkeleton variant="workplace" />
   const roomParam = params.get("room")
   const roomFilter =
     roomParam && isRoomKind(roomParam) && workplace?.rooms.some((room) => room.kind === roomParam)
@@ -31,7 +36,7 @@ export function WorkplacePage() {
     )
   }
 
-  const reports = reportsForWorkplace(workplace.id).filter((report) =>
+  const reports = board.reportsForWorkplace(workplace.id).filter((report) =>
     roomFilter ? report.roomKind === roomFilter : true,
   )
   const score = overallScore(workplace)
@@ -48,11 +53,15 @@ export function WorkplacePage() {
       <header className="flex flex-col gap-4 border-b border-border pb-6 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0 space-y-3">
           <div className="flex flex-wrap gap-2">
-            <Badge variant="outline">DEMO</Badge>
-            <Badge variant="secondary">{INDUSTRY_LABELS[workplace.industry]}</Badge>
-            <Badge variant="outline" className="capitalize">
-              {workplace.listedPlan} · preview
-            </Badge>
+            {workplace.demo ? <Badge variant="outline">DEMO</Badge> : null}
+            {workplace.industry ? (
+              <Badge variant="secondary">{INDUSTRY_LABELS[workplace.industry]}</Badge>
+            ) : null}
+            {workplace.demo ? (
+              <Badge variant="outline" className="capitalize">
+                {workplace.listedPlan} · preview
+              </Badge>
+            ) : null}
           </div>
           <h1 className="font-heading text-3xl tracking-tight sm:text-4xl">{workplace.name}</h1>
           <p className="text-muted-foreground">
@@ -108,28 +117,13 @@ export function WorkplacePage() {
           <h2 className="font-heading text-2xl tracking-tight">
             {roomFilter ? `${ROOM_LABELS[roomFilter]} excerpts` : "Anonymous excerpts"}
           </h2>
-          <div className="flex w-full flex-col items-stretch gap-1 sm:w-auto sm:items-end">
-            <Button
-              asChild
-              variant="outline"
-              size="sm"
-              className="h-auto min-h-11 w-full whitespace-normal md:w-auto"
-            >
-              <Link to="/staff" aria-label="This is my queue — claim In the Back's platform chair, not this listing">
-                This is my queue
-              </Link>
-            </Button>
-            <p className="text-center text-[11px] leading-snug text-muted-foreground sm:text-right">
-              Platform chair once — not this listing.
-            </p>
-          </div>
         </div>
         {reports.length === 0 ? (
           <EmptyState
             eyebrow="This room"
             title="This room's unscored."
-            primaryTo="/write"
-            primaryLabel="Score this room"
+            primaryTo={`/write?workplace=${workplace.slug}${roomFilter ? `&room=${roomFilter}` : ""}`}
+            primaryLabel="File a report"
           >
             <p>First mark sets the tone. Keep it fair, keep it specific.</p>
           </EmptyState>

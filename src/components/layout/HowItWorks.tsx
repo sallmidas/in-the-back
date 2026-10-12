@@ -17,12 +17,12 @@ const HOW_IT_WORKS_STEPS = [
   {
     n: "03",
     title: "Disputes stay a badge",
-    body: "The kitchen can flag a report. A flag leads to uphold or retract — never delete. The public sees DISPUTED — UNDER REVIEW, not a pile-on with a person.",
+    body: "A flagged file shows DISPUTED — UNDER REVIEW. The file stays up unless the person who filed it retracts it.",
   },
   {
     n: "04",
     title: "One chair, privately",
-    body: "In the Back's platform chair claims “This is my queue” once — not a workplace listing. That chair is not Watch or Respond. Reading the board is free. Watch billing stays preview-only until the LLC.",
+    body: "One person claims the platform queue, once. Who that is stays off the public board.",
   },
 ] as const
 

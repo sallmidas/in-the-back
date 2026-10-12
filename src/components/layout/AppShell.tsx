@@ -23,7 +23,7 @@ const NAV = [
   { to: "/workplaces", label: "Directory" },
   { to: "/how-it-works", label: "How it works" },
   { to: "/plans", label: "Plans" },
-  { to: "/staff", label: "Queue" },
+  { to: "/staff", label: "Chair" },
 ]
 
 function navClass({ isActive }: { isActive: boolean }) {
@@ -137,8 +137,8 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="max-w-md space-y-2">
             <Wordmark compact />
             <p>
-              Anonymous room-level BOH board. Public sees rooms, scores, context, and writing —
-              never who wrote it. Not a résumé site.
+              Anonymous room-level back-of-house board. Public sees rooms, scores, context, and
+              writing — never who wrote it. Not a résumé site.
             </p>
           </div>
           <nav className="flex flex-wrap items-center gap-x-3 gap-y-1" aria-label="Footer">
@@ -155,7 +155,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               Plans
             </Link>
             <Link to="/staff" className={footerLinkClass}>
-              This is my queue
+              Chair
             </Link>
             <Link to="/write" className={footerLinkClass}>
               File a report

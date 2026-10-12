@@ -25,8 +25,7 @@ export function DemoBanner() {
             Launch catalog
           </span>
           <span className="mx-2 text-primary/40">/</span>
-          <code className="font-mono text-[11px]">VITE_DEMO_SEED=0</code> — empty board on
-          purpose.{" "}
+          Filing is open. Payouts and Watch billing stay held until the LLC.{" "}
           <Link
             to="/how-it-works"
             className={cn("rounded-sm underline-offset-4 hover:underline", focusRingClass)}

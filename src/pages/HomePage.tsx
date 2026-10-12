@@ -1,21 +1,23 @@
 import { useEffect } from "react"
 import { Link } from "react-router-dom"
+import { BoardSkeleton } from "@/components/layout/BoardSkeleton"
 import { EmptyState } from "@/components/layout/EmptyState"
 import { HowItWorksPreview } from "@/components/layout/HowItWorks"
 import { DemoWalk, HoldNotice } from "@/components/layout/HoldNotice"
 import { ReportCard } from "@/components/report/ReportCard"
 import { Button } from "@/components/ui/button"
 import { WorkplaceStripCard } from "@/components/workplace/WorkplaceCard"
-import { disputedReports, getWorkplaces, recentReports } from "@/data/catalog"
 import { isDemoSeedEnabled } from "@/data/demo-flag"
+import { useBoard } from "@/lib/board"
 import { cn, focusRingClass } from "@/lib/utils"
 
 export function HomePage() {
-  const reports = recentReports(8)
-  const featured = disputedReports()[0]
-  const workplaces = getWorkplaces()
+  const board = useBoard()
+  const reports = board.recentReports(8)
+  const featured = board.disputedReports()[0]
+  const demoWorkplaces = board.workplaces.filter((workplace) => workplace.demo)
   const seeded = isDemoSeedEnabled()
-  const empty = !seeded || reports.length === 0
+  const empty = board.ready && !board.error && reports.length === 0
 
   useEffect(() => {
     const id = window.location.hash.replace("#", "")
@@ -32,7 +34,7 @@ export function HomePage() {
       <section className="grid gap-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] lg:items-end">
         <div className="space-y-4">
           <p className="font-mono text-[11px] tracking-[0.22em] text-primary uppercase">
-            Room-level BOH board
+            Room-level back-of-house board
           </p>
           <h1 className="font-heading max-w-xl text-4xl leading-[1.05] tracking-tight sm:text-5xl">
             Cleanliness, safety, dignity — scored
@@ -56,7 +58,7 @@ export function HomePage() {
             ) : (
               <>
                 <Button asChild className="w-full sm:w-auto">
-                  <Link to="/how-it-works">How it works</Link>
+                  <Link to="/write">File a report</Link>
                 </Button>
                 <Button asChild variant="outline" className="w-full sm:w-auto">
                   <Link to="/workplaces">Open directory</Link>
@@ -78,7 +80,7 @@ export function HomePage() {
             <li>No names, handles, or badge numbers.</li>
             <li>No star-rating of a CEO. Rooms only.</li>
             <li>Disputes become a public badge, not a pile-on.</li>
-            <li>In the Back's platform chair claims the queue once. The public still never sees who.</li>
+            <li>The chair's name stays off the board.</li>
           </ul>
         </aside>
       </section>
@@ -94,7 +96,7 @@ export function HomePage() {
         </section>
       ) : null}
 
-      {workplaces.length > 0 ? (
+      {demoWorkplaces.length > 0 ? (
         <section className="space-y-3">
           <div className="flex items-end justify-between gap-3">
             <h2 className="font-heading text-2xl tracking-tight">DEMO workplaces</h2>
@@ -109,7 +111,7 @@ export function HomePage() {
             </Link>
           </div>
           <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:thin] md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0 lg:grid-cols-5">
-            {workplaces.map((workplace) => (
+            {demoWorkplaces.map((workplace) => (
               <WorkplaceStripCard key={workplace.id} workplace={workplace} />
             ))}
           </div>
@@ -129,12 +131,23 @@ export function HomePage() {
             Full directory
           </Link>
         </div>
-        {empty ? (
+        {!board.ready ? (
+          <BoardSkeleton />
+        ) : board.error ? (
+          <div className="space-y-3">
+            <p role="alert" className="text-sm text-destructive">
+              {board.error}
+            </p>
+            <Button type="button" variant="outline" onClick={() => void board.refresh()}>
+              Try again
+            </Button>
+          </div>
+        ) : empty ? (
           <EmptyState
             eyebrow={seeded ? "No reports yet" : "Quiet board"}
             title="Board's quiet."
             primaryTo="/write"
-            primaryLabel="Score a room"
+            primaryLabel="File a report"
           >
             <p>No rooms scored yet. First mark: cleanliness, safety, dignity.</p>
           </EmptyState>

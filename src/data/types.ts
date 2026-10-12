@@ -39,13 +39,14 @@ export type Workplace = {
   id: string
   slug: string
   name: string
-  industry: Industry
+  industry: Industry | null
   city: string
   region: string
   blurb: string
   rooms: Room[]
   listedPlan: PlanId
-  demo: true
+  /** Labeled sample data. Filed workplaces are not demo. */
+  demo: boolean
 }
 
 export type Report = {

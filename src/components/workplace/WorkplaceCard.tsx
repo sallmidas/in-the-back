@@ -25,10 +25,14 @@ export function WorkplaceCard({ workplace }: { workplace: Workplace }) {
           </p>
           <p className="mt-1 text-sm leading-snug text-muted-foreground">
             {workplace.city}, {workplace.region}
-            <span className="mx-1.5 text-border" aria-hidden>
-              ·
-            </span>
-            {INDUSTRY_LABELS[workplace.industry]}
+            {workplace.industry ? (
+              <>
+                <span className="mx-1.5 text-border" aria-hidden>
+                  ·
+                </span>
+                {INDUSTRY_LABELS[workplace.industry]}
+              </>
+            ) : null}
           </p>
         </div>
         <p
@@ -40,9 +44,11 @@ export function WorkplaceCard({ workplace }: { workplace: Workplace }) {
           </span>
         </p>
       </div>
-      <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-foreground/85">
-        {workplace.blurb}
-      </p>
+      {workplace.blurb ? (
+        <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-foreground/85">
+          {workplace.blurb}
+        </p>
+      ) : null}
       {weak ? (
         <p className="mt-3 text-sm leading-snug">
           <span className="text-muted-foreground">Lowest room </span>
@@ -66,12 +72,14 @@ export function WorkplaceCard({ workplace }: { workplace: Workplace }) {
           </span>
         ))}
       </div>
-      <div className="mt-4 flex flex-wrap gap-1.5">
-        <Badge variant="outline">DEMO</Badge>
-        <Badge variant="secondary" className="capitalize">
-          {workplace.listedPlan} · preview
-        </Badge>
-      </div>
+      {workplace.demo ? (
+        <div className="mt-4 flex flex-wrap gap-1.5">
+          <Badge variant="outline">DEMO</Badge>
+          <Badge variant="secondary" className="capitalize">
+            {workplace.listedPlan} · preview
+          </Badge>
+        </div>
+      ) : null}
     </Link>
   )
 }

@@ -27,7 +27,26 @@ npm install
 npm run dev
 ```
 
-Open [http://127.0.0.1:43173](http://127.0.0.1:43173). Use **Walk the demo** on the home board, or **Open demo** in the header (Harbor & Rye walk-in, disputed). Tap a room tile to filter excerpts. **How it works** sells the product without hiring-board language.
+`npm run dev` starts the API on `http://127.0.0.1:43174` and the Vite app on [http://127.0.0.1:43173](http://127.0.0.1:43173). Vite proxies `/api` to the API. Filings, accounts, and the platform-chair claim are stored in `data/board.json` (gitignored).
+
+Open the app. Use **Walk the demo** on the home board, or **Open demo** in the header (Harbor & Rye walk-in, disputed). Tap a room tile to filter excerpts. **How it works** explains back of house and the chair.
+
+Empty launch catalog, no sample workplaces:
+
+```bash
+cp .env.example .env.local
+# set VITE_DEMO_SEED=0 in .env.local
+npm run dev
+```
+
+File a report. It is written to the server and shows on the home board and that workplace. The first account to claim **This is my queue** on `/staff` holds the chair; later accounts are refused.
+
+To serve the production bundle and the API together:
+
+```bash
+VITE_DEMO_SEED=0 npm run build
+ITB_STATIC=dist ITB_PORT=43173 npm start
+```
 
 ```bash
 npm run build    # production bundle into dist/
@@ -68,7 +87,7 @@ Capacitor remains the native store path; this PWA layer is for the browser door.
 
 The ten workplaces are **labeled DEMO**. They must not ship as if they were live reviews.
 
-When the seed is off, home, directory, workplace 404, platform-chair queue, and write CTAs use a stronger empty catalog (restore steps + How it works). Demo-only links (Harbor & Rye, Walk the demo) hide.
+When the seed is off, sample workplaces hide. The board shows only filings stored by the API. An empty board's primary action is **File a report**. Demo-only links (Harbor & Rye, Walk the demo) hide.
 
 **Fast path (keeps the sample data in git, hides it at runtime):**
 
@@ -93,11 +112,11 @@ Switch lives in `src/data/demo-flag.ts`. Catalog helpers in `src/data/catalog.ts
 | `/how-it-works` | Product walkthrough — rooms, scores, anonymity, flags, platform chair |
 | `/workplaces` | Directory with search + industry / room / score filters |
 | `/workplaces/:slug` | Rooms, scores, anonymous excerpts, dispute badges |
-| `/plans` | Free / Watch / Respond (preview only). Watch = kitchen sees files land. Respond = kitchen can flag. Not the platform chair. |
-| `/staff` | In the Back's platform chair — **This is my queue** once (not a workplace, not Watch/Respond) |
-| `/privacy` | Privacy placeholder |
-| `/account/delete` | Delete-account placeholder |
-| `/write` | File a report (open stub; no Stripe on send) |
+| `/plans` | Free / Watch / Respond. Flat monthly price. Reporter pay is included, not a per-file toll. Billing held until the LLC. |
+| `/staff` | Platform chair. Email and password. **This is my queue** once, on the server, for the whole platform. |
+| `/privacy` | What the public board stores, and what an account is |
+| `/account/delete` | Delete an account. Does not retract a file. Cannot delete the chair. |
+| `/write` | File a report. Open to anyone. Saved on the server. Retract with a receipt or the account that filed it. |
 
 Dispute copy on the board is exactly: **DISPUTED — UNDER REVIEW**. A flag leads to uphold or retract — never delete.
 
@@ -109,14 +128,20 @@ Each has sample rooms, scores, and anonymous reports. Two seeded disputes (Harbo
 
 ## Product rules this repo is teaching
 
-- **LLC before Stripe / payouts / Watch billing.** Filing stays open. Pay stays off until the company exists. This repo has no Stripe. Numbers on `/plans` are preview only.
-- **Platform chair.** In the Back's chair claims **This is my queue** once. It is not a per-workplace claim. It is not Watch or Respond. Operators do not buy a plan to sit it. The public board never shows who claimed it.
-- **Watch / Respond (preview).** Watch: the kitchen can see new files as they land. Respond: the kitchen can flag a report. A flag leads to uphold or retract — never delete.
+- **LLC before Stripe / payouts / Watch billing.** Filing stays open. Pay stays off until the company exists. This repo has no Stripe and no payment code. Watch is $129/mo flat and Respond is $249/mo flat. The $3 and $5 figures are reporter pay taken from that subscription, not an extra charge to the kitchen.
+- **Platform chair.** The first real account to claim **This is my queue** holds it. The claim is stored on the server and does not reopen. It is not a per-workplace claim. The public board never shows who claimed it.
+- **Watch / Respond.** Watch: the kitchen can see new files as they land. Respond: the kitchen can flag a report. A flag leads to uphold or retract — never delete. Those plans are not wired to billing.
 - **Share cards.** Static OG/Twitter title and description use the slogan. Tab titles follow the route (works with HashRouter). No reviewer or chair identity in share payloads.
 
-## Out of scope (stubs only)
+## Store
 
-Real Stripe, real OAuth, production deploy.
+There was no backend. The launch store is a Node HTTP API (`server/`) and one JSON file, `data/board.json`, with a lock around writes. Passwords are scrypt hashes. Sessions are httpOnly cookies. One process owns the file. That is enough for a single-server launch; more than one server would need a shared disk or a different store.
+
+Name checks on a filing are a heuristic (common first names, titles, “my name is”, emails). They miss single names, initials, all-lowercase names, and names outside the list, and they can mistake a First Last phrase. They block the submit. They do not rewrite the writing.
+
+## Out of scope
+
+Stripe or any payment code, payouts, wages, GPS, OAuth providers, a Resolve action, and ghostwritten files. Kitchen flagging stays a product rule, not a billed feature, until the LLC exists.
 
 ## Stack
 
