@@ -4,9 +4,12 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --host 127.0.0.1 --port 43173",
+    "dev": "node scripts/dev.mjs",
+    "server": "node server/index.mjs",
+    "start": "node server/index.mjs",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
+    "test": "ITB_SCRYPT_N=1024 ITB_DISABLE_RATELIMIT=1 node --test test/*.test.mjs",
     "preview": "vite preview --host 127.0.0.1 --port 43173",
     "cap:sync": "npm run build && cap sync",
     "cap:add:android": "cap add android",

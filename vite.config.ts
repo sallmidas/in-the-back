@@ -14,10 +14,20 @@ export default defineConfig({
     host: "127.0.0.1",
     port: 43173,
     strictPort: true,
+    proxy: {
+      "/api": {
+        target: process.env.ITB_API_PROXY || "http://127.0.0.1:43174",
+      },
+    },
   },
   preview: {
     host: "127.0.0.1",
     port: 43173,
     strictPort: true,
+    proxy: {
+      "/api": {
+        target: process.env.ITB_API_PROXY || "http://127.0.0.1:43174",
+      },
+    },
   },
 })

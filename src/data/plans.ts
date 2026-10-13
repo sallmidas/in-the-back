@@ -1,14 +1,16 @@
+import { kitchenPriceLabel } from "../../shared/plan-copy.mjs"
 import type { PlanId } from "./types"
 
 export type Plan = {
   id: PlanId
   name: string
   monthly: number
-  perReport: number
+  /** Flat price sentence. Reporter pay is inside the subscription, not a toll. */
+  priceLabel: string
   tagline: string
   audience: string
   features: string[]
-  missing: string[]
+  held: string | null
 }
 
 export const PLANS: Plan[] = [
@@ -16,7 +18,7 @@ export const PLANS: Plan[] = [
     id: "free",
     name: "Free",
     monthly: 0,
-    perReport: 0,
+    priceLabel: kitchenPriceLabel(0, 0),
     tagline: "The public board. Rooms, scores, writing.",
     audience: "Anyone reading the board",
     features: [
@@ -24,34 +26,34 @@ export const PLANS: Plan[] = [
       "Anonymous excerpts — never reviewer identity",
       "Dispute badges when a kitchen has flagged a report",
     ],
-    missing: ["No incoming-file view", "No flagging"],
+    held: null,
   },
   {
     id: "watch",
     name: "Watch",
     monthly: 129,
-    perReport: 3,
+    priceLabel: kitchenPriceLabel(129, 3),
     tagline: "The kitchen can see new files as they land.",
-    audience: "Operators who need to see reports as they land",
+    audience: "A kitchen that needs to see files as they land",
     features: [
       "Everything on Free",
-      "See new files and reports as they land",
-      "Volume alerts (stub in Phase 1)",
+      "See new files as they land",
+      "The $3 is reporter pay from the subscription, not an extra charge",
     ],
-    missing: ["Held until LLC", "No alerts billed", "No flagging yet"],
+    held: "Billing held until the LLC. No card on file.",
   },
   {
     id: "respond",
     name: "Respond",
     monthly: 249,
-    perReport: 5,
+    priceLabel: kitchenPriceLabel(249, 5),
     tagline: "The kitchen can flag a report.",
-    audience: "Operators who need to flag a report",
+    audience: "A kitchen that needs to flag a report",
     features: [
       "Everything on Watch",
       "Flag a report. A flag leads to uphold or retract — never delete.",
-      "Official replies (not implemented yet)",
+      "The $5 is reporter pay from the subscription, not an extra charge",
     ],
-    missing: ["Held until LLC", "No Stripe", "No card on file"],
+    held: "Billing held until the LLC. No card on file.",
   },
 ]

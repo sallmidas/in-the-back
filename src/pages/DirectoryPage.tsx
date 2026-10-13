@@ -1,4 +1,5 @@
 import { useSearchParams } from "react-router-dom"
+import { BoardSkeleton } from "@/components/layout/BoardSkeleton"
 import { EmptyState } from "@/components/layout/EmptyState"
 import { WorkplaceCard } from "@/components/workplace/WorkplaceCard"
 import { Button } from "@/components/ui/button"
@@ -11,8 +12,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { filterWorkplaces, getWorkplaces } from "@/data/catalog"
 import { isDemoSeedEnabled } from "@/data/demo-flag"
+import { useBoard } from "@/lib/board"
 import {
   INDUSTRIES,
   INDUSTRY_LABELS,
@@ -33,6 +34,7 @@ function asBand(value: string | null): Band {
 }
 
 export function DirectoryPage() {
+  const board = useBoard()
   const [params, setParams] = useSearchParams()
   const query = params.get("q") ?? ""
   const industryParam = params.get("industry")
@@ -42,8 +44,8 @@ export function DirectoryPage() {
   const room: RoomKind | "all" = roomParam && isRoomKind(roomParam) ? roomParam : "all"
   const band = asBand(params.get("band"))
 
-  const seeded = getWorkplaces().length
-  const results = filterWorkplaces({ query, industry, room, band })
+  const listed = board.workplaces.length
+  const results = board.filterWorkplaces({ query, industry, room, band })
   const filtersOn = Boolean(query) || industry !== "all" || room !== "all" || band !== "all"
 
   function patch(next: Record<string, string>) {
@@ -66,12 +68,27 @@ export function DirectoryPage() {
           Search name, city, or room. Filters live in the URL so you can share a view — never a
           reviewer, never a chair.
           {isDemoSeedEnabled()
-            ? " Every listing here is a labeled DEMO sample."
-            : " The launch directory is empty until real workplaces are added."}
+            ? " Every sample listing is labeled DEMO."
+            : listed > 0
+              ? " Workplaces show up here after someone files a room."
+              : ""}
         </p>
       </header>
 
-      {isDemoSeedEnabled() ? (
+      {!board.ready ? (
+        <BoardSkeleton variant="directory" />
+      ) : board.error ? (
+        <div className="space-y-3">
+          <p role="alert" className="text-sm text-destructive">
+            {board.error}
+          </p>
+          <Button type="button" variant="outline" onClick={() => void board.refresh()}>
+            Try again
+          </Button>
+        </div>
+      ) : (
+        <>
+      {listed > 0 ? (
         <form
           className="grid gap-3 rounded-xl border border-border bg-card/60 p-4 sm:grid-cols-2 lg:grid-cols-4"
           onSubmit={(event) => event.preventDefault()}
@@ -134,7 +151,7 @@ export function DirectoryPage() {
         </div>
         <div className="flex items-end justify-between gap-2 text-sm text-muted-foreground">
           <span>
-            {results.length} of {seeded}
+            {results.length} of {listed}
           </span>
           {filtersOn ? (
             <Button type="button" variant="ghost" size="sm" onClick={() => setParams({})}>
@@ -145,8 +162,8 @@ export function DirectoryPage() {
         </form>
       ) : null}
 
-      {!isDemoSeedEnabled() ? (
-        <EmptyState eyebrow="Directory" title="Board's quiet.">
+      {listed === 0 ? (
+        <EmptyState eyebrow="Directory" title="Board's quiet." primaryLabel="File a report">
           <p>No rooms scored yet. First mark: cleanliness, safety, dignity.</p>
         </EmptyState>
       ) : results.length === 0 ? (
@@ -164,6 +181,8 @@ export function DirectoryPage() {
             <WorkplaceCard key={workplace.id} workplace={workplace} />
           ))}
         </div>
+      )}
+        </>
       )}
     </div>
   )

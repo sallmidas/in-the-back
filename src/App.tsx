@@ -1,6 +1,8 @@
 import { lazy, Suspense, type ReactNode } from "react"
 import { Navigate, Route, Routes } from "react-router-dom"
 import { AppShell } from "@/components/layout/AppShell"
+import { BoardProvider } from "@/lib/board"
+import { SessionProvider } from "@/lib/session"
 import { BoardSkeleton } from "@/components/layout/BoardSkeleton"
 import { DeleteAccountPage } from "@/pages/DeleteAccountPage"
 import { HowItWorksPage } from "@/pages/HowItWorksPage"
@@ -32,6 +34,8 @@ function CatalogRoute({
 
 export default function App() {
   return (
+    <SessionProvider>
+    <BoardProvider>
     <AppShell>
       <Routes>
         <Route
@@ -68,5 +72,7 @@ export default function App() {
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </AppShell>
+    </BoardProvider>
+    </SessionProvider>
   )
 }

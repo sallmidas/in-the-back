@@ -91,13 +91,13 @@ export function weakestRoom(workplace: Workplace) {
   return workplace.rooms.reduce((lowest, room) => (room.score < lowest.score ? room : lowest))
 }
 
-export function filterWorkplaces(filters: DirectoryFilters): Workplace[] {
+export function filterWorkplaces(workplaces: Workplace[], filters: DirectoryFilters): Workplace[] {
   const query = filters.query?.trim().toLowerCase() ?? ""
   const industry = filters.industry ?? "all"
   const room = filters.room ?? "all"
   const band = filters.band ?? "all"
 
-  return getWorkplaces().filter((workplace) => {
+  return workplaces.filter((workplace) => {
     if (query) {
       const rooms = workplace.rooms.map((item) => ROOM_LABELS[item.kind]).join(" ")
       const haystack =

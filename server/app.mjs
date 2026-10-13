@@ -1,0 +1,630 @@
+import { createServer } from "node:http"
+import { createReadStream } from "node:fs"
+import { stat } from "node:fs/promises"
+import path from "node:path"
+import { INDUSTRIES, ROOM_KINDS, compareRooms } from "../shared/constants.mjs"
+import { createStore } from "./store.mjs"
+import {
+  hashPassword,
+  normalizeReceipt,
+  randomId,
+  randomReceipt,
+  randomToken,
+  safeEqualHex,
+  sha256,
+  verifyPassword,
+} from "./passwords.mjs"
+import { parseEmail, parseFiling, parsePassword, slugify } from "./validate.mjs"
+
+const SESSION_MS = 30 * 24 * 60 * 60 * 1000
+const RATE_LIMIT = 80
+const RATE_WINDOW_MS = 10 * 60 * 1000
+
+const STATIC_TYPES = {
+  ".html": "text/html; charset=utf-8",
+  ".js": "text/javascript; charset=utf-8",
+  ".css": "text/css; charset=utf-8",
+  ".svg": "image/svg+xml",
+  ".png": "image/png",
+  ".json": "application/json; charset=utf-8",
+  ".webmanifest": "application/manifest+json",
+  ".ico": "image/x-icon",
+  ".txt": "text/plain; charset=utf-8",
+  ".woff2": "font/woff2",
+  ".map": "application/json",
+}
+
+function publicUser(user) {
+  return { id: user.id, email: user.email }
+}
+
+function chairView(data, user) {
+  return {
+    claimed: Boolean(data.chairUserId),
+    mine: Boolean(user && data.chairUserId === user.id),
+  }
+}
+
+function roomsForWorkplace(data, workplaceId) {
+  const scores = new Map()
+  for (const report of data.reports) {
+    if (report.retractedAt || report.workplaceId !== workplaceId) continue
+    const list = scores.get(report.roomKind) ?? []
+    list.push(report.score)
+    scores.set(report.roomKind, list)
+  }
+  return [...scores.entries()]
+    .map(([kind, list]) => ({
+      kind,
+      score: Math.round((list.reduce((sum, value) => sum + value, 0) / list.length) * 10) / 10,
+    }))
+    .sort((a, b) => compareRooms(a.kind, b.kind))
+}
+
+function publicWorkplace(data, workplace) {
+  return {
+    id: workplace.id,
+    slug: workplace.slug,
+    name: workplace.name,
+    industry: workplace.industry,
+    city: workplace.city,
+    region: workplace.region,
+    blurb: "",
+    rooms: roomsForWorkplace(data, workplace.id),
+    listedPlan: "free",
+    demo: false,
+  }
+}
+
+function publicReport(report) {
+  return {
+    id: report.id,
+    workplaceSlug: report.workplaceSlug,
+    workplaceName: report.workplaceName,
+    workplaceCity: report.workplaceCity,
+    workplaceRegion: report.workplaceRegion,
+    workplaceIndustry: report.workplaceIndustry,
+    roomKind: report.roomKind,
+    score: report.score,
+    context: report.context,
+    excerpt: report.excerpt,
+    publishedAt: report.publishedAt,
+    disputed: false,
+  }
+}
+
+function ownerReport(report) {
+  return {
+    ...publicReport(report),
+    retracted: Boolean(report.retractedAt),
+  }
+}
+
+export function createApp({ storePath, staticRoot = null }) {
+  const store = createStore(storePath)
+  const hits = new Map()
+
+  function rateLimit(req) {
+    if (process.env.ITB_DISABLE_RATELIMIT === "1") return true
+    const now = Date.now()
+    const ip = req.socket?.remoteAddress || "local"
+    const bucket = (hits.get(ip) ?? []).filter((stamp) => now - stamp < RATE_WINDOW_MS)
+    if (bucket.length >= RATE_LIMIT) {
+      hits.set(ip, bucket)
+      return false
+    }
+    bucket.push(now)
+    hits.set(ip, bucket)
+    return true
+  }
+
+  function send(res, status, body, headers = {}) {
+    const payload = JSON.stringify(body)
+    res.writeHead(status, {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "no-store",
+      "x-content-type-options": "nosniff",
+      ...headers,
+    })
+    res.end(payload)
+  }
+
+  function readCookie(req) {
+    const raw = req.headers.cookie ?? ""
+    for (const part of raw.split(";")) {
+      const [key, ...rest] = part.trim().split("=")
+      if (key === "itb_session") return decodeURIComponent(rest.join("="))
+    }
+    return ""
+  }
+
+  function sessionCookie(token) {
+    const parts = [
+      `itb_session=${token ? encodeURIComponent(token) : ""}`,
+      "HttpOnly",
+      "SameSite=Lax",
+      "Path=/",
+      `Max-Age=${token ? Math.floor(SESSION_MS / 1000) : 0}`,
+    ]
+    if (process.env.ITB_SECURE_COOKIE === "1") parts.push("Secure")
+    return parts.join("; ")
+  }
+
+  function userFrom(data, token) {
+    if (!token) return null
+    const tokenHash = sha256(token)
+    const now = Date.now()
+    const session = data.sessions.find(
+      (item) => item.tokenHash === tokenHash && Date.parse(item.expiresAt) > now,
+    )
+    if (!session) return null
+    return data.users.find((user) => user.id === session.userId) ?? null
+  }
+
+  function originAllowed(req) {
+    const origin = req.headers.origin
+    if (!origin) return true
+    let url
+    try {
+      url = new URL(origin)
+    } catch {
+      return false
+    }
+    if (url.host === req.headers.host) return true
+    const extra = (process.env.ITB_ORIGINS ?? "")
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean)
+    return extra.includes(origin)
+  }
+
+  async function readJson(req) {
+    const chunks = []
+    let size = 0
+    for await (const chunk of req) {
+      size += chunk.length
+      if (size > 20_000) {
+        const error = new Error("That filing is too large.")
+        error.status = 413
+        throw error
+      }
+      chunks.push(chunk)
+    }
+    if (size === 0) return {}
+    const text = Buffer.concat(chunks).toString("utf8")
+    try {
+      const parsed = JSON.parse(text)
+      if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+        const error = new Error("Send a JSON object.")
+        error.status = 400
+        throw error
+      }
+      return parsed
+    } catch (error) {
+      if (error.status) throw error
+      const invalid = new Error("Send JSON.")
+      invalid.status = 400
+      throw invalid
+    }
+  }
+
+  function requireJson(req) {
+    const type = req.headers["content-type"] ?? ""
+    if (!type.includes("application/json")) {
+      const error = new Error("Send JSON.")
+      error.status = 415
+      throw error
+    }
+  }
+
+  async function serveStatic(req, res, url) {
+    if (!staticRoot || req.method !== "GET" && req.method !== "HEAD") return false
+    const root = path.resolve(staticRoot)
+    let pathname = decodeURIComponent(url.pathname)
+    if (pathname.endsWith("/")) pathname += "index.html"
+    const file = path.resolve(root, `.${pathname}`)
+    const inside = file === root || file.startsWith(`${root}${path.sep}`)
+    if (!inside) {
+      send(res, 403, { error: "Forbidden" })
+      return true
+    }
+    try {
+      const info = await stat(file)
+      if (!info.isFile()) throw new Error("not a file")
+      const type = STATIC_TYPES[path.extname(file)] ?? "application/octet-stream"
+      res.writeHead(200, { "content-type": type, "x-content-type-options": "nosniff" })
+      if (req.method === "HEAD") {
+        res.end()
+        return true
+      }
+      createReadStream(file).pipe(res)
+      return true
+    } catch {
+      const index = path.join(root, "index.html")
+      try {
+        await stat(index)
+      } catch {
+        return false
+      }
+      res.writeHead(200, {
+        "content-type": "text/html; charset=utf-8",
+        "x-content-type-options": "nosniff",
+      })
+      if (req.method === "HEAD") res.end()
+      else createReadStream(index).pipe(res)
+      return true
+    }
+  }
+
+  async function handle(req, res) {
+    const url = new URL(req.url ?? "/", "http://127.0.0.1")
+    const { pathname } = url
+
+    if (pathname.startsWith("/api/") && !originAllowed(req)) {
+      send(res, 403, { error: "That request came from somewhere else." })
+      return
+    }
+
+    try {
+      if (pathname === "/api/board" && req.method === "GET") {
+        const data = await store.read()
+        send(res, 200, {
+          workplaces: data.workplaces.map((workplace) => publicWorkplace(data, workplace)),
+          reports: data.reports.filter((report) => !report.retractedAt).map(publicReport),
+        })
+        return
+      }
+
+      if (pathname === "/api/auth/me" && req.method === "GET") {
+        const data = await store.read()
+        const user = userFrom(data, readCookie(req))
+        send(res, 200, { user: user ? publicUser(user) : null, chair: chairView(data, user) })
+        return
+      }
+
+      if (pathname === "/api/me/reports" && req.method === "GET") {
+        const data = await store.read()
+        const user = userFrom(data, readCookie(req))
+        if (!user) {
+          send(res, 401, { error: "Sign in to see files tied to your account." })
+          return
+        }
+        const reports = data.reports
+          .filter((report) => report.ownerUserId === user.id)
+          .map(ownerReport)
+        send(res, 200, { reports })
+        return
+      }
+
+      if (req.method === "DELETE" && pathname.startsWith("/api/reports")) {
+        send(res, 405, {
+          error: "A kitchen cannot delete a file. The person who filed it can retract it.",
+        })
+        return
+      }
+
+      if (req.method === "POST" && /\/resolve$/.test(pathname)) {
+        send(res, 404, { error: "There is no resolve action." })
+        return
+      }
+
+      if (!pathname.startsWith("/api/")) {
+        const served = await serveStatic(req, res, url)
+        if (!served) send(res, 404, { error: "Not found" })
+        return
+      }
+
+      if (req.method !== "POST") {
+        send(res, 404, { error: "Not found" })
+        return
+      }
+
+      if (!rateLimit(req)) {
+        send(res, 429, { error: "Too many attempts. Wait a few minutes." })
+        return
+      }
+
+      requireJson(req)
+      const body = await readJson(req)
+
+      if (pathname === "/api/auth/register") {
+        await register(req, res, body)
+        return
+      }
+      if (pathname === "/api/auth/login") {
+        await login(req, res, body)
+        return
+      }
+      if (pathname === "/api/auth/logout") {
+        await logout(req, res)
+        return
+      }
+      if (pathname === "/api/auth/delete") {
+        await deleteAccount(req, res, body)
+        return
+      }
+      if (pathname === "/api/chair/claim") {
+        await claimChair(req, res)
+        return
+      }
+      if (pathname === "/api/reports") {
+        await fileReport(req, res, body)
+        return
+      }
+      if (pathname === "/api/reports/retract") {
+        await retractWithReceipt(body, res)
+        return
+      }
+      if (pathname === "/api/me/reports/retract") {
+        await retractOwn(req, res, body)
+        return
+      }
+
+      send(res, 404, { error: "Not found" })
+    } catch (error) {
+      const status = error.status || 500
+      const message = status === 500 ? "The board hit an error." : error.message
+      if (status === 500) console.error(error)
+      send(res, status, { error: message })
+    }
+  }
+
+  async function register(_req, res, body) {
+    const email = parseEmail(body.email)
+    if (!email) {
+      send(res, 400, { error: "Enter a real email." })
+      return
+    }
+    const password = parsePassword(body.password)
+    if (password.error) {
+      send(res, 400, { error: password.error })
+      return
+    }
+    const passwordHash = hashPassword(password.password)
+    const result = await store.update((data) => {
+      if (data.users.some((user) => user.email === email)) {
+        return { status: 409, error: "An account with that email already exists. Sign in instead." }
+      }
+      const user = {
+        id: randomId("usr"),
+        email,
+        passwordHash,
+        createdAt: new Date().toISOString(),
+      }
+      const token = randomToken()
+      data.users.push(user)
+      data.sessions.push({
+        id: randomId("ses"),
+        userId: user.id,
+        tokenHash: sha256(token),
+        expiresAt: new Date(Date.now() + SESSION_MS).toISOString(),
+      })
+      return { status: 201, token, user: publicUser(user), chair: chairView(data, user) }
+    })
+    if (result.error) {
+      send(res, result.status, { error: result.error })
+      return
+    }
+    send(
+      res,
+      result.status,
+      { user: result.user, chair: result.chair },
+      { "set-cookie": sessionCookie(result.token) },
+    )
+  }
+
+  async function login(_req, res, body) {
+    const email = parseEmail(body.email)
+    const password = typeof body.password === "string" ? body.password : ""
+    if (!email || !password) {
+      send(res, 401, { error: "Email or password is wrong." })
+      return
+    }
+    const snapshot = await store.read()
+    const existing = snapshot.users.find((user) => user.email === email)
+    const valid = existing ? verifyPassword(password, existing.passwordHash) : false
+    if (!existing || !valid) {
+      send(res, 401, { error: "Email or password is wrong." })
+      return
+    }
+    const token = randomToken()
+    const result = await store.update((data) => {
+      const user = data.users.find((item) => item.id === existing.id)
+      if (!user) return { status: 401, error: "Email or password is wrong." }
+      data.sessions = data.sessions.filter((session) => Date.parse(session.expiresAt) > Date.now())
+      data.sessions.push({
+        id: randomId("ses"),
+        userId: user.id,
+        tokenHash: sha256(token),
+        expiresAt: new Date(Date.now() + SESSION_MS).toISOString(),
+      })
+      return { status: 200, user: publicUser(user), chair: chairView(data, user) }
+    })
+    if (result.error) {
+      send(res, result.status, { error: result.error })
+      return
+    }
+    send(res, 200, { user: result.user, chair: result.chair }, { "set-cookie": sessionCookie(token) })
+  }
+
+  async function logout(req, res) {
+    const token = readCookie(req)
+    if (token) {
+      const tokenHash = sha256(token)
+      await store.update((data) => {
+        data.sessions = data.sessions.filter((session) => session.tokenHash !== tokenHash)
+        return null
+      })
+    }
+    send(res, 200, { ok: true }, { "set-cookie": sessionCookie("") })
+  }
+
+  async function deleteAccount(req, res, body) {
+    const email = parseEmail(body.email)
+    const password = typeof body.password === "string" ? body.password : ""
+    const snapshot = await store.read()
+    const existing = email ? snapshot.users.find((user) => user.email === email) : null
+    const valid = existing ? verifyPassword(password, existing.passwordHash) : false
+    if (!existing || !valid) {
+      send(res, 401, { error: "Email or password is wrong." })
+      return
+    }
+    const result = await store.update((data) => {
+      const user = data.users.find((item) => item.id === existing.id)
+      if (!user) return { status: 401, error: "Email or password is wrong." }
+      if (data.chairUserId === user.id) {
+        return {
+          status: 403,
+          error: "The platform chair cannot be deleted. The claim stays with this account.",
+        }
+      }
+      data.users = data.users.filter((item) => item.id !== user.id)
+      data.sessions = data.sessions.filter((session) => session.userId !== user.id)
+      for (const report of data.reports) {
+        if (report.ownerUserId === user.id) report.ownerUserId = null
+      }
+      return { status: 200 }
+    })
+    if (result.error) {
+      send(res, result.status, { error: result.error })
+      return
+    }
+    send(res, 200, { deleted: true }, { "set-cookie": sessionCookie("") })
+  }
+
+  async function claimChair(req, res) {
+    const token = readCookie(req)
+    const result = await store.update((data) => {
+      const user = userFrom(data, token)
+      if (!user) return { status: 401, error: "Sign in before claiming the chair." }
+      if (!data.chairUserId) {
+        data.chairUserId = user.id
+        data.chairClaimedAt = new Date().toISOString()
+        return { status: 200, chair: chairView(data, user) }
+      }
+      if (data.chairUserId === user.id) return { status: 200, chair: chairView(data, user) }
+      return { status: 409, error: "The platform chair is already claimed." }
+    })
+    if (result.error) {
+      send(res, result.status, { error: result.error })
+      return
+    }
+    send(res, result.status, { chair: result.chair })
+  }
+
+  async function fileReport(req, res, body) {
+    const parsed = parseFiling(body)
+    if (parsed.error) {
+      send(res, 400, { error: parsed.error })
+      return
+    }
+    const filing = parsed.value
+    const token = readCookie(req)
+    const receipt = randomReceipt()
+    const receiptHash = sha256(normalizeReceipt(receipt))
+    const result = await store.update((data) => {
+      const user = userFrom(data, token)
+      let workplace = null
+      if (!filing.create) {
+        workplace = data.workplaces.find((item) => item.slug === filing.workplaceSlug) ?? null
+      }
+      if (filing.create) {
+        workplace =
+          data.workplaces.find(
+            (item) => item.name.toLowerCase() === filing.workplaceName.toLowerCase(),
+          ) ?? null
+        if (!workplace) {
+          let slug = slugify(filing.workplaceName)
+          let n = 2
+          while (data.workplaces.some((item) => item.slug === slug)) {
+            slug = `${slugify(filing.workplaceName)}-${n}`
+            n += 1
+          }
+          workplace = {
+            id: randomId("wp"),
+            slug,
+            name: filing.workplaceName,
+            industry: filing.industry,
+            city: filing.city,
+            region: filing.region,
+            createdAt: new Date().toISOString(),
+          }
+          data.workplaces.push(workplace)
+        }
+      }
+      const report = {
+        id: randomId("rpt"),
+        workplaceId: workplace?.id ?? null,
+        workplaceSlug: workplace?.slug ?? filing.workplaceSlug,
+        workplaceName: workplace?.name ?? filing.workplaceName,
+        workplaceCity: workplace?.city ?? filing.city,
+        workplaceRegion: workplace?.region ?? filing.region,
+        workplaceIndustry: workplace?.industry ?? filing.industry,
+        roomKind: filing.roomKind,
+        score: filing.score,
+        context: filing.context,
+        excerpt: filing.excerpt,
+        publishedAt: new Date().toISOString(),
+        retractedAt: null,
+        receiptHash,
+        ownerUserId: user?.id ?? null,
+      }
+      data.reports.push(report)
+      return {
+        report: publicReport(report),
+        workplace: workplace ? publicWorkplace(data, workplace) : null,
+      }
+    })
+    send(res, 201, { report: result.report, receipt, workplace: result.workplace })
+  }
+
+  async function retractWithReceipt(body, res) {
+    const receipt = normalizeReceipt(body.receipt)
+    if (receipt.length < 8) {
+      send(res, 400, { error: "That receipt does not match a filed report." })
+      return
+    }
+    const receiptHash = sha256(receipt)
+    const result = await store.update((data) => {
+      let found = null
+      for (const report of data.reports) {
+        if (safeEqualHex(receiptHash, report.receiptHash)) found = report
+      }
+      if (!found) return { status: 400, error: "That receipt does not match a filed report." }
+      if (!found.retractedAt) found.retractedAt = new Date().toISOString()
+      return { status: 200, retracted: true }
+    })
+    if (result.error) {
+      send(res, result.status, { error: result.error })
+      return
+    }
+    send(res, 200, { retracted: true })
+  }
+
+  async function retractOwn(req, res, body) {
+    const token = readCookie(req)
+    const reportId = typeof body.reportId === "string" ? body.reportId : ""
+    const result = await store.update((data) => {
+      const user = userFrom(data, token)
+      if (!user) return { status: 401, error: "Sign in to retract a file tied to your account." }
+      const report = data.reports.find((item) => item.id === reportId && item.ownerUserId === user.id)
+      if (!report) return { status: 404, error: "No file under this account matches that id." }
+      if (!report.retractedAt) report.retractedAt = new Date().toISOString()
+      return { status: 200, retracted: true }
+    })
+    if (result.error) {
+      send(res, result.status, { error: result.error })
+      return
+    }
+    send(res, 200, { retracted: true })
+  }
+
+  const server = createServer((req, res) => {
+    handle(req, res).catch((error) => {
+      console.error(error)
+      if (!res.headersSent) send(res, 500, { error: "The board hit an error." })
+    })
+  })
+
+  return { server, store, roomKinds: ROOM_KINDS, industries: INDUSTRIES }
+}
