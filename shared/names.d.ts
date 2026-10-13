@@ -1,5 +1,5 @@
 export const NAME_BLOCK_MESSAGE: string
-export function personalNameHit(text: string): string | null
+export function personalNameHit(text: string, options?: { solo?: boolean }): string | null
 export function filingNameError(fields: {
   context?: string
   excerpt?: string

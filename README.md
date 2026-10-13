@@ -128,7 +128,7 @@ Each has sample rooms, scores, and anonymous reports. Two seeded disputes (Harbo
 
 ## Product rules this repo is teaching
 
-- **LLC before Stripe / payouts / Watch billing.** Filing stays open. Pay stays off until the company exists. This repo has no Stripe and no payment code. Watch is $129/mo flat and Respond is $249/mo flat. The $3 and $5 figures are reporter pay taken from that subscription, not an extra charge to the kitchen.
+- **LLC before payouts / Watch billing.** Filing stays open. Pay stays off until the company exists. This repo has no payment code and no card form. Watch is $129/mo flat and Respond is $249/mo flat. The $3 and $5 figures are reporter pay taken from that subscription, not an extra charge to the kitchen.
 - **Platform chair.** The first real account to claim **This is my queue** holds it. The claim is stored on the server and does not reopen. It is not a per-workplace claim. The public board never shows who claimed it.
 - **Watch / Respond.** Watch: the kitchen can see new files as they land. Respond: the kitchen can flag a report. A flag leads to uphold or retract — never delete. Those plans are not wired to billing.
 - **Share cards.** Static OG/Twitter title and description use the slogan. Tab titles follow the route (works with HashRouter). No reviewer or chair identity in share payloads.
@@ -137,11 +137,11 @@ Each has sample rooms, scores, and anonymous reports. Two seeded disputes (Harbo
 
 There was no backend. The launch store is a Node HTTP API (`server/`) and one JSON file, `data/board.json`, with a lock around writes. Passwords are scrypt hashes. Sessions are httpOnly cookies. One process owns the file. That is enough for a single-server launch; more than one server would need a shared disk or a different store.
 
-Name checks on a filing are a heuristic (common first names, titles, “my name is”, emails). They miss single names, initials, all-lowercase names, and names outside the list, and they can mistake a First Last phrase. They block the submit. They do not rewrite the writing.
+Name checks on a filing are a heuristic (common first names, a single capitalized first name, initials, titles, “my name is”, emails). They still miss all-lowercase names, names outside the list, and a few ordinary words that are also names (Mark, Grace, Long). They can mistake a First Last phrase. They block the submit. They do not rewrite the writing. Filing also asks for a required checkbox, “I was in this room.” That is the filer’s word. It is not checked, stored, or shown on the board.
 
 ## Out of scope
 
-Stripe or any payment code, payouts, wages, GPS, OAuth providers, a Resolve action, and ghostwritten files. Kitchen flagging stays a product rule, not a billed feature, until the LLC exists.
+Payment code, payouts, wages, GPS, OAuth providers, a Resolve action, tips, a bullying or witness lane, an employment wall, and ghostwritten files. Kitchen flagging stays a product rule, not a billed feature, until the LLC exists.
 
 ## Stack
 

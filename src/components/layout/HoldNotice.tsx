@@ -7,8 +7,8 @@ export function HoldNotice({ className = "" }: { className?: string }) {
     <p
       className={`rounded-xl border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-primary ${className}`}
     >
-      Payouts and Watch billing are held until the LLC exists. No Stripe. No card on file.
-      Filing stays open.
+      Payouts and Watch billing are held until the LLC exists. No card on file. Filing stays
+      open.
       {isDemoSeedEnabled() ? " The sample workplaces are labeled DEMO." : ""}
     </p>
   )

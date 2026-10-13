@@ -57,6 +57,9 @@ export function parseFiling(body) {
   if (!Number.isFinite(score) || score < 1 || score > 10) {
     return { error: "Score cleanliness, safety, and dignity from 1 to 10." }
   }
+  if (body?.inRoom !== true) {
+    return { error: "Confirm you were in this room. That is your word. We do not check it." }
+  }
   if (!context || !excerpt) {
     return { error: "Shift context and writing are required. Never a name." }
   }

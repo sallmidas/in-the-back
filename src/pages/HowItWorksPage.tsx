@@ -119,7 +119,7 @@ export function HowItWorksPage() {
             <li>Reviewer name, handle, email, badge, or login.</li>
             <li>Platform chair identity, even after they claim a queue.</li>
             <li>Hiring copy, résumés, or “rate my boss.”</li>
-            <li>Stripe, payouts, and Watch billing — held until the LLC exists. Filing is open. No card on file.</li>
+            <li>Payouts and Watch billing — held until the LLC exists. Filing is open. No card on file.</li>
           </ul>
         </div>
       </section>

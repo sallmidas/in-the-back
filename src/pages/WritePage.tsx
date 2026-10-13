@@ -66,6 +66,7 @@ export function WritePage() {
   const [score, setScore] = useState("")
   const [context, setContext] = useState("")
   const [excerpt, setExcerpt] = useState("")
+  const [inRoom, setInRoom] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [receipt, setReceipt] = useState<string | null>(null)
   const [filedSlug, setFiledSlug] = useState<string | null>(null)
@@ -120,6 +121,10 @@ export function WritePage() {
       setError("Name the city and region. This is text you type, not a location pin.")
       return
     }
+    if (!inRoom) {
+      setError("Confirm you were in this room. That is your word. We do not check it.")
+      return
+    }
 
     const nameError = filingNameError({
       workplaceName: name,
@@ -147,6 +152,7 @@ export function WritePage() {
         score: scoreValue,
         context: context.trim(),
         excerpt: excerpt.trim(),
+        inRoom: true,
       })
       setReceipt(result.receipt)
       setFiledSlug(result.report.workplaceSlug)
@@ -159,6 +165,7 @@ export function WritePage() {
       setScore("")
       setContext("")
       setExcerpt("")
+      setInRoom(false)
       setCreating(false)
       await refresh()
       await loadMine()
@@ -388,9 +395,24 @@ export function WritePage() {
             rows={4}
           />
           <p className="text-xs text-muted-foreground">
-            Names are blocked. The check misses some and can mistake others — still write about the
-            room, not a person.
+            Names are blocked, including a capitalized first name or initials. Lowercase names and
+            names the check does not know can still get through. Write about the room, not a person.
           </p>
+        </div>
+
+        <div className="flex items-start gap-3 rounded-lg border border-border bg-background/40 px-3 py-3">
+          <input
+            id="write-in-room"
+            type="checkbox"
+            checked={inRoom}
+            required
+            onChange={(event) => setInRoom(event.target.checked)}
+            className="mt-1 size-4 accent-primary"
+          />
+          <div className="space-y-1">
+            <Label htmlFor="write-in-room">I was in this room.</Label>
+            <p className="text-xs text-muted-foreground">Your word. Nothing checks it.</p>
+          </div>
         </div>
 
         <Button type="submit" className="h-11 w-full" disabled={pending}>

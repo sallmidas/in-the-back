@@ -68,6 +68,8 @@ export type FilingInput = {
   score: number
   context: string
   excerpt: string
+  /** Self-attested. Required to file. Not stored or shown on the board. */
+  inRoom: boolean
 }
 
 function apiUrl(path: string) {

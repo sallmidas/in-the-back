@@ -49,6 +49,17 @@ test("the store survives a restart", async () => {
   }
 })
 
+test("a filing without the room attestation is refused and not stored", async () => {
+  await withServer(async ({ client }) => {
+    const { inRoom: _inRoom, ...withoutRoom } = sampleFiling
+    const filed = await client.request("POST", "/api/reports", withoutRoom)
+    assert.equal(filed.status, 400)
+    assert.match(filed.data.error, /room/i)
+    const board = await client.request("GET", "/api/board")
+    assert.equal(board.data.reports.length, 0)
+  })
+})
+
 test("server rejects a personal name even if the client skips its check", async () => {
   await withServer(async ({ client }) => {
     const filed = await client.request("POST", "/api/reports", {

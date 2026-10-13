@@ -164,8 +164,8 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
         <Separator />
         <p className="mx-auto max-w-6xl px-4 py-4 text-xs text-muted-foreground">
-          LLC first. No Stripe. No card on file. Payouts and Watch billing stay held until
-          then. Filing is open. Looking at plans costs nothing.
+          LLC first. No card on file. Payouts and Watch billing stay held until then. Filing
+          is open. Looking at plans costs nothing.
         </p>
       </footer>
     </div>

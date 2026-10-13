@@ -66,7 +66,7 @@ export function PlansPage() {
       </div>
 
       <p className="text-xs text-muted-foreground">
-        No Stripe. No card on file. Payouts and Watch billing stay held until the LLC. The{" "}
+        No card on file. Payouts and Watch billing stay held until the LLC. The{" "}
         <Link
           to="/staff"
           className={cn("rounded-sm underline-offset-4 hover:underline", focusRingClass)}

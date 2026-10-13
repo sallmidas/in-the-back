@@ -17,11 +17,13 @@ test("user-facing copy matches the product model", () => {
     "src/pages/HowItWorksPage.tsx",
     "src/components/layout/EmptyState.tsx",
     "src/components/layout/DemoBanner.tsx",
+    "src/components/layout/HoldNotice.tsx",
     "src/components/layout/AppShell.tsx",
   ].map(read)
 
   const ui = pages.join("\n")
-  assert.doesNotMatch(ui, /from the README|VITE_DEMO_SEED|localStorage|perReport|published report/)
+  assert.doesNotMatch(ui, /from the README|VITE_DEMO_SEED|localStorage|perReport|published report|Stripe/)
+  assert.match(read("src/pages/WritePage.tsx"), /I was in this room\./)
   assert.doesNotMatch(read("src/pages/WorkplacePage.tsx"), /This is my queue/)
   assert.match(read("src/components/layout/EmptyState.tsx"), /File a report/)
   assert.match(read("src/pages/HowItWorksPage.tsx"), /Back of house/)

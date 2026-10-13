@@ -1,12 +1,12 @@
 /**
  * Heuristic block for personal names in filing text.
  *
- * Catches explicit phrases, titles, role-plus-name, emails, and a capitalized
- * first name from a common list followed by a capitalized surname.
+ * Catches explicit phrases, titles, role-plus-name, emails, initials, a
+ * capitalized first name from a common list, and that name plus a surname.
  *
- * Does not catch: a single given name, initials, all-lowercase names that are
- * not in the list, names outside the list, and many non-English names.
- * Can mistake a business or a sentence that looks like First Last.
+ * Still misses all-lowercase names, names outside the list, and a few ordinary
+ * words that are also names (Mark, Grace, Long) so a room sentence can start
+ * with them. Can mistake a phrase that looks like First Last.
  * It blocks the filing. It does not rewrite the writing.
  */
 
@@ -50,6 +50,13 @@ garden hill park bay lake wood woods field point view end front the and
 for but not all any our day tonight on`.split(/\s+/),
 )
 
+/** Capitalized words that are also ordinary English. A solo hit would block room writing. */
+const SOLO_SKIP = new Set(
+  `mark bill grace rose lily ruby ivy nova aurora stella violet luna ella piper
+long hope joy faith dawn may will art pat don guy chase hunter summer angel
+star sky amber crystal christian jordan harmony melody brook`.split(/\s+/),
+)
+
 export const NAME_BLOCK_MESSAGE =
   "Leave names out of the filing. Describe the room and the building, not a person."
 
@@ -57,8 +64,9 @@ function wordKey(token) {
   return token.toLowerCase().replace(/[^a-z]/g, "")
 }
 
-export function personalNameHit(text) {
+export function personalNameHit(text, options = {}) {
   if (!text || typeof text !== "string") return null
+  const solo = options.solo !== false
   if (/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i.test(text)) return "email"
 
   if (
@@ -69,8 +77,10 @@ export function personalNameHit(text) {
   }
   if (roleHit(text)) return "role"
   if (phraseHit(text)) return "phrase"
+  if (initialHit(text)) return "initial"
   if (pairHit(text)) return "pair"
   if (capsHit(text)) return "caps"
+  if (solo && soloHit(text)) return "solo"
   return null
 }
 
@@ -115,6 +125,35 @@ function pairHit(text) {
   return false
 }
 
+function soloHit(text) {
+  const re = /\b([A-Z][a-z]{2,})\b/g
+  for (const match of text.matchAll(re)) {
+    const key = match[1].toLowerCase()
+    if (!FIRST_NAMES.has(key) || SECOND_STOP.has(key) || SOLO_SKIP.has(key)) continue
+    return true
+  }
+  return false
+}
+
+function initialHit(text) {
+  const named = /\b([A-Z])\.?\s+([A-Z][a-z]{2,})\b/g
+  for (const match of text.matchAll(named)) {
+    const second = wordKey(match[2])
+    if (SECOND_STOP.has(second)) continue
+    const dotted = text.slice(match.index, match.index + 2).includes(".")
+    if ((match[1] === "A" || match[1] === "I") && !dotted) continue
+    return true
+  }
+  const dotted = /\b([A-Z])\.\s*([A-Z])\./g
+  const dottedOk = new Set(["AM", "PM", "US", "OK", "IE", "AC", "DC", "NY", "LA", "TV", "ID", "HR", "RN", "ER"])
+  for (const match of text.matchAll(dotted)) {
+    const pair = `${match[1]}${match[2]}`.toUpperCase()
+    if (dottedOk.has(pair)) continue
+    return true
+  }
+  return false
+}
+
 function capsHit(text) {
   const re = /\b([A-Z]{2,})\s+([A-Z]{2,})\b/g
   for (const match of text.matchAll(re)) {
@@ -124,8 +163,10 @@ function capsHit(text) {
 }
 
 export function filingNameError(fields) {
-  const keys = ["context", "excerpt", "city", "region", "workplaceName"]
-  for (const key of keys) {
+  for (const key of ["workplaceName", "city", "region"]) {
+    if (personalNameHit(fields?.[key], { solo: false })) return NAME_BLOCK_MESSAGE
+  }
+  for (const key of ["context", "excerpt"]) {
     if (personalNameHit(fields?.[key])) return NAME_BLOCK_MESSAGE
   }
   return null

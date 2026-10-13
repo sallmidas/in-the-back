@@ -59,4 +59,5 @@ export const sampleFiling = {
   score: 4,
   context: "Tuesday close · prep",
   excerpt: "Walk-in was warm. Dairy on a sheet pan. Nobody logged a temp all close.",
+  inRoom: true,
 }
