@@ -9,11 +9,14 @@ import { Button } from "@/components/ui/button"
 import { WorkplaceStripCard } from "@/components/workplace/WorkplaceCard"
 import { demoSeedEnabled } from "@/data/demo-flag"
 import { useBoard } from "@/lib/board"
+import { useSession } from "@/lib/session"
 import { useDemoRoomPath } from "@/lib/demo-room"
 import { cn, focusRingClass } from "@/lib/utils"
 
 export function HomePage() {
   const board = useBoard()
+  const { user } = useSession()
+  const storeSession = user?.kind === "store"
   const reports = board.recentReports(8)
   const featured = board.disputedReports()[0]
   const demoWorkplaces = board.workplaces.filter((workplace) => workplace.demo)
@@ -58,10 +61,12 @@ export function HomePage() {
               </>
             ) : (
               <>
-                <Button asChild className="w-full sm:w-auto">
-                  <Link to="/write">File a report</Link>
-                </Button>
-                <Button asChild variant="outline" className="w-full sm:w-auto">
+                {storeSession ? null : (
+                  <Button asChild className="w-full sm:w-auto">
+                    <Link to="/write">File a report</Link>
+                  </Button>
+                )}
+                <Button asChild variant={storeSession ? "default" : "outline"} className="w-full sm:w-auto">
                   <Link to="/workplaces">Open directory</Link>
                 </Button>
               </>

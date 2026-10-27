@@ -103,8 +103,9 @@ Switch lives in `src/data/demo-flag.ts`. The Vite alias is in `vite.config.ts`.
 | `/how-it-works` | Product walkthrough — rooms, scores, anonymity, flags, platform chair |
 | `/workplaces` | Directory with search + industry / room / score filters |
 | `/workplaces/:slug` | Rooms, scores, anonymous excerpts, dispute badges |
-| `/plans` | Reading and filing are free. Store prices live under For stores. |
-| `/stores` | For stores. What a store would see, planned Watch and Respond prices, and a claim call to action. |
+| `/plans` | Redirects to `/stores/plans`. Reader pages do not list store prices. |
+| `/stores` | For stores. What a verified store would see, and a claim call to action. |
+| `/stores/plans` | Watch and Respond, labeled as a later model the store would pay. Nothing is charged now. |
 | `/stores/login` | Store sign-in. Separate from a reader account. |
 | `/stores/dashboard` | Claim a store, or see its rooms, scores, and anonymous filings after the chair approves. |
 | `/staff` | Platform chair. Email and password. **This is my queue** once, on the server, for the whole platform. The chair can hide and unhide a filing, and approve or refuse a store claim. |

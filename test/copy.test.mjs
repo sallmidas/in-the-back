@@ -13,7 +13,7 @@ test("user-facing copy matches the product model", () => {
     "src/pages/WorkplacePage.tsx",
     "src/pages/WritePage.tsx",
     "src/pages/StaffQueuePage.tsx",
-    "src/pages/PlansPage.tsx",
+    "src/pages/StorePlansPage.tsx",
     "src/pages/StoresLandingPage.tsx",
     "src/pages/StoreLoginPage.tsx",
     "src/pages/StoreDashboardPage.tsx",
@@ -27,6 +27,7 @@ test("user-facing copy matches the product model", () => {
     "src/components/layout/DemoBanner.tsx",
     "src/components/layout/HoldNotice.tsx",
     "src/components/layout/AppShell.tsx",
+    "src/components/layout/StoreShell.tsx",
   ].map(read)
 
   const ui = pages.join("\n")
@@ -39,18 +40,14 @@ test("user-facing copy matches the product model", () => {
   assert.match(read("src/components/layout/EmptyState.tsx"), /File a report/)
   assert.match(read("src/pages/HowItWorksPage.tsx"), /Back of house/)
   assert.match(read("src/pages/HowItWorksPage.tsx"), /one seat for the whole platform/)
-  assert.match(read("src/pages/PlansPage.tsx"), /Free for everyone reading and filing/)
-  assert.match(read("src/pages/StoresLandingPage.tsx"), /Plans for stores/)
   assert.match(read("src/pages/StoresLandingPage.tsx"), /For stores & businesses/)
   assert.match(read("src/pages/StoresLandingPage.tsx"), /Claim your store/)
-  assert.match(
-    read("src/pages/StoresLandingPage.tsx"),
-    /Reading and filing are always free\. Stores would pay for alerts/,
-  )
-  assert.doesNotMatch(read("src/pages/PlansPage.tsx"), /facility|REPORTER_REWARD_NOTE/)
-  assert.doesNotMatch(read("src/pages/StoresLandingPage.tsx"), /facility/)
-  assert.match(read("src/components/layout/AppShell.tsx"), /For stores/)
-  assert.doesNotMatch(read("src/data/plans.ts"), /facility/)
+  assert.match(read("src/pages/StorePlansPage.tsx"), /Plans for stores/)
+  assert.match(read("src/pages/StorePlansPage.tsx"), /Stores would pay for alerts/)
+  assert.doesNotMatch(read("src/pages/StorePlansPage.tsx"), /facility|reporter would earn|File a report/)
+  assert.doesNotMatch(read("src/pages/StoresLandingPage.tsx"), /facility|reporter would earn|File a report/)
+  assert.match(read("src/components/layout/AppShell.tsx"), /Are you a store\?/)
+  assert.doesNotMatch(read("src/data/plans.ts"), /facility|reporter would earn/)
   assert.match(read("src/pages/TermsPage.tsx"), /REPORTER_REWARD_NOTE/)
   assert.match(read("src/components/layout/DraftBanner.tsx"), /Draft – pending legal review/)
   assert.match(read("src/pages/PrivacyPage.tsx"), /<DraftBanner/)
@@ -60,15 +57,14 @@ test("user-facing copy matches the product model", () => {
   assert.match(read("src/components/layout/AppShell.tsx"), /to="\/terms"/)
   assert.match(read("src/components/layout/AppShell.tsx"), /to="\/content"/)
   assert.doesNotMatch(read("src/pages/HomePage.tsx"), /<HoldNotice|harbor-and-rye/)
-  assert.doesNotMatch(read("src/pages/PlansPage.tsx"), /HoldNotice/)
-  assert.doesNotMatch(read("src/pages/HowItWorksPage.tsx"), /HoldNotice|harbor-and-rye/)
+  assert.doesNotMatch(read("src/pages/StorePlansPage.tsx"), /HoldNotice/)
+  assert.doesNotMatch(read("src/pages/HowItWorksPage.tsx"), /HoldNotice|harbor-and-rye|\/stores/)
 
   const plans = read("src/data/plans.ts")
-  assert.match(plans, /kitchenPriceLabel\(129, 3\)/)
-  assert.match(plans, /kitchenPriceLabel\(249, 5\)/)
-  assert.match(plans, /Reports shown to be false after a dispute earn nothing/)
-  assert.doesNotMatch(plans, /perReport/)
-  assert.doesNotMatch(read("src/pages/PlansPage.tsx"), /\+ \{|perReport|published report/)
+  assert.match(plans, /storePriceLabel\(129\)/)
+  assert.match(plans, /storePriceLabel\(249\)/)
+  assert.doesNotMatch(plans, /perReport|kitchenPriceLabel/)
+  assert.doesNotMatch(read("src/pages/StorePlansPage.tsx"), /\+ \{|perReport|published report/)
 })
 
 test("demo seed is off unless explicitly enabled", () => {

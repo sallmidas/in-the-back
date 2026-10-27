@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom"
-import { PREVIEW_NOTE } from "../../../shared/plan-copy.mjs"
 import { demoSeedEnabled } from "@/data/demo-flag"
 import { useDemoRoomPath } from "@/lib/demo-room"
 import { cn, focusRingClass } from "@/lib/utils"
@@ -7,7 +6,7 @@ import { cn, focusRingClass } from "@/lib/utils"
 export function HoldNotice({ className = "" }: { className?: string }) {
   return (
     <p className={className}>
-      {PREVIEW_NOTE}
+      Reading and filing are free during this preview.
       {demoSeedEnabled ? " The sample workplaces are labeled DEMO." : ""}
     </p>
   )
@@ -36,9 +35,9 @@ export function DemoWalk() {
     },
     {
       n: "04",
-      to: "/stores",
-      title: "For stores",
-      body: "Store plans are labeled as planned. Nothing is charged during the preview.",
+      to: "/write",
+      title: "File a report",
+      body: "Score a room. The writing is about the room, not a person.",
     },
   ]
 

@@ -21,3 +21,9 @@ export function kitchenPriceLabel(monthly, reporterPay) {
   if (!monthly) return "Free for everyone reading and filing."
   return `The store pays $${monthly}/mo. A reporter would earn $${reporterPay} once the report passes review. Reports shown to be false after a dispute earn nothing.`
 }
+
+/** Store-facing price line. Reporter rewards stay off this side of the product. */
+export function storePriceLabel(monthly) {
+  if (!monthly) return "Readers use the public board for free."
+  return `The store pays $${monthly}/mo. Planned, not for sale during this preview.`
+}

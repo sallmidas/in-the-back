@@ -1,5 +1,5 @@
 import { type FormEvent, useState } from "react"
-import { Link, useSearchParams } from "react-router-dom"
+import { Link, Navigate, useSearchParams } from "react-router-dom"
 import { AuthForm } from "@/components/account/AuthForm"
 import { BoardSkeleton } from "@/components/layout/BoardSkeleton"
 import { Button } from "@/components/ui/button"
@@ -36,7 +36,7 @@ const UNSET = "unset"
 
 export function WritePage() {
   const { ready, workplaces, refresh } = useBoard()
-  const { user } = useSession()
+  const { user, ready: sessionReady } = useSession()
   const [params] = useSearchParams()
   const presetSlug = params.get("workplace") ?? ""
   const presetRoom = params.get("room") ?? ""
@@ -203,7 +203,8 @@ export function WritePage() {
     }
   }
 
-  if (!ready) return <BoardSkeleton />
+  if (!sessionReady || !ready) return <BoardSkeleton />
+  if (user?.kind === "store") return <Navigate to="/stores/dashboard" replace />
 
   return (
     <div className="mx-auto max-w-xl space-y-6">
