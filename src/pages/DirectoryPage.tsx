@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { isDemoSeedEnabled } from "@/data/demo-flag"
+import { demoSeedEnabled } from "@/data/demo-flag"
 import { useBoard } from "@/lib/board"
 import {
   INDUSTRIES,
@@ -67,7 +67,7 @@ export function DirectoryPage() {
         <p className="max-w-2xl text-muted-foreground">
           Search name, city, or room. Filters live in the URL so you can share a view — never a
           reviewer, never a chair.
-          {isDemoSeedEnabled()
+          {demoSeedEnabled
             ? " Every sample listing is labeled DEMO."
             : listed > 0
               ? " Workplaces show up here after someone files a room."
@@ -99,7 +99,7 @@ export function DirectoryPage() {
             id="q"
             value={query}
             onChange={(event) => patch({ q: event.target.value })}
-            placeholder="Harbor, Cicero, walk-in…"
+            placeholder="Name, city, or room"
             className="mt-1.5"
           />
         </div>

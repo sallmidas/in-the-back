@@ -14,6 +14,7 @@ import {
   sha256,
   verifyPassword,
 } from "./passwords.mjs"
+import { clientAddress } from "./client-ip.mjs"
 import { parseEmail, parseFiling, parsePassword, slugify } from "./validate.mjs"
 
 const SESSION_MS = 30 * 24 * 60 * 60 * 1000
@@ -45,10 +46,14 @@ function chairView(data, user) {
   }
 }
 
+function isOnBoard(report) {
+  return !report.retractedAt && !report.hiddenAt
+}
+
 function roomsForWorkplace(data, workplaceId) {
   const scores = new Map()
   for (const report of data.reports) {
-    if (report.retractedAt || report.workplaceId !== workplaceId) continue
+    if (!isOnBoard(report) || report.workplaceId !== workplaceId) continue
     const list = scores.get(report.roomKind) ?? []
     list.push(report.score)
     scores.set(report.roomKind, list)
@@ -97,19 +102,26 @@ function ownerReport(report) {
   return {
     ...publicReport(report),
     retracted: Boolean(report.retractedAt),
+    hidden: Boolean(report.hiddenAt),
   }
 }
 
-export function createApp({ storePath, staticRoot = null }) {
+export function createApp({
+  storePath,
+  staticRoot = null,
+  rateLimitEnabled = process.env.ITB_DISABLE_RATELIMIT !== "1",
+  trustProxy = process.env.ITB_TRUST_PROXY ?? "",
+  rateLimitMax = RATE_LIMIT,
+}) {
   const store = createStore(storePath)
   const hits = new Map()
 
   function rateLimit(req) {
-    if (process.env.ITB_DISABLE_RATELIMIT === "1") return true
+    if (!rateLimitEnabled) return true
     const now = Date.now()
-    const ip = req.socket?.remoteAddress || "local"
+    const ip = clientAddress(req, { ITB_TRUST_PROXY: trustProxy })
     const bucket = (hits.get(ip) ?? []).filter((stamp) => now - stamp < RATE_WINDOW_MS)
-    if (bucket.length >= RATE_LIMIT) {
+    if (bucket.length >= rateLimitMax) {
       hits.set(ip, bucket)
       return false
     }
@@ -270,7 +282,7 @@ export function createApp({ storePath, staticRoot = null }) {
         const data = await store.read()
         send(res, 200, {
           workplaces: data.workplaces.map((workplace) => publicWorkplace(data, workplace)),
-          reports: data.reports.filter((report) => !report.retractedAt).map(publicReport),
+          reports: data.reports.filter((report) => isOnBoard(report)).map(publicReport),
         })
         return
       }
@@ -279,6 +291,11 @@ export function createApp({ storePath, staticRoot = null }) {
         const data = await store.read()
         const user = userFrom(data, readCookie(req))
         send(res, 200, { user: user ? publicUser(user) : null, chair: chairView(data, user) })
+        return
+      }
+
+      if (pathname === "/api/chair/reports" && req.method === "GET") {
+        await listChairReports(req, res)
         return
       }
 
@@ -320,6 +337,7 @@ export function createApp({ storePath, staticRoot = null }) {
       }
 
       if (!rateLimit(req)) {
+        req.resume()
         send(res, 429, { error: "Too many attempts. Wait a few minutes." })
         return
       }
@@ -357,6 +375,14 @@ export function createApp({ storePath, staticRoot = null }) {
       }
       if (pathname === "/api/me/reports/retract") {
         await retractOwn(req, res, body)
+        return
+      }
+      if (pathname === "/api/chair/reports/hide") {
+        await setReportHidden(req, res, body, true)
+        return
+      }
+      if (pathname === "/api/chair/reports/unhide") {
+        await setReportHidden(req, res, body, false)
         return
       }
 
@@ -566,6 +592,7 @@ export function createApp({ storePath, staticRoot = null }) {
         excerpt: filing.excerpt,
         publishedAt: new Date().toISOString(),
         retractedAt: null,
+        hiddenAt: null,
         receiptHash,
         ownerUserId: user?.id ?? null,
       }
@@ -599,6 +626,53 @@ export function createApp({ storePath, staticRoot = null }) {
       return
     }
     send(res, 200, { retracted: true })
+  }
+
+  async function listChairReports(req, res) {
+    const data = await store.read()
+    const user = userFrom(data, readCookie(req))
+    if (!user) {
+      send(res, 401, { error: "Sign in as the platform chair." })
+      return
+    }
+    if (data.chairUserId !== user.id) {
+      send(res, 403, { error: "Only the platform chair can open this queue." })
+      return
+    }
+    const reports = data.reports
+      .filter((report) => !report.retractedAt)
+      .sort((a, b) => String(b.publishedAt).localeCompare(String(a.publishedAt)))
+      .map((report) => ({ ...publicReport(report), hidden: Boolean(report.hiddenAt) }))
+    send(res, 200, { reports })
+  }
+
+  async function setReportHidden(req, res, body, hidden) {
+    const reportId = typeof body.reportId === "string" ? body.reportId : ""
+    if (!reportId) {
+      send(res, 400, { error: "Name the filing." })
+      return
+    }
+    const token = readCookie(req)
+    const result = await store.update((data) => {
+      const user = userFrom(data, token)
+      if (!user) return { status: 401, error: "Sign in as the platform chair." }
+      if (data.chairUserId !== user.id) {
+        return { status: 403, error: "Only the platform chair can hide or unhide a filing." }
+      }
+      const report = data.reports.find((item) => item.id === reportId)
+      if (!report) return { status: 404, error: "No filing matches that id." }
+      if (hidden) {
+        if (!report.hiddenAt) report.hiddenAt = new Date().toISOString()
+      } else {
+        report.hiddenAt = null
+      }
+      return { status: 200, hidden: Boolean(report.hiddenAt) }
+    })
+    if (result.error) {
+      send(res, result.status, { error: result.error })
+      return
+    }
+    send(res, 200, { hidden: result.hidden })
   }
 
   async function retractOwn(req, res, body) {

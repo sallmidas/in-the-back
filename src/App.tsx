@@ -7,9 +7,11 @@ import { BoardSkeleton } from "@/components/layout/BoardSkeleton"
 import { DeleteAccountPage } from "@/pages/DeleteAccountPage"
 import { HowItWorksPage } from "@/pages/HowItWorksPage"
 import { NotFoundPage } from "@/pages/NotFoundPage"
+import { ContentPolicyPage } from "@/pages/ContentPolicyPage"
 import { PlansPage } from "@/pages/PlansPage"
 import { PrivacyPage } from "@/pages/PrivacyPage"
 import { StaffQueuePage } from "@/pages/StaffQueuePage"
+import { TermsPage } from "@/pages/TermsPage"
 import { WritePage } from "@/pages/WritePage"
 
 const HomePage = lazy(() =>
@@ -66,6 +68,8 @@ export default function App() {
         <Route path="/plans" element={<PlansPage />} />
         <Route path="/staff" element={<StaffQueuePage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/terms" element={<TermsPage />} />
+        <Route path="/content" element={<ContentPolicyPage />} />
         <Route path="/account/delete" element={<DeleteAccountPage />} />
         <Route path="/write" element={<WritePage />} />
         <Route path="/home" element={<Navigate to="/" replace />} />

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"
-import { HoldNotice } from "@/components/layout/HoldNotice"
+import { REPORTER_REWARD_NOTE } from "../../shared/plan-copy.mjs"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -22,15 +22,17 @@ export function PlansPage() {
           <p className="font-mono text-[11px] tracking-[0.2em] text-primary uppercase">
             Operator plans
           </p>
-          <Badge variant="outline">Preview only — no checkout yet</Badge>
+          <Badge variant="outline">Planned, coming later</Badge>
         </div>
         <h1 className="font-heading text-4xl tracking-tight">Free, Watch, Respond</h1>
         <p className="max-w-2xl text-muted-foreground">
-          Kitchen plans are a flat monthly price. Reporter pay comes out of that subscription.
-          It is not an extra charge on each file. Nothing is billed until the LLC exists. The
-          chair is not a plan.
+          Nothing on this page is for sale. Watch and Respond are a preview of a model planned for
+          later, not a promise and not a date. A facility would pay a flat monthly price for
+          near-real-time alerts. Watch would be $129/mo. Respond would be $249/mo and would add the
+          ability to respond or dispute and recover a rating faster. {REPORTER_REWARD_NOTE} On
+          Watch that reward would be $3. On Respond it would be $5. Filing alone would not earn it.
+          The chair is not a plan.
         </p>
-        <HoldNotice />
       </header>
 
       <div className="grid gap-4 lg:grid-cols-3">
@@ -66,7 +68,7 @@ export function PlansPage() {
       </div>
 
       <p className="text-xs text-muted-foreground">
-        No card on file. Payouts and Watch billing stay held until the LLC. The{" "}
+        The{" "}
         <Link
           to="/staff"
           className={cn("rounded-sm underline-offset-4 hover:underline", focusRingClass)}

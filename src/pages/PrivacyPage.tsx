@@ -1,35 +1,106 @@
 import { Link } from "react-router-dom"
+import { ContactLine } from "@/components/layout/ContactLine"
+import { DraftBanner } from "@/components/layout/DraftBanner"
 import { Button } from "@/components/ui/button"
 
 export function PrivacyPage() {
   return (
-    <article className="prose-invert max-w-2xl space-y-4 text-sm leading-relaxed">
+    <article className="max-w-2xl space-y-4 text-sm leading-relaxed">
+      <DraftBanner />
       <p className="font-mono text-[11px] tracking-[0.2em] text-primary uppercase">Privacy</p>
       <h1 className="font-heading text-4xl tracking-tight">Privacy</h1>
       <p className="text-muted-foreground">
-        Not a lawyer-reviewed policy. The public board never carries reviewer identity.
+        This is a plain-English draft of what In the Back stores during the free preview. It is
+        not a lawyer-reviewed policy. Read it with the{" "}
+        <Link to="/terms" className="underline-offset-4 hover:underline">
+          Terms of Use
+        </Link>{" "}
+        and the{" "}
+        <Link to="/content" className="underline-offset-4 hover:underline">
+          content policy
+        </Link>
+        .
       </p>
+      <ContactLine />
+
+      <h2 className="font-heading pt-2 text-2xl">What this is</h2>
+      <p className="text-muted-foreground">
+        In the Back is a room-level board. People file notes about a room — cleanliness, safety,
+        dignity — not about a named person. During this preview the board is free. We do not take
+        payment and we do not send money. We do not ask for a card, a bank account, or a location
+        pin.
+      </p>
+
       <h2 className="font-heading pt-2 text-2xl">What the public sees</h2>
       <ul className="list-disc space-y-1 pl-5 text-muted-foreground">
-        <li>Workplace name, city, industry, and room list.</li>
-        <li>Room scores and anonymous excerpts.</li>
+        <li>Workplace name, city, region, industry, and room list.</li>
+        <li>Room scores and the writing on filings that are still on the board.</li>
         <li>Shift or station context written without a name.</li>
-        <li>A dispute badge when a kitchen has flagged a report.</li>
+        <li>A dispute badge if a filing is marked under review.</li>
       </ul>
+
       <h2 className="font-heading pt-2 text-2xl">What stays off the board</h2>
       <ul className="list-disc space-y-1 pl-5 text-muted-foreground">
-        <li>Reviewer name, email, phone, badge, or login.</li>
-        <li>The receipt code for a filing.</li>
+        <li>Your name, email, phone, badge, or account.</li>
+        <li>The receipt for a filing. We store a hash of it, not the receipt itself.</li>
         <li>Who claimed the platform chair.</li>
-        <li>City and region are words the filer typed, not a location pin.</li>
+        <li>The “I was in this room” confirmation. It is required to file and then thrown away. We do not check it against a schedule, a badge, or a map.</li>
+        <li>A filing the chair has hidden, or one the filer has retracted.</li>
+        <li>City and region are words the filer typed. We do not collect GPS.</li>
       </ul>
-      <h2 className="font-heading pt-2 text-2xl">Accounts</h2>
+
+      <h2 className="font-heading pt-2 text-2xl">Filing</h2>
       <p className="text-muted-foreground">
-        An account is an email and a password. The password is stored as a hash. A session cookie
-        stays in the browser and is not readable by the page script. Filing does not require an
-        account. If you file while signed in, that account can retract the file. A receipt can
-        retract it either way. Deleting an account does not delete a published file.
+        You can file without an account. We store the workplace, the room, the score, the shift
+        context, the writing, and the time. If you are signed in, we also store a private link
+        from that filing to your account so you can retract it later. The public board does not
+        show that link. The receipt works either way. Keep the receipt. We cannot show it to you
+        again.
       </p>
+
+      <h2 className="font-heading pt-2 text-2xl">Accounts and the session cookie</h2>
+      <p className="text-muted-foreground">
+        An account is an email and a password. We store a hash of the password, not the password.
+        Signing in sets one session cookie that page script cannot read. It is used to recognize
+        the browser. We do not use advertising cookies. Deleting an account removes the email,
+        the password hash, and the sessions. It does not retract a filing. The platform-chair
+        account cannot be deleted, so the claim is not dropped by accident.
+      </p>
+
+      <h2 className="font-heading pt-2 text-2xl">The chair and hidden filings</h2>
+      <p className="text-muted-foreground">
+        The first account to claim the platform chair holds it. We store that claim. We do not
+        publish who it is. The chair can hide a published filing, and put it back. A hidden filing
+        leaves the public board and the room score. It stays in the private store until the filer
+        retracts it. Hiding is not a delete by the workplace.
+      </p>
+
+      <h2 className="font-heading pt-2 text-2xl">Request addresses</h2>
+      <p className="text-muted-foreground">
+        The server may use the address of a connection, including an address passed by the host’s
+        proxy, to slow repeated attempts. That address is not written onto the board and is not
+        kept in the board file. We do not build a location profile from it.
+      </p>
+
+      <h2 className="font-heading pt-2 text-2xl">Sample data</h2>
+      <p className="text-muted-foreground">
+        A demo board of invented workplaces can be turned on for development. It is off unless
+        someone explicitly enables it. Those workplaces are labeled DEMO and are not live reviews.
+        The launch build does not include them.
+      </p>
+
+      <h2 className="font-heading pt-2 text-2xl">What we don’t do</h2>
+      <ul className="list-disc space-y-1 pl-5 text-muted-foreground">
+        <li>We don’t sell personal information.</li>
+        <li>We don’t take tips, wages, or payments during this preview.</li>
+        <li>We don’t ask you to prove employment, and we don’t offer a witness or bullying lane.</li>
+      </ul>
+
+      <p className="text-muted-foreground">
+        This draft can be replaced after legal review. The board file is the record of accounts
+        and filings until then.
+      </p>
+      <ContactLine />
       <Button asChild variant="outline">
         <Link to="/account/delete">Delete account</Link>
       </Button>

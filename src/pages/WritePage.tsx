@@ -214,8 +214,7 @@ export function WritePage() {
         <h1 className="font-heading text-4xl tracking-tight">Score a room</h1>
         <p className="text-muted-foreground">
           Filing is open to anyone. Name the workplace and the room, score it, and write about the
-          shift. No names. Nothing is charged when you send it. Payouts stay held until the LLC
-          exists.
+          shift. No names. Nothing is charged when you send it.
         </p>
       </header>
 
@@ -419,15 +418,15 @@ export function WritePage() {
           {pending ? "Filing…" : "File report"}
         </Button>
         <p className="text-xs text-muted-foreground">
-          No card. No payout on send. A kitchen flag, later, is uphold or retract — never delete.
+          A kitchen cannot delete a file. The chair can hide one that breaks the content policy.
         </p>
       </form>
 
       <section className="space-y-3 rounded-xl border border-border bg-card/70 p-5">
         <h2 className="font-heading text-2xl tracking-tight">Retract your file</h2>
         <p className="text-sm text-muted-foreground">
-          Only the person who filed it can take it off the board. Paste the receipt, or retract one
-          tied to this account. That is not a kitchen delete.
+          Paste the receipt, or retract a file tied to this account. The chair can hide a filing
+          under the content policy. A kitchen cannot delete it.
         </p>
         {retractError ? (
           <p role="alert" className="text-sm text-destructive">
@@ -492,7 +491,7 @@ function OwnFiles({
         <div key={report.id} className="flex flex-col gap-2 rounded-lg border border-border p-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm">
             {report.workplaceName} · {isRoomKind(report.roomKind) ? ROOM_LABELS[report.roomKind] : report.roomKind}
-            {report.retracted ? " · retracted" : ""}
+            {report.retracted ? " · retracted" : report.hidden ? " · hidden from the board" : ""}
           </p>
           {report.retracted ? null : (
             <Button type="button" variant="outline" size="sm" onClick={() => onRetract(report.id)}>

@@ -55,7 +55,9 @@ export type BoardPayload = {
   reports: LiveReport[]
 }
 
-export type OwnedReport = LiveReport & { retracted: boolean }
+export type OwnedReport = LiveReport & { retracted: boolean; hidden: boolean }
+
+export type StaffReport = LiveReport & { hidden: boolean }
 
 export type FilingInput = {
   create: boolean
@@ -138,6 +140,24 @@ export function deleteAccount(email: string, password: string) {
 
 export function claimChair() {
   return request<{ chair: ChairState }>("/api/chair/claim", { method: "POST", body: {} })
+}
+
+export function chairReports() {
+  return request<{ reports: StaffReport[] }>("/api/chair/reports")
+}
+
+export function hideReport(reportId: string) {
+  return request<{ hidden: boolean }>("/api/chair/reports/hide", {
+    method: "POST",
+    body: { reportId },
+  })
+}
+
+export function unhideReport(reportId: string) {
+  return request<{ hidden: boolean }>("/api/chair/reports/unhide", {
+    method: "POST",
+    body: { reportId },
+  })
 }
 
 export function fileReport(body: FilingInput) {

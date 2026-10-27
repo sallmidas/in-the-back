@@ -2,7 +2,7 @@ import type { Report, Workplace } from "./types"
 
 /**
  * Labeled DEMO workplaces. Not live reviews.
- * Empty both arrays (or set VITE_DEMO_SEED=0) before a real launch.
+ * Bundled only when VITE_DEMO_SEED=1. Otherwise Vite uses seed.empty.ts.
  */
 export const DEMO_WORKPLACES: Workplace[] = [
   {

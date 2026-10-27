@@ -14,7 +14,7 @@ if (
 ) {
   // Network-only SW: Chromium needs a fetch handler to offer install.
   // Do not cache the board here — a last-seen cache would serve a stale
-  // demo seed after VITE_DEMO_SEED=0. Native Add to Home Screen only;
+  // demo seed, which is off unless VITE_DEMO_SEED=1 at build time. Native Add to Home Screen only;
   // do not intercept beforeinstallprompt with a custom nag.
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("/sw.js").catch(() => {

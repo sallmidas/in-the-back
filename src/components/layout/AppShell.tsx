@@ -4,10 +4,11 @@ import { useState } from "react"
 import { Link, NavLink } from "react-router-dom"
 import { DemoBanner } from "@/components/layout/DemoBanner"
 import { DocumentTitle } from "@/components/layout/DocumentTitle"
+import { HoldNotice } from "@/components/layout/HoldNotice"
 import { RouteErrorBoundary } from "@/components/layout/RouteErrorBoundary"
 import { Wordmark } from "@/components/layout/Wordmark"
 import { Button } from "@/components/ui/button"
-import { isDemoSeedEnabled } from "@/data/demo-flag"
+import { useDemoRoomPath } from "@/lib/demo-room"
 import { Separator } from "@/components/ui/separator"
 import {
   Sheet,
@@ -54,7 +55,7 @@ const skipLinkClass = cn(
 
 export function AppShell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false)
-  const seeded = isDemoSeedEnabled()
+  const demoPath = useDemoRoomPath()
 
   function skipToContent(event: MouseEvent<HTMLAnchorElement>) {
     event.preventDefault()
@@ -80,9 +81,9 @@ export function AppShell({ children }: { children: ReactNode }) {
                   {item.label}
                 </NavLink>
               ))}
-              {seeded ? (
+              {demoPath ? (
                 <Button asChild size="sm" className="ml-2">
-                  <Link to="/workplaces/harbor-and-rye?room=walk-in">Open demo</Link>
+                  <Link to={demoPath}>Open demo</Link>
                 </Button>
               ) : null}
             </nav>
@@ -112,9 +113,9 @@ export function AppShell({ children }: { children: ReactNode }) {
                         {item.label}
                       </NavLink>
                     ))}
-                    {seeded ? (
+                    {demoPath ? (
                       <NavLink
-                        to="/workplaces/harbor-and-rye?room=walk-in"
+                        to={demoPath}
                         className={sheetNavClass}
                         onClick={() => setOpen(false)}
                       >
@@ -148,6 +149,12 @@ export function AppShell({ children }: { children: ReactNode }) {
             <Link to="/privacy" className={footerLinkClass}>
               Privacy
             </Link>
+            <Link to="/terms" className={footerLinkClass}>
+              Terms
+            </Link>
+            <Link to="/content" className={footerLinkClass}>
+              Content policy
+            </Link>
             <Link to="/account/delete" className={footerLinkClass}>
               Delete account
             </Link>
@@ -163,10 +170,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </nav>
         </div>
         <Separator />
-        <p className="mx-auto max-w-6xl px-4 py-4 text-xs text-muted-foreground">
-          LLC first. No card on file. Payouts and Watch billing stay held until then. Filing
-          is open. Looking at plans costs nothing.
-        </p>
+        <HoldNotice className="mx-auto max-w-6xl px-4 py-4 text-xs text-muted-foreground" />
       </footer>
     </div>
   )

@@ -9,7 +9,8 @@ lerna-debug.log*
 
 node_modules
 dist
-data/
+# Board store at the repo root. A leading slash so src/data stays trackable.
+/data/
 dist-ssr
 *.local
 .env

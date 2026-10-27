@@ -1,26 +1,26 @@
 import { Link } from "react-router-dom"
-import { isDemoSeedEnabled } from "@/data/demo-flag"
+import { PREVIEW_NOTE } from "../../../shared/plan-copy.mjs"
+import { demoSeedEnabled } from "@/data/demo-flag"
+import { useDemoRoomPath } from "@/lib/demo-room"
 import { cn, focusRingClass } from "@/lib/utils"
 
 export function HoldNotice({ className = "" }: { className?: string }) {
   return (
-    <p
-      className={`rounded-xl border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-primary ${className}`}
-    >
-      Payouts and Watch billing are held until the LLC exists. No card on file. Filing stays
-      open.
-      {isDemoSeedEnabled() ? " The sample workplaces are labeled DEMO." : ""}
+    <p className={className}>
+      {PREVIEW_NOTE}
+      {demoSeedEnabled ? " The sample workplaces are labeled DEMO." : ""}
     </p>
   )
 }
 
 export function DemoWalk() {
+  const demoPath = useDemoRoomPath() ?? "/workplaces"
   const steps = [
     {
       n: "01",
-      to: "/workplaces/harbor-and-rye?room=walk-in",
+      to: demoPath,
       title: "A disputed room",
-      body: "Harbor & Rye walk-in — score, writing, DISPUTED badge. No reviewer name.",
+      body: "A labeled DEMO room — score, writing, DISPUTED badge. No reviewer name.",
     },
     {
       n: "02",
@@ -38,7 +38,7 @@ export function DemoWalk() {
       n: "04",
       to: "/plans",
       title: "Browse plans",
-      body: "Flat monthly prices. Billing stays off until the LLC.",
+      body: "A later model, labeled as planned. Nothing is charged during the preview.",
     },
   ]
 
