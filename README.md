@@ -138,7 +138,7 @@ Name checks on a filing are a heuristic (common first names, a single capitalize
 
 ## Out of scope
 
-Payment code, wages, GPS, OAuth providers, a Resolve action, tips, a bullying or witness lane, an employment wall, and ghostwritten files. Facility flagging stays a planned Respond behavior, not something the preview charges for. The contact address on the legal pages is `contact@REPLACE-ME` until a real one is chosen.
+Payment code, wages, GPS, OAuth providers, a Resolve action, tips, a bullying or witness lane, an employment wall, and ghostwritten files. Facility flagging stays a planned Respond behavior, not something the preview charges for. The contact address on the legal pages is `inthebackcontact@gmail.com`.
 
 ## Stack
 

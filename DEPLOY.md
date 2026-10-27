@@ -42,6 +42,10 @@ Optional:
 
 Do not set `ITB_DISABLE_RATELIMIT` on a public host.
 
+## Contact
+
+The address on the privacy, terms, and content policy pages is inthebackcontact@gmail.com. The privacy and terms pages stay marked draft until legal review.
+
 ## Back up `board.json`
 
 Copy `ITB_STORE_PATH` (the `board.json` file) on a schedule, and again before you upgrade the app. Restoring that file restores accounts, the chair, and filings. There is no second database.

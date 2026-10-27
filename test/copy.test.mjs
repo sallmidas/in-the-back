@@ -52,7 +52,21 @@ test("user-facing copy matches the product model", () => {
   assert.match(read("src/components/layout/DraftBanner.tsx"), /Draft – pending legal review/)
   assert.match(read("src/pages/PrivacyPage.tsx"), /<DraftBanner/)
   assert.match(read("src/pages/TermsPage.tsx"), /<DraftBanner/)
-  assert.match(read("src/lib/contact.ts"), /contact@REPLACE-ME/)
+  assert.match(read("src/lib/contact.ts"), /inthebackcontact@gmail\.com/)
+  assert.doesNotMatch(read("src/lib/contact.ts"), /REPLACE-ME/)
+  for (const path of [
+    "src/pages/PrivacyPage.tsx",
+    "src/pages/TermsPage.tsx",
+    "src/pages/ContentPolicyPage.tsx",
+    "README.md",
+    "DEPLOY.md",
+  ]) {
+    assert.doesNotMatch(read(path), /contact@REPLACE-ME|REPLACE-ME/)
+  }
+  assert.match(read("DEPLOY.md"), /inthebackcontact@gmail\.com/)
+  assert.match(read("src/pages/PrivacyPage.tsx"), /ContactLine/)
+  assert.match(read("src/pages/TermsPage.tsx"), /ContactLine/)
+  assert.match(read("src/pages/ContentPolicyPage.tsx"), /ContactLine/)
   assert.match(read("src/components/layout/AppShell.tsx"), /HoldNotice/)
   assert.match(read("src/components/layout/AppShell.tsx"), /to="\/terms"/)
   assert.match(read("src/components/layout/AppShell.tsx"), /to="\/content"/)
