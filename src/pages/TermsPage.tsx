@@ -11,21 +11,19 @@ export function TermsPage() {
       <h1 className="font-heading text-4xl tracking-tight">Terms of Use</h1>
       <p className="text-muted-foreground">
         This is a plain-English draft for the free preview of In the Back. It is not a
-        lawyer-reviewed contract. If you use the board, these are the rules we are running now.
+        lawyer-reviewed contract. If you use the site, these are the rules we are running now.
+        The two sections below are separate.
       </p>
       <ContactLine />
 
-      <h2 className="font-heading pt-2 text-2xl">The preview is free</h2>
+      <h2 className="font-heading pt-2 text-2xl">If you read or file</h2>
       <p className="text-muted-foreground">
-        In the Back does not take money and does not pay money during this preview. Store plans
-        describe a model that is planned for later: a store would pay monthly for alerts.{" "}
-        {REPORTER_REWARD_NOTE} Filing alone would not earn it. In that later model the reward would
-        be $3 on Watch and $5 on Respond, as part of the monthly price. That page is a preview, not
-        an offer, not a promise, and
-        not a date. Nothing on it is for sale.
+        Reading and filing are free. In the Back does not take money from you and does not pay
+        you during this preview. {REPORTER_REWARD_NOTE} Filing alone would not earn it. In that
+        later model the reward would be $3 on Watch and $5 on Respond, as part of a store’s
+        monthly price. That is a preview of a later model, not an offer, not a promise, and not
+        a date.
       </p>
-
-      <h2 className="font-heading pt-2 text-2xl">The board is about rooms</h2>
       <p className="text-muted-foreground">
         Filings are about a room: cleanliness, safety, and dignity. They are not about a person,
         a boss, a résumé, or a hiring decision. Do not name people. Do not post contact details,
@@ -35,39 +33,41 @@ export function TermsPage() {
         </Link>{" "}
         is the longer version of this rule.
       </p>
-
-      <h2 className="font-heading pt-2 text-2xl">“I was in this room”</h2>
       <p className="text-muted-foreground">
         Filing asks you to confirm you were in the room. That is your word. We do not check it
         against a roster, a badge, a camera, or a map. We do not store the answer. You are
         responsible for what you file.
       </p>
-
-      <h2 className="font-heading pt-2 text-2xl">Retract and hide</h2>
       <p className="text-muted-foreground">
         You can retract your own filing with the receipt, or with the account you were signed in
-        with. A workplace cannot delete a filing. The platform chair can hide a published filing
-        that breaks the content rules, and can put it back. Hiding takes it off the public board.
-        It is not the same as you retracting it.
+        with. The platform chair can hide a published filing that breaks the content rules, and
+        can put it back. Hiding takes it off the public board. It is not the same as you
+        retracting it.
       </p>
-
-      <h2 className="font-heading pt-2 text-2xl">Accounts and the chair</h2>
       <p className="text-muted-foreground">
         An account is optional for filing. It is an email and a password. Don’t share the
         password. The platform chair is the first account that claims it. The claim does not
         reopen for a second account. The public board does not show who claimed it. Deleting an
-        account does not delete filings. The chair account cannot be deleted. A store account
-        cannot claim the chair. A store claim stays pending until the chair approves it. One
-        verified claim per store, unless the chair adds another. A store cannot delete, hide, or
-        edit a filing.
+        account does not delete filings. The chair account cannot be deleted.
       </p>
-
-      <h2 className="font-heading pt-2 text-2xl">What the board is not</h2>
       <p className="text-muted-foreground">
         A filing is one person’s account of a room. It can be incomplete or wrong. The board is
         not a background check, not an inspection, and not advice. We don’t promise that the site
         will be up, complete, or error-free. Sample workplaces, if a demo is switched on, are
         labeled DEMO and are not live reviews.
+      </p>
+
+      <h2 className="font-heading pt-4 text-2xl">If you are a store</h2>
+      <p className="text-muted-foreground">
+        Store plans describe a later model: a store would pay monthly for alerts, and a higher
+        plan would add a response or dispute and a faster way to recover a rating. Nothing on
+        that page is for sale during this preview, and nothing is charged now. Notes on the board
+        are anonymous.
+      </p>
+      <p className="text-muted-foreground">
+        A store account cannot claim the chair. A store claim stays pending until the chair
+        approves it. One verified claim per store, unless the chair adds another. A store cannot
+        delete, hide, or edit a note.
       </p>
 
       <h2 className="font-heading pt-2 text-2xl">This draft</h2>

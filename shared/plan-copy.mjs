@@ -24,6 +24,6 @@ export function kitchenPriceLabel(monthly, reporterPay) {
 
 /** Store-facing price line. Reporter rewards stay off this side of the product. */
 export function storePriceLabel(monthly) {
-  if (!monthly) return "Readers use the public board for free."
+  if (!monthly) return "Not a store plan."
   return `The store pays $${monthly}/mo. Planned, not for sale during this preview.`
 }

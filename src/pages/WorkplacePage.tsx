@@ -57,11 +57,6 @@ export function WorkplacePage() {
             {workplace.industry ? (
               <Badge variant="secondary">{INDUSTRY_LABELS[workplace.industry]}</Badge>
             ) : null}
-            {workplace.demo ? (
-              <Badge variant="outline" className="capitalize">
-                {workplace.listedPlan} · preview
-              </Badge>
-            ) : null}
           </div>
           <h1 className="font-heading text-3xl tracking-tight sm:text-4xl">{workplace.name}</h1>
           <p className="text-muted-foreground">

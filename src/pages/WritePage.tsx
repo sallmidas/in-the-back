@@ -183,7 +183,7 @@ export function WritePage() {
     try {
       await retractWithReceipt(retractCode)
       setRetractCode("")
-      setRetractNotice("Retracted. The file is off the public board. It was not deleted by a kitchen.")
+      setRetractNotice("Retracted. The file is off the public board.")
       await refresh()
     } catch (err) {
       setRetractError(err instanceof Error ? err.message : "That receipt did not retract a file.")
@@ -195,7 +195,7 @@ export function WritePage() {
     setRetractNotice(null)
     try {
       await retractOwnReport(reportId)
-      setRetractNotice("Retracted. The file is off the public board. It was not deleted by a kitchen.")
+      setRetractNotice("Retracted. The file is off the public board.")
       await refresh()
       await loadMine()
     } catch (err) {
@@ -215,7 +215,7 @@ export function WritePage() {
         <h1 className="font-heading text-4xl tracking-tight">Score a room</h1>
         <p className="text-muted-foreground">
           Filing is open to anyone. Name the workplace and the room, score it, and write about the
-          shift. No names. Nothing is charged when you send it.
+          shift. No names. Reading and filing are free.
         </p>
       </header>
 
@@ -232,8 +232,8 @@ export function WritePage() {
           <p>Filed. It is on the board. Save this receipt — it is shown once and is not published.</p>
           <p className="font-mono text-base tracking-wide">{receipt}</p>
           <p className="text-muted-foreground">
-            Use the receipt, or the account you were signed in with, to retract your own file. A
-            kitchen cannot delete it.
+            Use the receipt, or the account you were signed in with, to retract your own file. The
+            chair can hide writing that breaks the content rules.
           </p>
           {filedSlug ? (
             <Button asChild variant="outline" size="sm">
@@ -419,7 +419,7 @@ export function WritePage() {
           {pending ? "Filing…" : "File report"}
         </Button>
         <p className="text-xs text-muted-foreground">
-          A kitchen cannot delete a file. The chair can hide one that breaks the content policy.
+          You can retract your own file. The chair can hide one that breaks the content policy.
         </p>
       </form>
 
@@ -427,7 +427,7 @@ export function WritePage() {
         <h2 className="font-heading text-2xl tracking-tight">Retract your file</h2>
         <p className="text-sm text-muted-foreground">
           Paste the receipt, or retract a file tied to this account. The chair can hide a filing
-          under the content policy. A kitchen cannot delete it.
+          under the content policy. The public still never sees who wrote it.
         </p>
         {retractError ? (
           <p role="alert" className="text-sm text-destructive">

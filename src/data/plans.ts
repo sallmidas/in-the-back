@@ -5,7 +5,7 @@ export type Plan = {
   id: PlanId
   name: string
   monthly: number
-  /** Flat price sentence. Reporter pay would be inside the subscription, not a toll. */
+  /** Flat monthly price in the planned store model. */
   priceLabel: string
   tagline: string
   audience: string
@@ -21,12 +21,9 @@ export const PLANS: Plan[] = [
     name: "Free",
     monthly: 0,
     priceLabel: storePriceLabel(0),
-    tagline: "The public board. Not a store plan.",
-    audience: "Readers on the public board",
-    features: [
-      "Workplace directory and room scores",
-      "Anonymous excerpts — never reviewer identity",
-    ],
+    tagline: "Not a store plan.",
+    audience: "Not offered on this page",
+    features: ["Stores are not on a free plan"],
     held: null,
   },
   {
@@ -35,10 +32,10 @@ export const PLANS: Plan[] = [
     monthly: 129,
     priceLabel: storePriceLabel(129),
     tagline: "The store pays $129/mo for near-real-time alerts.",
-    audience: "A store that would want alerts as files land",
+    audience: "A store that would want alerts when a new note is on its rooms",
     features: [
-      "Near-real-time alerts when a filing lands",
-      "The same anonymous writing the public sees",
+      "Near-real-time alerts when a new note is on this store",
+      "The same anonymous notes, with no name attached",
     ],
     held: later,
   },

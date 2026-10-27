@@ -168,7 +168,8 @@ function PlannedActions() {
         <div className="space-y-2 rounded-xl border border-border bg-card/70 p-4">
           <h3 className="font-heading text-lg">Alerts</h3>
           <p className="text-sm text-muted-foreground">
-            Planned. A store would be told when a filing lands. Not included in the free preview.
+            Planned. A store would be told when a new note is on this store. Not included during
+            this preview.
           </p>
           <Button type="button" variant="outline" disabled>
             Planned
@@ -178,7 +179,7 @@ function PlannedActions() {
           <h3 className="font-heading text-lg">Respond or dispute</h3>
           <p className="text-sm text-muted-foreground">
             Planned. A store would respond or dispute, and recover a rating faster. Not included
-            in the free preview.
+            during this preview.
           </p>
           <Button type="button" variant="outline" disabled>
             Planned
@@ -226,7 +227,7 @@ export function StoreDashboardPage() {
         <p className="font-mono text-[11px] tracking-[0.2em] text-primary uppercase">For stores</p>
         <h1 className="font-heading text-4xl tracking-tight">Store dashboard</h1>
         <p className="max-w-2xl text-muted-foreground">
-          Rooms, scores, and published filings. The same anonymous view as the public board.
+          Rooms, scores, and the notes on this store. The notes are anonymous.
         </p>
       </header>
 
@@ -248,8 +249,7 @@ export function StoreDashboardPage() {
       ) : user.kind !== "store" ? (
         <div className="max-w-md space-y-3">
           <p className="text-sm text-muted-foreground">
-            This sign-in is a reader account. Store accounts are separate, and a reader cannot
-            claim a store from here.
+            This sign-in is not a store account. Store accounts are separate.
           </p>
           <Button asChild className="w-full sm:w-auto">
             <Link to="/stores/login">Store sign-in</Link>
@@ -313,8 +313,7 @@ function ApprovedStore({ stores }: { stores: StoreHomeStores }) {
           <p className="text-sm text-muted-foreground">{INDUSTRY_LABELS[workplace.industry]}</p>
         ) : null}
         <p className="max-w-2xl text-sm text-muted-foreground">
-          You cannot hide, edit, or delete a filing. The same writing is on the public board,
-          without a reporter’s name.
+          You cannot hide, edit, or delete a note. The notes are anonymous.
         </p>
       </header>
 
@@ -332,9 +331,9 @@ function ApprovedStore({ stores }: { stores: StoreHomeStores }) {
       </section>
 
       <section className="space-y-3">
-        <h2 className="font-heading text-2xl">Published filings</h2>
+        <h2 className="font-heading text-2xl">Notes</h2>
         {place.reports.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No published filings about this store yet.</p>
+          <p className="text-sm text-muted-foreground">No notes on this store yet.</p>
         ) : (
           <div className="grid gap-3">
             {place.reports.map((report) => {

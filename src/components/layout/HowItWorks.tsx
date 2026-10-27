@@ -16,8 +16,8 @@ const HOW_IT_WORKS_STEPS = [
   },
   {
     n: "03",
-    title: "Disputes stay a badge",
-    body: "A flagged file shows DISPUTED — UNDER REVIEW. The person who filed it can retract it. The chair can hide a filing that breaks the content rules. A kitchen cannot delete it.",
+    title: "Take your file back",
+    body: "You can retract your own file with the receipt or your account. The chair can hide writing that breaks the content rules. The public still never sees who wrote it.",
   },
   {
     n: "04",

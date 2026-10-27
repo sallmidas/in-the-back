@@ -18,7 +18,6 @@ export function HomePage() {
   const { user } = useSession()
   const storeSession = user?.kind === "store"
   const reports = board.recentReports(8)
-  const featured = board.disputedReports()[0]
   const demoWorkplaces = board.workplaces.filter((workplace) => workplace.demo)
   const seeded = demoSeedEnabled
   const demoPath = useDemoRoomPath()
@@ -47,7 +46,7 @@ export function HomePage() {
           <p className="max-w-lg text-base leading-relaxed text-muted-foreground">
             Kitchens, dish pits, walk-ins, staff bathrooms, break rooms, docks, stock, overnight.
             Public sees the room, the score, the shift context, and the writing. Never the
-            reviewer. This is not Glassdoor.
+            reviewer. Reading and filing are free. This is not Glassdoor.
           </p>
           <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
             {demoPath ? (
@@ -85,7 +84,7 @@ export function HomePage() {
           <ul className="mt-3 space-y-2">
             <li>No names, handles, or badge numbers.</li>
             <li>No star-rating of a CEO. Rooms only.</li>
-            <li>Disputes become a public badge, not a pile-on.</li>
+            <li>No tips, wages, or a pile-on.</li>
             <li>The chair's name stays off the board.</li>
           </ul>
         </aside>
@@ -94,13 +93,6 @@ export function HomePage() {
       <HowItWorksPreview />
 
       {seeded ? <DemoWalk /> : null}
-
-      {featured ? (
-        <section className="space-y-3">
-          <h2 className="font-heading text-2xl tracking-tight">Pinned dispute</h2>
-          <ReportCard report={featured} workplace={featured.workplace} />
-        </section>
-      ) : null}
 
       {demoWorkplaces.length > 0 ? (
         <section className="space-y-3">

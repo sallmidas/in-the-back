@@ -27,6 +27,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   return (
     <SiteFrame
       nav={nav}
+      blurb="Anonymous room-level board. Read a room, or file about one: cleanliness, safety, dignity. Never a person’s name. Reading and filing are free."
       footer={
         <div className="space-y-3">
           <nav className="flex flex-wrap items-center gap-x-3 gap-y-1" aria-label="Footer">

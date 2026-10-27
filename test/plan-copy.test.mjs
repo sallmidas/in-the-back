@@ -23,6 +23,6 @@ test("planned prices name a reward only after review", () => {
   assert.doesNotMatch(kitchenPriceLabel(129, 3), /\+|per report|toll|payout|held until|for each published/i)
   assert.equal(storePriceLabel(129), "The store pays $129/mo. Planned, not for sale during this preview.")
   assert.equal(storePriceLabel(249), "The store pays $249/mo. Planned, not for sale during this preview.")
-  assert.equal(storePriceLabel(0), "Readers use the public board for free.")
+  assert.equal(storePriceLabel(0), "Not a store plan.")
   assert.doesNotMatch(storePriceLabel(129), /reporter|reward|\$3|\$5/i)
 })

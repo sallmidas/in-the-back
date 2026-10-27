@@ -75,9 +75,6 @@ export function WorkplaceCard({ workplace }: { workplace: Workplace }) {
       {workplace.demo ? (
         <div className="mt-4 flex flex-wrap gap-1.5">
           <Badge variant="outline">DEMO</Badge>
-          <Badge variant="secondary" className="capitalize">
-            {workplace.listedPlan} · preview
-          </Badge>
         </div>
       ) : null}
     </Link>

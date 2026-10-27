@@ -48,12 +48,14 @@ export function SiteFrame({
   headerExtra,
   footer,
   notice,
+  blurb,
   children,
 }: {
   nav: SiteNavItem[]
   headerExtra?: ReactNode
   footer: ReactNode
   notice?: ReactNode
+  blurb: string
   children: ReactNode
 }) {
   const [open, setOpen] = useState(false)
@@ -126,10 +128,7 @@ export function SiteFrame({
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-6 text-sm text-muted-foreground sm:py-8 md:flex-row md:items-start md:justify-between">
           <div className="max-w-md space-y-2">
             <Wordmark compact />
-            <p>
-              Anonymous room-level back-of-house board. Public sees rooms, scores, context, and
-              writing — never who wrote it. Not a résumé site.
-            </p>
+            <p>{blurb}</p>
           </div>
           {footer}
         </div>

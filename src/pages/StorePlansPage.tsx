@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -24,13 +23,13 @@ export function StorePlansPage() {
         </div>
         <h1 className="font-heading text-4xl tracking-tight">Plans for stores</h1>
         <p className="max-w-2xl text-muted-foreground">
-          Reading the public board is free. Stores would pay for alerts — planned for later, not
-          for sale during the preview.
+          Stores would pay for alerts — planned for later, not for sale during the preview. Notes
+          on the board are anonymous.
         </p>
       </header>
 
-      <div className="grid gap-4 lg:grid-cols-3">
-        {PLANS.map((plan) => (
+      <div className="grid gap-4 lg:grid-cols-2">
+        {PLANS.filter((plan) => plan.id !== "free").map((plan) => (
           <Card key={plan.id}>
             <CardHeader>
               <CardTitle className="font-heading text-2xl">{plan.name}</CardTitle>
@@ -51,15 +50,9 @@ export function StorePlansPage() {
               </ul>
             </CardContent>
             <CardFooter>
-              {plan.id === "free" ? (
-                <Button asChild className="w-full" variant="outline">
-                  <Link to="/">Public board</Link>
-                </Button>
-              ) : (
-                <Button className="w-full" variant="outline" disabled>
-                  Planned
-                </Button>
-              )}
+              <Button className="w-full" variant="outline" disabled>
+                Planned
+              </Button>
             </CardFooter>
           </Card>
         ))}

@@ -67,6 +67,51 @@ test("user-facing copy matches the product model", () => {
   assert.doesNotMatch(read("src/pages/StorePlansPage.tsx"), /\+ \{|perReport|published report/)
 })
 
+test("each description speaks to one audience", () => {
+  const reader = [
+    "src/pages/HomePage.tsx",
+    "src/pages/HowItWorksPage.tsx",
+    "src/pages/WritePage.tsx",
+    "src/pages/DirectoryPage.tsx",
+    "src/pages/DeleteAccountPage.tsx",
+    "src/components/layout/AppShell.tsx",
+    "src/components/layout/HowItWorks.tsx",
+    "src/components/layout/HoldNotice.tsx",
+    "src/components/layout/EmptyState.tsx",
+    "index.html",
+    "public/manifest.webmanifest",
+  ]
+    .map(read)
+    .join("\n")
+  assert.match(reader, /Reading and filing are free/)
+  assert.doesNotMatch(reader, /\$129|\$249|store pays|\boperator\b|DISPUTED|dispute badge|Watch|Respond/i)
+
+  const store = [
+    "src/pages/StoresLandingPage.tsx",
+    "src/pages/StoreLoginPage.tsx",
+    "src/pages/StoreDashboardPage.tsx",
+    "src/pages/StorePlansPage.tsx",
+    "src/components/layout/StoreShell.tsx",
+    "src/data/plans.ts",
+  ]
+    .map(read)
+    .join("\n")
+  assert.match(store, /The notes are anonymous/)
+  assert.doesNotMatch(store, /Reading and filing|File a report|I was in this room|reporter would earn|reward/i)
+
+  for (const path of [
+    "src/pages/PrivacyPage.tsx",
+    "src/pages/TermsPage.tsx",
+    "src/pages/ContentPolicyPage.tsx",
+  ]) {
+    const page = read(path)
+    const readerAt = page.indexOf("If you read or file")
+    const storeAt = page.indexOf("If you are a store")
+    assert.ok(readerAt > 0, path)
+    assert.ok(storeAt > readerAt, path)
+  }
+})
+
 test("demo seed is off unless explicitly enabled", () => {
   assert.match(read("src/data/demo-flag.ts"), /VITE_DEMO_SEED === "1"/)
   assert.match(read("src/data/catalog.ts"), /@\/data\/seed/)

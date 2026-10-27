@@ -117,7 +117,7 @@ export function StaffQueuePage() {
         <h1 className="font-heading text-4xl tracking-tight">This is my queue</h1>
         <p className="max-w-2xl text-muted-foreground">
           One staff queue for the whole platform. Sign in, then claim it if it is still open. The
-          claim is stored on the server, once. It is not a workplace. From this queue you can hide
+          claim is stored on the server, once. From this queue you can hide
           a published filing that breaks the{" "}
           <Link to="/content" className={cn("rounded-sm underline-offset-4 hover:underline", focusRingClass)}>
             content policy

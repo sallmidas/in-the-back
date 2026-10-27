@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom"
 import { HowItWorksSteps, SampleRoomStrip } from "@/components/layout/HowItWorks"
-import { DisputeBadge } from "@/components/report/DisputeBadge"
 import { Button } from "@/components/ui/button"
 import { useDemoRoomPath } from "@/lib/demo-room"
 
@@ -53,9 +52,8 @@ export function HowItWorksPage() {
           <h3 className="font-heading text-xl tracking-tight">Chair</h3>
           <p className="text-sm leading-relaxed text-muted-foreground">
             The chair is one seat for the whole platform. The first person to sign in and claim it
-            holds the staff queue. That happens once. A workplace does not get its own queue, and
-            the public board never shows who claimed the seat. The chair can hide a published
-            filing, and put it back, under the{" "}
+            holds the staff queue. That happens once. The public board never shows who claimed the
+            seat. The chair can hide a published filing, and put it back, under the{" "}
             <Link to="/content" className="underline-offset-4 hover:underline">
               content policy
             </Link>
@@ -63,7 +61,7 @@ export function HowItWorksPage() {
           </p>
         </div>
         <p className="text-sm leading-relaxed text-muted-foreground">
-          Reading and filing are free. The chair is one seat for the platform, not a workplace.
+          Reading and filing are free. The writing is about the room, never a person.
         </p>
       </section>
 
@@ -90,9 +88,8 @@ export function HowItWorksPage() {
               Walk-in was 48° at 2am. Dairy sitting in a sheet pan on the floor. Nobody logged a
               temp all close.
             </p>
-            <DisputeBadge className="mt-3" />
             <p className="mt-3 text-xs text-muted-foreground">
-              Illustration of layout and the dispute badge. No reviewer name, ever.
+              Illustration of the layout. No name on the writing, ever.
             </p>
           </article>
         </div>
@@ -105,10 +102,7 @@ export function HowItWorksPage() {
             <li>Workplace, city, industry, rooms.</li>
             <li>Room scores and anonymous excerpts.</li>
             <li>Shift or station context written without a name.</li>
-            <li>
-              A dispute badge when a kitchen has flagged a report — exactly{" "}
-              <span className="text-destructive">DISPUTED — UNDER REVIEW</span>.
-            </li>
+            <li>Nothing that names who wrote it.</li>
           </ul>
         </div>
         <div>
@@ -117,7 +111,7 @@ export function HowItWorksPage() {
             <li>Reviewer name, handle, email, badge, or login.</li>
             <li>Platform chair identity, even after they claim a queue.</li>
             <li>Hiring copy, résumés, or “rate my boss.”</li>
-            <li>Payments. This preview does not take or send money.</li>
+            <li>A charge. Reading and filing are free.</li>
           </ul>
         </div>
       </section>

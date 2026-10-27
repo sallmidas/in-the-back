@@ -16,18 +16,20 @@ export function ContentPolicyPage() {
         <Link to="/privacy" className="underline-offset-4 hover:underline">
           privacy draft
         </Link>
-        .
+        . The two sections below are separate.
       </p>
       <ContactLine />
 
-      <h2 className="font-heading pt-2 text-2xl">What a filing is for</h2>
+      <h2 className="font-heading pt-2 text-2xl">If you read or file</h2>
+      <h3 className="font-heading pt-2 text-xl">What a filing is for</h3>
       <p className="text-muted-foreground">
         Write about a room. Cleanliness, safety, and dignity in a kitchen, dish pit, walk-in,
         staff bathroom, break room, dock, stock room, or overnight area. Score the space and the
-        shift. The public sees the room, the score, the context, and the writing.
+        shift. The public sees the room, the score, the context, and the writing. Reading and
+        filing are free.
       </p>
 
-      <h2 className="font-heading pt-2 text-2xl">What to leave out</h2>
+      <h3 className="font-heading pt-2 text-xl">What to leave out</h3>
       <ul className="list-disc space-y-1 pl-5 text-muted-foreground">
         <li>Names of people, initials that point at a person, and “my name is”.</li>
         <li>Phone numbers, emails, badge numbers, and other contact details.</li>
@@ -38,26 +40,27 @@ export function ContentPolicyPage() {
         <li>An employment wall. You do not prove you work there. The only check is your own confirmation that you were in the room, and that confirmation is not verified.</li>
       </ul>
 
-      <h2 className="font-heading pt-2 text-2xl">Names</h2>
+      <h3 className="font-heading pt-2 text-xl">Names</h3>
       <p className="text-muted-foreground">
         The filing form and the server refuse text that looks like a person’s name. The check
         misses names it does not know, and it misses all-lowercase names. Write about the room
         anyway. A filing that names a person can be hidden even if the check let it through.
       </p>
 
-      <h2 className="font-heading pt-2 text-2xl">Hide, unhide, retract</h2>
+      <h3 className="font-heading pt-2 text-xl">Hide and retract</h3>
       <ul className="list-disc space-y-1 pl-5 text-muted-foreground">
         <li>A filing goes on the public board when it is sent.</li>
-        <li>The person who filed it can retract it with the receipt or with their account. Retracting takes it off the board.</li>
+        <li>You can retract your own filing with the receipt or with your account. Retracting takes it off the board.</li>
         <li>The platform chair can hide a published filing that breaks these rules, and can put it back. Hiding takes it off the public board and out of the room score. The workplace can remain listed. The filing stays in the private store.</li>
-        <li>A store cannot delete, hide, or edit a filing. Only the platform chair can hide one. The person who filed it can retract it. There is no Resolve button.</li>
       </ul>
 
-      <h2 className="font-heading pt-2 text-2xl">Asking for a review</h2>
+      <h2 className="font-heading pt-4 text-2xl">If you are a store</h2>
       <p className="text-muted-foreground">
-        If a filing on the board breaks these rules, write to the contact below and name the
-        workplace and the room. Do not include a person’s name in that note if you can point at
-        the filing without one.
+        A store cannot delete, hide, or edit a note. Only the platform chair can hide one. The
+        person who wrote it can retract it. There is no Resolve button. Notes on the board are
+        anonymous. If a note breaks these rules, write to the contact below and name the store
+        and the room. Do not include a person’s name in that note if you can point at the writing
+        without one.
       </p>
       <ContactLine />
     </article>

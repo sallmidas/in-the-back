@@ -19,37 +19,36 @@ export function PrivacyPage() {
         <Link to="/content" className="underline-offset-4 hover:underline">
           content policy
         </Link>
-        .
+        . The two sections below are separate: one for people who read or file, and one for a
+        store.
       </p>
       <ContactLine />
 
-      <h2 className="font-heading pt-2 text-2xl">What this is</h2>
+      <h2 className="font-heading pt-2 text-2xl">If you read or file</h2>
       <p className="text-muted-foreground">
         In the Back is a room-level board. People file notes about a room — cleanliness, safety,
-        dignity — not about a named person. During this preview the board is free. We do not take
-        payment and we do not send money. We do not ask for a card, a bank account, or a location
-        pin.
+        dignity — not about a named person. Reading and filing are free. We do not ask for a card,
+        a bank account, or a location pin.
       </p>
 
-      <h2 className="font-heading pt-2 text-2xl">What the public sees</h2>
+      <h3 className="font-heading pt-2 text-xl">What the public sees</h3>
       <ul className="list-disc space-y-1 pl-5 text-muted-foreground">
         <li>Workplace name, city, region, industry, and room list.</li>
         <li>Room scores and the writing on filings that are still on the board.</li>
         <li>Shift or station context written without a name.</li>
-        <li>A dispute badge if a filing is marked under review.</li>
       </ul>
 
-      <h2 className="font-heading pt-2 text-2xl">What stays off the board</h2>
+      <h3 className="font-heading pt-2 text-xl">What stays off the board</h3>
       <ul className="list-disc space-y-1 pl-5 text-muted-foreground">
         <li>Your name, email, phone, badge, or account.</li>
         <li>The receipt for a filing. We store a hash of it, not the receipt itself.</li>
         <li>Who claimed the platform chair.</li>
         <li>The “I was in this room” confirmation. It is required to file and then thrown away. We do not check it against a schedule, a badge, or a map.</li>
-        <li>A filing the chair has hidden, or one the filer has retracted.</li>
-        <li>City and region are words the filer typed. We do not collect GPS.</li>
+        <li>A filing the chair has hidden, or one you have retracted.</li>
+        <li>City and region are words you typed. We do not collect GPS.</li>
       </ul>
 
-      <h2 className="font-heading pt-2 text-2xl">Filing</h2>
+      <h3 className="font-heading pt-2 text-xl">Filing</h3>
       <p className="text-muted-foreground">
         You can file without an account. We store the workplace, the room, the score, the shift
         context, the writing, and the time. If you are signed in, we also store a private link
@@ -58,7 +57,7 @@ export function PrivacyPage() {
         again.
       </p>
 
-      <h2 className="font-heading pt-2 text-2xl">Accounts and the session cookie</h2>
+      <h3 className="font-heading pt-2 text-xl">Your account and the session cookie</h3>
       <p className="text-muted-foreground">
         An account is an email and a password. We store a hash of the password, not the password.
         Signing in sets one session cookie that page script cannot read. It is used to recognize
@@ -66,20 +65,23 @@ export function PrivacyPage() {
         the password hash, and the sessions. It does not retract a filing. The platform-chair
         account cannot be deleted, so the claim is not dropped by accident.
       </p>
-      <p className="text-muted-foreground">
-        A store account is separate. To claim a store we store the business name, the role, and a
-        work email, and we keep that claim pending until the platform chair approves it. The
-        public board does not show the claim. A verified store sees the same anonymous filings
-        the public sees. We do not give a store the filer’s email, name, or account. A store
-        cannot hide or delete a filing.
-      </p>
 
-      <h2 className="font-heading pt-2 text-2xl">The chair and hidden filings</h2>
+      <h3 className="font-heading pt-2 text-xl">The chair and hidden filings</h3>
       <p className="text-muted-foreground">
         The first account to claim the platform chair holds it. We store that claim. We do not
         publish who it is. The chair can hide a published filing, and put it back. A hidden filing
-        leaves the public board and the room score. It stays in the private store until the filer
-        retracts it. Hiding is not a delete by the workplace.
+        leaves the public board and the room score. It stays in the private store until you
+        retract it.
+      </p>
+
+      <h2 className="font-heading pt-4 text-2xl">If you are a store</h2>
+      <p className="text-muted-foreground">
+        A store account is separate. To claim a store we store the business name, the role, and a
+        work email, and we keep that claim pending until the platform chair approves it. The
+        public board does not show the claim. A verified store sees its rooms, scores, and the
+        notes on those rooms. The notes are anonymous. We do not give a store the email, name, or
+        account behind a note. A store cannot hide or delete a note. A note may be marked under
+        review. That mark does not name who wrote it. Nothing is charged during this preview.
       </p>
 
       <h2 className="font-heading pt-2 text-2xl">Request addresses</h2>
@@ -99,7 +101,7 @@ export function PrivacyPage() {
       <h2 className="font-heading pt-2 text-2xl">What we don’t do</h2>
       <ul className="list-disc space-y-1 pl-5 text-muted-foreground">
         <li>We don’t sell personal information.</li>
-        <li>We don’t take tips, wages, or payments during this preview.</li>
+        <li>We don’t take tips or wages.</li>
         <li>We don’t ask you to prove employment, and we don’t offer a witness or bullying lane.</li>
       </ul>
 

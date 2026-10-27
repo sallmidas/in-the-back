@@ -18,8 +18,8 @@ export function DemoWalk() {
     {
       n: "01",
       to: demoPath,
-      title: "A disputed room",
-      body: "A labeled DEMO room — score, writing, DISPUTED badge. No reviewer name.",
+      title: "A sample room",
+      body: "A labeled DEMO room — score and writing. No reviewer name.",
     },
     {
       n: "02",
@@ -31,7 +31,7 @@ export function DemoWalk() {
       n: "03",
       to: "/staff",
       title: "Platform chair",
-      body: "Sign in and claim the one platform queue. It is not a workplace. The public never sees who.",
+      body: "Sign in and claim the one platform queue. The public never sees who.",
     },
     {
       n: "04",

@@ -10,9 +10,8 @@ export function StoresLandingPage() {
         </p>
         <h1 className="font-heading text-4xl tracking-tight">For stores</h1>
         <p className="max-w-2xl text-muted-foreground">
-          In the Back is a public board of the rooms in a building: kitchens, pits, walk-ins,
-          docks. After the chair verifies a claim, a store sees its own rooms, scores, and the
-          same anonymous filings the public sees. Never who filed them.
+          Claim a store to see its rooms, scores, and the notes already on those rooms. The notes
+          are anonymous. Kitchens, pits, walk-ins, docks — the rooms, not the people in them.
         </p>
         <div className="flex flex-col gap-2 pt-2 sm:flex-row">
           <Button asChild className="w-full sm:w-auto">
@@ -28,11 +27,10 @@ export function StoresLandingPage() {
         <h2 className="font-heading text-2xl tracking-tight">What a store would see</h2>
         <ul className="space-y-1.5 text-sm text-muted-foreground">
           <li>— The store’s rooms and room scores.</li>
-          <li>— Published filings about those rooms, in the same anonymous view as the public board.</li>
-          <li>— No reporter name, email, account, or receipt.</li>
+          <li>— Notes already on those rooms. No name, email, or account on a note.</li>
         </ul>
         <p className="text-sm text-muted-foreground">
-          A store cannot hide, edit, or delete a filing. Alerts and a response are planned for
+          A store cannot hide, edit, or delete a note. Alerts and a response are planned for
           later. They are not for sale during the preview, and nothing is charged now.
         </p>
       </section>

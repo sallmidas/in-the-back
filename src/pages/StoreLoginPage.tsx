@@ -15,9 +15,9 @@ export function StoreLoginPage() {
         </p>
         <h1 className="font-heading text-4xl tracking-tight">Store sign-in</h1>
         <p className="max-w-2xl text-muted-foreground">
-          A store account is separate from a reader account and from the platform chair. Use a
-          work email if you have one. After sign-in you can claim the store. The claim waits for
-          the chair.
+          A store account is separate from the platform chair. Use a work email if you have one.
+          After sign-in you can claim the store. The claim waits for the chair. Notes on the board
+          are anonymous.
         </p>
       </header>
 
@@ -36,8 +36,7 @@ export function StoreLoginPage() {
         <div className="max-w-md space-y-3 rounded-xl border border-border bg-card/70 p-5">
           {user?.kind === "reader" ? (
             <p className="text-sm text-muted-foreground">
-              This browser is signed in as a reader. Store sign-in is a different account. Signing
-              in here replaces that session.
+              This browser already has a different sign-in. Store sign-in replaces that session.
             </p>
           ) : (
             <p className="text-sm text-muted-foreground">
@@ -54,7 +53,7 @@ export function StoreLoginPage() {
       )}
 
       <p className="text-sm text-muted-foreground">
-        Reading and filing stay free.{" "}
+        Notes on the board are anonymous.{" "}
         <Link to="/stores" className="underline-offset-4 hover:underline">
           Back to For stores
         </Link>
