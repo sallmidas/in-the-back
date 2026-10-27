@@ -7,7 +7,7 @@ export function ContentPolicyPage() {
       <p className="font-mono text-[11px] tracking-[0.2em] text-primary uppercase">Moderation</p>
       <h1 className="font-heading text-4xl tracking-tight">Content policy</h1>
       <p className="text-muted-foreground">
-        These are the rules for what belongs on the board. The platform chair uses them when
+        These are the rules for what belongs on the board. The moderator uses them when
         hiding or unhiding a filing. They match the{" "}
         <Link to="/terms" className="underline-offset-4 hover:underline">
           terms
@@ -51,12 +51,12 @@ export function ContentPolicyPage() {
       <ul className="list-disc space-y-1 pl-5 text-muted-foreground">
         <li>A filing goes on the public board when it is sent.</li>
         <li>You can retract your own filing with the receipt or with your account. Retracting takes it off the board.</li>
-        <li>The platform chair can hide a published filing that breaks these rules, and can put it back. Hiding takes it off the public board and out of the room score. The workplace can remain listed. The filing stays in the private store.</li>
+        <li>The moderator can hide a published filing that breaks these rules, and can put it back. Hiding takes it off the public board and out of the room score. The workplace can remain listed. The filing stays in the private store.</li>
       </ul>
 
       <h2 className="font-heading pt-4 text-2xl">If you are a store</h2>
       <p className="text-muted-foreground">
-        A store cannot delete, hide, or edit a report. Only the platform chair can hide one. The
+        A store cannot delete, hide, or edit a report. Only the moderator can hide one. The
         person who wrote it can retract it. There is no Resolve button. Reports on the board are
         anonymous. If a report breaks these rules, write to the contact below and name the store
         and the room. Do not include a person’s name in that message if you can point at the writing

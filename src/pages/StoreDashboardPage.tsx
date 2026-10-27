@@ -80,7 +80,7 @@ function ClaimForm({
     <form onSubmit={onSubmit} className="max-w-md space-y-3 rounded-xl border border-border bg-card/70 p-5">
       <h2 className="font-heading text-2xl">Claim your store</h2>
       <p className="text-sm text-muted-foreground">
-        The claim stays pending until the platform chair approves it. Use a title for your role,
+        The claim stays pending until a moderator approves it. Use a title for your role,
         not your name. A work email on the store’s own domain is easier to check. A free inbox can
         still be sent. Nothing is verified automatically, and nothing is charged.
       </p>
@@ -130,11 +130,11 @@ function PendingClaim({ claim }: { claim: StoreClaim }) {
     <section className="max-w-xl space-y-3 rounded-xl border border-border bg-card/70 p-5">
       <div className="flex flex-wrap items-center gap-2">
         <h2 className="font-heading text-2xl">Claim pending</h2>
-        <Badge variant="outline">Waiting for the chair</Badge>
+        <Badge variant="outline">Waiting for a moderator</Badge>
       </div>
       <p className="text-sm text-muted-foreground">
-        {claim.businessName} is not verified yet. You will not see a store dashboard until the
-        platform chair approves this claim. One verified claim per store, unless the chair adds
+        {claim.businessName} is not verified yet. You will not see a store dashboard until a
+        moderator approves this claim. One verified claim per store, unless a moderator adds
         another.
       </p>
       <dl className="space-y-1 text-sm">
@@ -153,7 +153,7 @@ function PendingClaim({ claim }: { claim: StoreClaim }) {
       </dl>
       {claim.freeInbox ? (
         <p className="text-xs text-muted-foreground">
-          This is a free inbox, not the store’s own domain. The chair can still approve it.
+          This is a free inbox, not the store’s own domain. A moderator can still approve it.
         </p>
       ) : null}
     </section>
@@ -279,7 +279,7 @@ export function StoreDashboardPage() {
             <div className="space-y-4">
               {claim?.status === "refused" ? (
                 <p className="text-sm text-muted-foreground">
-                  The chair refused the claim for {claim.businessName}. You can send a new one.
+                  A moderator refused the claim for {claim.businessName}. You can send a new one.
                 </p>
               ) : null}
               <ClaimForm email={user.email} onDone={() => setReload((value) => value + 1)} />

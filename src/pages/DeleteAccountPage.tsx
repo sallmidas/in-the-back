@@ -42,7 +42,7 @@ export function DeleteAccountPage() {
       <h1 className="font-heading text-4xl tracking-tight">Delete account</h1>
       <p className="text-muted-foreground">
         This removes the email and password. It does not retract a filed report, and it cannot
-        remove the platform chair. Retract a file from the filing page.
+        remove the moderator account. Retract a file from the filing page.
       </p>
       {error ? (
         <p role="alert" className="text-sm text-destructive">

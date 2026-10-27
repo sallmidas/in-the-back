@@ -66,7 +66,7 @@ export function DirectoryPage() {
         <h1 className="font-heading text-4xl tracking-tight">Find a building, then a room</h1>
         <p className="max-w-2xl text-muted-foreground">
           Search a name, a city, or a room. A shared link keeps the same view. The board never
-          shows who wrote a report, or who the chair is.
+          shows who wrote a report, or who the moderator is.
           {demoSeedEnabled
             ? " Every sample listing is labeled DEMO."
             : listed > 0

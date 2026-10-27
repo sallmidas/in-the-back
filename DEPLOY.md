@@ -33,6 +33,7 @@ Leave `VITE_DEMO_SEED` unset for this build. Sample workplaces are included only
 | `ITB_TRUST_PROXY` | `1` | Trust one reverse proxy and rate-limit by the client address in `X-Forwarded-For`. Unset means the socket address is used and a caller cannot spoof the limit with that header. Use `2` only if two proxies append hops. |
 | `ITB_STATIC` | `dist` | Directory of the production bundle. The same process serves the app and `/api`. |
 | `ITB_STORE_PATH` | a path on the persistent disk | Example: `/var/data/board.json`. The default is `data/board.json` under the working directory, which is only safe if that directory is the persistent disk. |
+| `ITB_CHAIR_EMAIL` | Saul’s chair account email | The reader account Saul signs in with. Only that email can claim the chair. Do not put the address in application code. |
 
 Optional:
 
@@ -41,6 +42,16 @@ Optional:
 - `VITE_DEMO_SEED` — set to `1` only for a private demo build. Do not set it for the public preview.
 
 Do not set `ITB_DISABLE_RATELIMIT` on a public host.
+
+## The chair
+
+Set `ITB_CHAIR_EMAIL` to the email of Saul’s chair account before the public host starts. That is the reader account he signs in with. It is not the public contact address.
+
+On a public host (`NODE_ENV=production` or `ITB_SECURE_COOKIE=1`), a missing `ITB_CHAIR_EMAIL` means nobody can claim the chair. The server logs `ITB_CHAIR_EMAIL is unset. Nobody can claim the platform chair.` Local development with the variable unset still lets the first reader account confirm and claim, so you can test the queue. The claim still happens once. A second account cannot take it.
+
+`/staff` is not in the public nav or footer. After that account has claimed the chair, the Chair link shows only while that account is signed in. Open `/staff` directly the first time, sign in, and confirm **This is my queue**.
+
+Reader and store pages say “a moderator.” The `/staff` title stays Platform chair.
 
 ## Contact
 

@@ -29,9 +29,9 @@ export function DemoWalk() {
     },
     {
       n: "03",
-      to: "/staff",
-      title: "Platform chair",
-      body: "Sign in and claim the one platform queue. The public never sees who.",
+      to: "/content",
+      title: "A moderator reviews reports",
+      body: "A moderator can hide writing that breaks the content rules. The public never sees who.",
     },
     {
       n: "04",

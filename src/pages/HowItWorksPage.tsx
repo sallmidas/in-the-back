@@ -49,15 +49,14 @@ export function HowItWorksPage() {
           </p>
         </div>
         <div className="space-y-2">
-          <h3 className="font-heading text-xl tracking-tight">Chair</h3>
+          <h3 className="font-heading text-xl tracking-tight">A moderator</h3>
           <p className="text-sm leading-relaxed text-muted-foreground">
-            The chair is one seat for the whole platform. The first person to sign in and claim it
-            holds the staff queue. That happens once. The public board never shows who claimed the
-            seat. The chair can hide a published filing, and put it back, under the{" "}
+            A moderator reviews reports. They can hide a published filing, and put it back, under
+            the{" "}
             <Link to="/content" className="underline-offset-4 hover:underline">
               content policy
             </Link>
-            .
+            . The public board never shows who the moderator is.
           </p>
         </div>
         <p className="text-sm leading-relaxed text-muted-foreground">
@@ -109,7 +108,7 @@ export function HowItWorksPage() {
           <h2 className="font-heading text-xl tracking-tight">What stays off</h2>
           <ul className="mt-3 space-y-2 text-sm leading-relaxed text-muted-foreground">
             <li>Reviewer name, handle, email, badge, or login.</li>
-            <li>Platform chair identity, even after they claim a queue.</li>
+            <li>Who the moderator is.</li>
             <li>Hiring copy, résumés, or “rate my boss.”</li>
             <li>A charge. Reading and filing are free.</li>
           </ul>

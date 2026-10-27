@@ -15,9 +15,8 @@ export function StoreLoginPage() {
         </p>
         <h1 className="font-heading text-4xl tracking-tight">Store sign-in</h1>
         <p className="max-w-2xl text-muted-foreground">
-          A store account is separate from the platform chair. Use a work email if you have one.
-          After sign-in you can claim the store. The claim waits for the chair. Reports on the board
-          are anonymous. Reports on the board are anonymous.
+          A store account is its own sign-in. Use a work email if you have one. After sign-in you
+          can claim the store. The claim waits for a moderator. Reports on the board are anonymous.
         </p>
       </header>
 

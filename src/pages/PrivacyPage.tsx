@@ -42,9 +42,9 @@ export function PrivacyPage() {
       <ul className="list-disc space-y-1 pl-5 text-muted-foreground">
         <li>Your name, email, phone, badge, or account.</li>
         <li>The receipt for a filing. We store a hash of it, not the receipt itself.</li>
-        <li>Who claimed the platform chair.</li>
+        <li>Who the moderator is.</li>
         <li>The “I was in this room” confirmation. It is required to file and then thrown away. We do not check it against a schedule, a badge, or a map.</li>
-        <li>A filing the chair has hidden, or one you have retracted.</li>
+        <li>A filing the moderator has hidden, or one you have retracted.</li>
         <li>City and region are words you typed. We do not collect GPS.</li>
       </ul>
 
@@ -62,14 +62,14 @@ export function PrivacyPage() {
         An account is an email and a password. We store a hash of the password, not the password.
         Signing in sets one session cookie that page script cannot read. It is used to recognize
         the browser. We do not use advertising cookies. Deleting an account removes the email,
-        the password hash, and the sessions. It does not retract a filing. The platform-chair
-        account cannot be deleted, so the claim is not dropped by accident.
+        the password hash, and the sessions. It does not retract a filing. The moderator
+        account cannot be deleted, so that role is not dropped by accident.
       </p>
 
-      <h3 className="font-heading pt-2 text-xl">The chair and hidden filings</h3>
+      <h3 className="font-heading pt-2 text-xl">The moderator and hidden filings</h3>
       <p className="text-muted-foreground">
-        The first account to claim the platform chair holds it. We store that claim. We do not
-        publish who it is. The chair can hide a published filing, and put it back. A hidden filing
+        The moderator reviews reports. We store who that is. We do not publish it. The moderator
+        can hide a published filing, and put it back. A hidden filing
         leaves the public board and the room score. It stays in the private store until you
         retract it.
       </p>
@@ -77,7 +77,7 @@ export function PrivacyPage() {
       <h2 className="font-heading pt-4 text-2xl">If you are a store</h2>
       <p className="text-muted-foreground">
         A store account is separate. To claim a store we store the business name, the role, and a
-        work email, and we keep that claim pending until the platform chair approves it. The
+        work email, and we keep that claim pending until the moderator approves it. The
         public board does not show the claim. A verified store sees its rooms, scores, and the
         reports on those rooms. Reports are anonymous. We do not give a store the email, name, or
         account behind a report. A store cannot hide or delete a report. A report may be marked

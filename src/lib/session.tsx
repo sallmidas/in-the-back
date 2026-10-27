@@ -8,7 +8,7 @@ type SessionValue = {
   refresh: () => Promise<void>
 }
 
-const EMPTY_CHAIR: ChairState = { claimed: false, mine: false }
+const EMPTY_CHAIR: ChairState = { claimed: false, mine: false, canClaim: false, open: false }
 
 const SessionContext = createContext<SessionValue | null>(null)
 

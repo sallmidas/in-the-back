@@ -12,17 +12,19 @@ const footerLinkClass = cn(
 )
 
 export function StoreShell({ children }: { children: ReactNode }) {
-  const { user, refresh } = useSession()
+  const { user, chair, refresh } = useSession()
   const signedIn = user?.kind === "store"
   const nav: SiteNavItem[] = signedIn
     ? [
         { to: "/stores/dashboard", label: "Dashboard", end: true },
         { to: "/stores/plans", label: "Plans", end: true },
+        ...(chair.mine ? [{ to: "/staff", label: "Chair" }] : []),
       ]
     : [
         { to: "/stores", label: "For stores", end: true },
         { to: "/stores/plans", label: "Plans", end: true },
         { to: "/stores/login", label: "Sign in", end: true },
+        ...(chair.mine ? [{ to: "/staff", label: "Chair" }] : []),
       ]
 
   async function onSignOut() {
@@ -52,6 +54,11 @@ export function StoreShell({ children }: { children: ReactNode }) {
           <Link to="/terms" className={footerLinkClass}>
             Terms
           </Link>
+          {chair.mine ? (
+            <Link to="/staff" className={footerLinkClass}>
+              Chair
+            </Link>
+          ) : null}
         </nav>
       }
       notice={<p>Store plans are a later model. Nothing is charged during this preview.</p>}

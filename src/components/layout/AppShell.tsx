@@ -3,15 +3,17 @@ import { Link } from "react-router-dom"
 import { HoldNotice } from "@/components/layout/HoldNotice"
 import { SiteFrame, type SiteNavItem } from "@/components/layout/SiteFrame"
 import { useDemoRoomPath } from "@/lib/demo-room"
+import { useSession } from "@/lib/session"
 import { cn, focusRingClass } from "@/lib/utils"
 
 const REPORTER_NAV: SiteNavItem[] = [
   { to: "/", label: "Board", end: true },
   { to: "/workplaces", label: "Directory" },
   { to: "/how-it-works", label: "How it works" },
-  { to: "/staff", label: "Chair" },
   { to: "/write", label: "File a report" },
 ]
+
+const CHAIR_NAV: SiteNavItem = { to: "/staff", label: "Chair" }
 
 const footerLinkClass = cn(
   "inline-flex min-h-11 items-center rounded-md px-1 py-1 hover:text-foreground",
@@ -20,9 +22,13 @@ const footerLinkClass = cn(
 
 export function AppShell({ children }: { children: ReactNode }) {
   const demoPath = useDemoRoomPath()
-  const nav = demoPath
-    ? [...REPORTER_NAV, { to: demoPath, label: "Open demo" }]
-    : REPORTER_NAV
+  const { chair } = useSession()
+  const nav = [
+    ...REPORTER_NAV.slice(0, 3),
+    ...(chair.mine ? [CHAIR_NAV] : []),
+    ...REPORTER_NAV.slice(3),
+    ...(demoPath ? [{ to: demoPath, label: "Open demo" }] : []),
+  ]
 
   return (
     <SiteFrame
@@ -46,9 +52,11 @@ export function AppShell({ children }: { children: ReactNode }) {
             <Link to="/account/delete" className={footerLinkClass}>
               Delete account
             </Link>
-            <Link to="/staff" className={footerLinkClass}>
-              Chair
-            </Link>
+            {chair.mine ? (
+              <Link to="/staff" className={footerLinkClass}>
+                Chair
+              </Link>
+            ) : null}
             <Link to="/write" className={footerLinkClass}>
               File a report
             </Link>

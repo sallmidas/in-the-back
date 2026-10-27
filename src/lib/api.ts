@@ -18,6 +18,8 @@ export type AccountUser = {
 export type ChairState = {
   claimed: boolean
   mine: boolean
+  canClaim: boolean
+  open: boolean
 }
 
 export type MeResponse = {

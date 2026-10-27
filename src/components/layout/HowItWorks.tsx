@@ -17,12 +17,12 @@ const HOW_IT_WORKS_STEPS = [
   {
     n: "03",
     title: "Take your file back",
-    body: "You can retract your own file with the receipt or your account. The chair can hide writing that breaks the content rules. The public still never sees who wrote it.",
+    body: "You can retract your own file with the receipt or your account. A moderator can hide writing that breaks the content rules. The public still never sees who wrote it.",
   },
   {
     n: "04",
-    title: "One chair, privately",
-    body: "One person claims the platform queue, once. Who that is stays off the public board.",
+    title: "Reviewed in private",
+    body: "A moderator reviews reports. Who that is stays off the public board.",
   },
 ] as const
 

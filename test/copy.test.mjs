@@ -44,7 +44,7 @@ test("user-facing copy matches the product model", () => {
   assert.doesNotMatch(read("src/pages/WorkplacePage.tsx"), /This is my queue/)
   assert.match(read("src/components/layout/EmptyState.tsx"), /File a report/)
   assert.match(read("src/pages/HowItWorksPage.tsx"), /Back of house/)
-  assert.match(read("src/pages/HowItWorksPage.tsx"), /one seat for the whole platform/)
+  assert.match(read("src/pages/HowItWorksPage.tsx"), /A moderator reviews reports/)
   assert.match(read("src/pages/StoresLandingPage.tsx"), /For stores & businesses/)
   assert.match(read("src/pages/StoresLandingPage.tsx"), /Claim your store/)
   assert.match(read("src/pages/StorePlansPage.tsx"), /Plans for stores/)
@@ -69,6 +69,9 @@ test("user-facing copy matches the product model", () => {
     assert.doesNotMatch(read(path), /contact@REPLACE-ME|REPLACE-ME/)
   }
   assert.match(read("DEPLOY.md"), /inthebackcontact@gmail\.com/)
+  assert.match(read("DEPLOY.md"), /ITB_CHAIR_EMAIL/)
+  assert.doesNotMatch(read("DEPLOY.md"), /ITB_CHAIR_EMAIL=.+@/)
+  assert.doesNotMatch(read("server/app.mjs"), /ITB_CHAIR_EMAIL\s*=\s*["'][^"']+@/)
   assert.match(read("src/pages/PrivacyPage.tsx"), /ContactLine/)
   assert.match(read("src/pages/TermsPage.tsx"), /ContactLine/)
   assert.match(read("src/pages/ContentPolicyPage.tsx"), /ContactLine/)
@@ -129,6 +132,32 @@ test("each description speaks to one audience", () => {
     assert.ok(readerAt > 0, path)
     assert.ok(storeAt > readerAt, path)
   }
+})
+
+test("reader, store, and legal pages do not say chair", () => {
+  const pages = [
+    "src/pages/HomePage.tsx",
+    "src/pages/HowItWorksPage.tsx",
+    "src/pages/WritePage.tsx",
+    "src/pages/DirectoryPage.tsx",
+    "src/pages/DeleteAccountPage.tsx",
+    "src/pages/StoreDashboardPage.tsx",
+    "src/pages/StoreLoginPage.tsx",
+    "src/pages/StorePlansPage.tsx",
+    "src/pages/StoresLandingPage.tsx",
+    "src/pages/PrivacyPage.tsx",
+    "src/pages/TermsPage.tsx",
+    "src/pages/ContentPolicyPage.tsx",
+    "src/components/layout/HowItWorks.tsx",
+    "src/components/layout/HoldNotice.tsx",
+  ]
+  for (const path of pages) {
+    assert.doesNotMatch(read(path), /\bchair\b/i, path)
+  }
+  assert.match(read("src/pages/ContentPolicyPage.tsx"), /the moderator/i)
+  assert.match(read("src/pages/TermsPage.tsx"), /the moderator/i)
+  assert.match(read("src/pages/PrivacyPage.tsx"), /the moderator/i)
+  assert.match(read("src/pages/StaffQueuePage.tsx"), /<h1[^>]*>Platform chair<\/h1>/)
 })
 
 test("demo seed is off unless explicitly enabled", () => {

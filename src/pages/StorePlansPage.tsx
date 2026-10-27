@@ -59,7 +59,7 @@ export function StorePlansPage() {
       </div>
 
       <p className="text-xs text-muted-foreground">
-        Nothing on this page is for sale. One verified claim per store, unless the chair adds
+        Nothing on this page is for sale. One verified claim per store, unless a moderator adds
         another.
       </p>
     </div>

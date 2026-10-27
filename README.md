@@ -29,7 +29,7 @@ npm run dev
 
 `npm run dev` starts the API on `http://127.0.0.1:43174` and the Vite app on [http://127.0.0.1:43173](http://127.0.0.1:43173). Vite proxies `/api` to the API. Filings, accounts, and the platform-chair claim are stored in `data/board.json` (gitignored).
 
-Open the app. With the demo off, the board starts empty and the primary action is **File a report**. **How it works** explains back of house and the chair.
+Open the app. With the demo off, the board starts empty and the primary action is **File a report**. **How it works** explains back of house and that a moderator reviews reports.
 
 To walk the labeled sample workplaces, opt in and restart:
 
@@ -39,7 +39,7 @@ cp .env.example .env.local
 npm run dev
 ```
 
-File a report. It is written to the server and shows on the home board and that workplace. The first account to claim **This is my queue** on `/staff` holds the chair; later accounts are refused. That account can hide a filing and put it back.
+File a report. It is written to the server and shows on the home board and that workplace. The chair is not in the public nav. On a public host, set `ITB_CHAIR_EMAIL` (see [DEPLOY.md](DEPLOY.md)) to Saul’s chair account. That account opens `/staff`, signs in, and claims **This is my queue** once. Later accounts are refused. With the variable unset in local development, the first reader account can still claim it for testing. That account can hide a filing and put it back.
 
 To serve the production bundle and the API together, leave `VITE_DEMO_SEED` unset:
 
@@ -100,19 +100,19 @@ Switch lives in `src/data/demo-flag.ts`. The Vite alias is in `vite.config.ts`.
 | Path | What it is |
 | --- | --- |
 | `/` | Home / recent reports |
-| `/how-it-works` | Product walkthrough — rooms, scores, anonymity, flags, platform chair |
+| `/how-it-works` | Product walkthrough — rooms, scores, anonymity, a moderator reviews reports |
 | `/workplaces` | Directory with search + industry / room / score filters |
 | `/workplaces/:slug` | Rooms, scores, anonymous excerpts, dispute badges |
 | `/plans` | Redirects to `/stores/plans`. Reader pages do not list store prices. |
 | `/stores` | For stores. What a verified store would see, and a claim call to action. |
 | `/stores/plans` | Watch and Respond, labeled as a later model the store would pay. Nothing is charged now. |
 | `/stores/login` | Store sign-in. Separate from a reader account. |
-| `/stores/dashboard` | Claim a store, or see its rooms, scores, and anonymous filings after the chair approves. |
-| `/staff` | Platform chair. Email and password. **This is my queue** once, on the server, for the whole platform. The chair can hide and unhide a filing, and approve or refuse a store claim. |
+| `/stores/dashboard` | Claim a store, or see its rooms, scores, and anonymous filings after a moderator approves. |
+| `/staff` | Platform chair. Not in the public nav. The `ITB_CHAIR_EMAIL` account signs in and claims **This is my queue** once. That account can hide and unhide a filing, and approve or refuse a store claim. |
 | `/privacy` | Draft privacy notice. Pending legal review. |
 | `/terms` | Draft terms of use. Pending legal review. |
-| `/content` | Content policy. Rooms, not people. Chair hide and filer retract. |
-| `/account/delete` | Delete an account. Does not retract a file. Cannot delete the chair. |
+| `/content` | Content policy. Rooms, not people. The moderator can hide a filing. The filer can retract. |
+| `/account/delete` | Delete an account. Does not retract a file. Cannot delete the moderator account. |
 | `/write` | File a report. Open to anyone. Saved on the server. Retract with a receipt or the account that filed it. |
 
 Dispute copy on the board is exactly: **DISPUTED — UNDER REVIEW**. A flag leads to uphold or retract — never delete.
@@ -126,7 +126,7 @@ Each has sample rooms, scores, and anonymous reports. Two seeded disputes (Harbo
 ## Product rules this repo is teaching
 
 - **No payments during the preview.** The company is not formed. This repo has no payment code and no card form. Nothing is charged and nothing is paid. The Plans page is a preview of a later model, not a promise and not a date: Watch $129/mo for near-real-time alerts, Respond $249/mo which would add a response or dispute and a faster way to recover a rating. Planned: reporters earn a small reward once their report passes review ($3 on Watch, $5 on Respond). Reports shown to be false after a dispute earn nothing. Filing alone would not earn the reward.
-- **Platform chair.** The first real account to claim **This is my queue** holds it. The claim is stored on the server and does not reopen. It is not a per-workplace claim. The public board never shows who claimed it. The chair can hide a published filing and put it back. Hiding is not a delete, and it is not the filer's retract.
+- **Platform chair.** One seat, stored on the server, and it does not reopen. On a public host only the `ITB_CHAIR_EMAIL` account can claim it. The Chair link is shown only to that signed-in account. Reader and store pages say “a moderator.” The chair can hide a published filing and put it back. Hiding is not a delete, and it is not the filer's retract.
 - **Watch / Respond.** Planned only. Watch: near-real-time alerts. Respond: alerts plus a response or dispute and a faster recovery of the rating. A flag, if that plan arrives, leads to uphold or retract — never delete. Those plans are not wired to billing.
 - **Share cards.** Static OG/Twitter title and description use the slogan. Tab titles follow the route (works with HashRouter). No reviewer or chair identity in share payloads.
 

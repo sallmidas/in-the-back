@@ -44,10 +44,27 @@ function publicUser(user) {
   return { id: user.id, email: user.email, kind: accountKind(user) }
 }
 
-function chairView(data, user) {
+function resolveChairPolicy({ chairEmail, production } = {}) {
+  const raw = chairEmail !== undefined ? chairEmail : process.env.ITB_CHAIR_EMAIL
+  const email = typeof raw === "string" ? raw.trim().toLowerCase() : ""
+  const locked =
+    production !== undefined
+      ? Boolean(production)
+      : process.env.NODE_ENV === "production" || process.env.ITB_SECURE_COOKIE === "1"
+  return { chairEmail: email || null, production: locked }
+}
+
+function chairView(data, user, policy) {
+  const mine = Boolean(user && data.chairUserId === user.id)
+  const reader = Boolean(user) && accountKind(user) !== "store"
+  const allowed = policy.chairEmail
+    ? user?.email?.toLowerCase() === policy.chairEmail
+    : !policy.production
   return {
     claimed: Boolean(data.chairUserId),
-    mine: Boolean(user && data.chairUserId === user.id),
+    mine,
+    canClaim: reader && allowed && (!data.chairUserId || mine),
+    open: !policy.chairEmail && !policy.production,
   }
 }
 
@@ -198,7 +215,13 @@ export function createApp({
   rateLimitEnabled = process.env.ITB_DISABLE_RATELIMIT !== "1",
   trustProxy = process.env.ITB_TRUST_PROXY ?? "",
   rateLimitMax = RATE_LIMIT,
+  chairEmail,
+  production,
 }) {
+  const chairPolicy = resolveChairPolicy({ chairEmail, production })
+  if (chairPolicy.production && !chairPolicy.chairEmail) {
+    console.warn("ITB_CHAIR_EMAIL is unset. Nobody can claim the platform chair.")
+  }
   const store = createStore(storePath)
   const hits = new Map()
 
@@ -378,7 +401,7 @@ export function createApp({
       if (pathname === "/api/auth/me" && req.method === "GET") {
         const data = await store.read()
         const user = userFrom(data, readCookie(req))
-        send(res, 200, { user: user ? publicUser(user) : null, chair: chairView(data, user) })
+        send(res, 200, { user: user ? publicUser(user) : null, chair: chairView(data, user, chairPolicy) })
         return
       }
 
@@ -536,7 +559,7 @@ export function createApp({
         tokenHash: sha256(token),
         expiresAt: new Date(Date.now() + SESSION_MS).toISOString(),
       })
-      return { status: 201, token, user: publicUser(user), chair: chairView(data, user) }
+      return { status: 201, token, user: publicUser(user), chair: chairView(data, user, chairPolicy) }
     })
     if (result.error) {
       send(res, result.status, { error: result.error })
@@ -584,7 +607,7 @@ export function createApp({
         tokenHash: sha256(token),
         expiresAt: new Date(Date.now() + SESSION_MS).toISOString(),
       })
-      return { status: 200, user: publicUser(user), chair: chairView(data, user) }
+      return { status: 200, user: publicUser(user), chair: chairView(data, user, chairPolicy) }
     })
     if (result.error) {
       send(res, result.status, { error: result.error })
@@ -621,7 +644,7 @@ export function createApp({
       if (data.chairUserId === user.id) {
         return {
           status: 403,
-          error: "The platform chair cannot be deleted. The claim stays with this account.",
+          error: "The moderator account cannot be deleted.",
         }
       }
       data.users = data.users.filter((item) => item.id !== user.id)
@@ -644,15 +667,21 @@ export function createApp({
     const result = await store.update((data) => {
       const user = userFrom(data, token)
       if (!user) return { status: 401, error: "Sign in before claiming the chair." }
-      if (accountKind(user) === "store") {
+      if (chairPolicy.chairEmail) {
+        if (accountKind(user) === "store" || user.email.toLowerCase() !== chairPolicy.chairEmail) {
+          return { status: 404, error: "Not found." }
+        }
+      } else if (chairPolicy.production) {
+        return { status: 403, error: "Not found." }
+      } else if (accountKind(user) === "store") {
         return { status: 403, error: "A store account cannot claim the platform chair." }
       }
       if (!data.chairUserId) {
         data.chairUserId = user.id
         data.chairClaimedAt = new Date().toISOString()
-        return { status: 200, chair: chairView(data, user) }
+        return { status: 200, chair: chairView(data, user, chairPolicy) }
       }
-      if (data.chairUserId === user.id) return { status: 200, chair: chairView(data, user) }
+      if (data.chairUserId === user.id) return { status: 200, chair: chairView(data, user, chairPolicy) }
       return { status: 409, error: "The platform chair is already claimed." }
     })
     if (result.error) {
@@ -880,7 +909,7 @@ export function createApp({
         return { status: 401, error: "Sign in with a store account to claim a store." }
       }
       if (data.storeClaims.some((claim) => claim.userId === user.id && claim.status === "pending")) {
-        return { status: 409, error: "You already have a claim waiting for the chair." }
+        return { status: 409, error: "You already have a claim waiting for a moderator." }
       }
       if (data.storeClaims.some((claim) => claim.userId === user.id && claim.status === "approved")) {
         return { status: 409, error: "This account is already verified for a store." }

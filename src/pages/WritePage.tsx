@@ -300,8 +300,8 @@ export function WritePage() {
             {copied ? "Copied" : "Copy receipt"}
           </Button>
           <p className="text-muted-foreground">
-            Use the receipt, or the account you were signed in with, to retract your own file. The
-            chair can hide writing that breaks the content rules.
+            Use the receipt, or the account you were signed in with, to retract your own file. A
+            moderator can hide writing that breaks the content rules.
           </p>
           {filedSlug ? (
             <Button asChild variant="outline" size="sm">
@@ -492,14 +492,14 @@ export function WritePage() {
           {pending ? "Filing…" : "File report"}
         </Button>
         <p className="text-xs text-muted-foreground">
-          You can retract your own file. The chair can hide one that breaks the content policy.
+          You can retract your own file. A moderator can hide one that breaks the content policy.
         </p>
       </form>
 
       <section className="space-y-3 rounded-xl border border-border bg-card/70 p-5">
         <h2 className="font-heading text-2xl tracking-tight">Retract your file</h2>
         <p className="text-sm text-muted-foreground">
-          Paste the receipt, or retract a file tied to this account. The chair can hide a filing
+          Paste the receipt, or retract a file tied to this account. A moderator can hide a filing
           under the content policy. The public still never sees who wrote it.
         </p>
         {retractError ? (

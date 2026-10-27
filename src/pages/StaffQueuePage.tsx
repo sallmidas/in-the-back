@@ -118,9 +118,8 @@ export function StaffQueuePage() {
         </p>
         <h1 className="font-heading text-4xl tracking-tight">Platform chair</h1>
         <p className="max-w-2xl text-muted-foreground">
-          One staff queue for the whole platform. Sign in, then claim it if it is still open. The
-          claim is stored on the server, once. From this queue you can hide
-          a published filing that breaks the{" "}
+          One staff queue for the whole platform. From this queue you can hide a published filing
+          that breaks the{" "}
           <Link to="/content" className={cn("rounded-sm underline-offset-4 hover:underline", focusRingClass)}>
             content policy
           </Link>
@@ -148,12 +147,14 @@ export function StaffQueuePage() {
       ) : !user ? (
         <div className="max-w-md space-y-3 rounded-xl border border-border bg-card/70 p-5">
           <p className="text-sm text-muted-foreground">
-            {chair.claimed
-              ? "The chair is already claimed. Sign in only if this is your account."
-              : "Create an account, then claim the chair. The first account to claim it is the only one."}
+            {chair.open
+              ? "Create an account, then claim the chair. The first account to claim it is the only one."
+              : "Sign in if this is your account."}
           </p>
           <AuthForm kind="reader" />
         </div>
+      ) : user.kind === "store" && !chair.open ? (
+        <p className="text-sm text-muted-foreground">Not found.</p>
       ) : user.kind === "store" ? (
         <div className="max-w-xl space-y-3 rounded-xl border border-border bg-card/70 p-5">
           <p className="text-sm">
@@ -242,11 +243,7 @@ export function StaffQueuePage() {
               )}
             </section>
             </>
-          ) : chair.claimed ? (
-            <p className="rounded-xl border border-border bg-card/70 p-5 text-sm text-muted-foreground">
-              The platform chair is already claimed. This account is not the chair.
-            </p>
-          ) : (
+          ) : chair.canClaim ? (
             <div className="space-y-3 rounded-xl border border-border bg-card/70 p-5">
               <p className="text-sm text-muted-foreground">
                 Claim the platform chair once. This is one seat for the whole board, and it does
@@ -268,6 +265,12 @@ export function StaffQueuePage() {
                 {pending ? "Claiming…" : "This is my queue"}
               </Button>
             </div>
+          ) : chair.open && chair.claimed ? (
+            <p className="rounded-xl border border-border bg-card/70 p-5 text-sm text-muted-foreground">
+              The platform chair is already claimed. This account is not the chair.
+            </p>
+          ) : (
+            <p className="text-sm text-muted-foreground">Not found.</p>
           )}
         </div>
       )}

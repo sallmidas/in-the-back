@@ -40,15 +40,14 @@ export function TermsPage() {
       </p>
       <p className="text-muted-foreground">
         You can retract your own filing with the receipt, or with the account you were signed in
-        with. The platform chair can hide a published filing that breaks the content rules, and
+        with. The moderator can hide a published filing that breaks the content rules, and
         can put it back. Hiding takes it off the public board. It is not the same as you
         retracting it.
       </p>
       <p className="text-muted-foreground">
         An account is optional for filing. It is an email and a password. Don’t share the
-        password. The platform chair is the first account that claims it. The claim does not
-        reopen for a second account. The public board does not show who claimed it. Deleting an
-        account does not delete filings. The chair account cannot be deleted.
+        password. The moderator reviews reports. The public board does not show who that is.
+        Deleting an account does not delete filings. The moderator account cannot be deleted.
       </p>
       <p className="text-muted-foreground">
         A filing is one person’s account of a room. It can be incomplete or wrong. The board is
@@ -65,8 +64,8 @@ export function TermsPage() {
         are anonymous.
       </p>
       <p className="text-muted-foreground">
-        A store account cannot claim the chair. A store claim stays pending until the chair
-        approves it. One verified claim per store, unless the chair adds another. A store cannot
+        A store account is not the moderator. A store claim stays pending until the moderator
+        approves it. One verified claim per store, unless the moderator adds another. A store cannot
         delete, hide, or edit a report.
       </p>
 
