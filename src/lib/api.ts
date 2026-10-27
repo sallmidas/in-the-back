@@ -7,9 +7,12 @@ export class ApiError extends Error {
   }
 }
 
+export type AccountKind = "reader" | "store"
+
 export type AccountUser = {
   id: string
   email: string
+  kind: AccountKind
 }
 
 export type ChairState = {
@@ -113,17 +116,17 @@ export function getMe() {
   return request<MeResponse>("/api/auth/me")
 }
 
-export function registerAccount(email: string, password: string) {
+export function registerAccount(email: string, password: string, kind: AccountKind = "reader") {
   return request<MeResponse>("/api/auth/register", {
     method: "POST",
-    body: { email, password },
+    body: { email, password, kind },
   })
 }
 
-export function loginAccount(email: string, password: string) {
+export function loginAccount(email: string, password: string, kind: AccountKind = "reader") {
   return request<MeResponse>("/api/auth/login", {
     method: "POST",
-    body: { email, password },
+    body: { email, password, kind },
   })
 }
 
@@ -182,5 +185,55 @@ export function retractOwnReport(reportId: string) {
   return request<{ retracted: boolean }>("/api/me/reports/retract", {
     method: "POST",
     body: { reportId },
+  })
+}
+
+export type StoreClaimStatus = "pending" | "approved" | "refused"
+
+export type StoreClaim = {
+  id: string
+  businessName: string
+  role: string
+  workEmail: string
+  freeInbox: boolean
+  status: StoreClaimStatus
+  createdAt: string
+}
+
+export type StoreHome = {
+  claim: StoreClaim | null
+  stores: { workplace: LiveWorkplace; reports: LiveReport[] }[]
+}
+
+export type ChairStoreClaim = StoreClaim & {
+  accountEmail: string | null
+  decidedAt: string | null
+  verifiedCount: number
+  workplaceName: string | null
+}
+
+export function storeHome() {
+  return request<StoreHome>("/api/store/home")
+}
+
+export function submitStoreClaim(body: { businessName: string; role: string; workEmail: string }) {
+  return request<{ claim: StoreClaim }>("/api/store/claims", { method: "POST", body })
+}
+
+export function chairStoreClaims() {
+  return request<{ claims: ChairStoreClaim[] }>("/api/chair/store-claims")
+}
+
+export function approveStoreClaim(claimId: string, allowAnother = false) {
+  return request<{ claim: ChairStoreClaim }>("/api/chair/store-claims/approve", {
+    method: "POST",
+    body: { claimId, allowAnother },
+  })
+}
+
+export function refuseStoreClaim(claimId: string) {
+  return request<{ claim: ChairStoreClaim }>("/api/chair/store-claims/refuse", {
+    method: "POST",
+    body: { claimId },
   })
 }

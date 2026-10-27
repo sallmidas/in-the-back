@@ -2,15 +2,19 @@ import { type FormEvent, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { loginAccount, registerAccount } from "@/lib/api"
+import { loginAccount, registerAccount, type AccountKind } from "@/lib/api"
 import { useSession } from "@/lib/session"
 
 export function AuthForm({
   onDone,
   createLabel = "Create account",
+  kind = "reader",
+  idPrefix = "account",
 }: {
   onDone?: () => void
   createLabel?: string
+  kind?: AccountKind
+  idPrefix?: string
 }) {
   const { refresh } = useSession()
   const [mode, setMode] = useState<"sign-in" | "create">("sign-in")
@@ -24,8 +28,8 @@ export function AuthForm({
     setPending(true)
     setError(null)
     try {
-      if (mode === "create") await registerAccount(email, password)
-      else await loginAccount(email, password)
+      if (mode === "create") await registerAccount(email, password, kind)
+      else await loginAccount(email, password, kind)
       await refresh()
       setPassword("")
       onDone?.()
@@ -47,9 +51,9 @@ export function AuthForm({
         </p>
       ) : null}
       <div className="space-y-1.5">
-        <Label htmlFor="account-email">Email</Label>
+        <Label htmlFor={`${idPrefix}-email`}>Email</Label>
         <Input
-          id="account-email"
+          id={`${idPrefix}-email`}
           type="email"
           autoComplete="username"
           required
@@ -58,9 +62,9 @@ export function AuthForm({
         />
       </div>
       <div className="space-y-1.5">
-        <Label htmlFor="account-password">Password</Label>
+        <Label htmlFor={`${idPrefix}-password`}>Password</Label>
         <Input
-          id="account-password"
+          id={`${idPrefix}-password`}
           type="password"
           autoComplete={mode === "create" ? "new-password" : "current-password"}
           required

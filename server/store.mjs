@@ -11,6 +11,7 @@ export function emptyStore() {
     chairClaimedAt: null,
     workplaces: [],
     reports: [],
+    storeClaims: [],
   }
 }
 
@@ -21,7 +22,9 @@ export function createStore(filePath) {
     try {
       const raw = await readFile(filePath, "utf8")
       const parsed = JSON.parse(raw)
-      return { ...emptyStore(), ...parsed }
+      const data = { ...emptyStore(), ...parsed }
+      if (!Array.isArray(data.storeClaims)) data.storeClaims = []
+      return data
     } catch (error) {
       if (error && error.code === "ENOENT") return emptyStore()
       throw error

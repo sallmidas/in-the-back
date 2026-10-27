@@ -56,7 +56,10 @@ export function TermsPage() {
         An account is optional for filing. It is an email and a password. Don’t share the
         password. The platform chair is the first account that claims it. The claim does not
         reopen for a second account. The public board does not show who claimed it. Deleting an
-        account does not delete filings. The chair account cannot be deleted.
+        account does not delete filings. The chair account cannot be deleted. A store account
+        cannot claim the chair. A store claim stays pending until the chair approves it. One
+        verified claim per store, unless the chair adds another. A store cannot delete, hide, or
+        edit a filing.
       </p>
 
       <h2 className="font-heading pt-2 text-2xl">What the board is not</h2>

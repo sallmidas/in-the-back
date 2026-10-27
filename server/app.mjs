@@ -15,6 +15,7 @@ import {
   verifyPassword,
 } from "./passwords.mjs"
 import { clientAddress } from "./client-ip.mjs"
+import { parseStoreClaim } from "./store-claims.mjs"
 import { parseEmail, parseFiling, parsePassword, slugify } from "./validate.mjs"
 
 const SESSION_MS = 30 * 24 * 60 * 60 * 1000
@@ -35,8 +36,12 @@ const STATIC_TYPES = {
   ".map": "application/json",
 }
 
+function accountKind(user) {
+  return user?.kind === "store" ? "store" : "reader"
+}
+
 function publicUser(user) {
-  return { id: user.id, email: user.email }
+  return { id: user.id, email: user.email, kind: accountKind(user) }
 }
 
 function chairView(data, user) {
@@ -48,6 +53,87 @@ function chairView(data, user) {
 
 function isOnBoard(report) {
   return !report.retractedAt && !report.hiddenAt
+}
+
+function listedOnBoard(data, workplace) {
+  if (!workplace.claimOnly) return true
+  return data.reports.some((report) => report.workplaceId === workplace.id && isOnBoard(report))
+}
+
+function ensureWorkplace(data, businessName) {
+  const key = businessName.toLowerCase()
+  const existing = data.workplaces.find((item) => item.name.toLowerCase() === key)
+  if (existing) return existing
+  let slug = slugify(businessName)
+  let n = 2
+  while (data.workplaces.some((item) => item.slug === slug)) {
+    slug = `${slugify(businessName)}-${n}`
+    n += 1
+  }
+  const workplace = {
+    id: randomId("wp"),
+    slug,
+    name: businessName,
+    industry: null,
+    city: "",
+    region: "",
+    createdAt: new Date().toISOString(),
+    claimOnly: true,
+  }
+  data.workplaces.push(workplace)
+  return workplace
+}
+
+function verifiedClaimsForName(data, businessName, exceptId) {
+  const key = businessName.trim().toLowerCase()
+  return data.storeClaims.filter(
+    (item) =>
+      item.status === "approved" &&
+      item.id !== exceptId &&
+      item.businessName.trim().toLowerCase() === key,
+  )
+}
+
+function chairClaimView(data, claim) {
+  const account = data.users.find((user) => user.id === claim.userId)
+  const workplace = claim.workplaceId
+    ? data.workplaces.find((item) => item.id === claim.workplaceId)
+    : null
+  return {
+    id: claim.id,
+    businessName: claim.businessName,
+    role: claim.role,
+    workEmail: claim.workEmail,
+    accountEmail: account?.email ?? null,
+    freeInbox: Boolean(claim.freeInbox),
+    status: claim.status,
+    createdAt: claim.createdAt,
+    decidedAt: claim.decidedAt ?? null,
+    verifiedCount: verifiedClaimsForName(data, claim.businessName, claim.id).length,
+    workplaceName: workplace?.name ?? null,
+  }
+}
+
+function storeClaimView(claim) {
+  return {
+    id: claim.id,
+    businessName: claim.businessName,
+    role: claim.role,
+    workEmail: claim.workEmail,
+    freeInbox: Boolean(claim.freeInbox),
+    status: claim.status,
+    createdAt: claim.createdAt,
+  }
+}
+
+function activeStoreClaim(data, userId) {
+  const mine = data.storeClaims.filter((claim) => claim.userId === userId)
+  return (
+    mine.find((claim) => claim.status === "pending") ??
+    mine.find((claim) => claim.status === "approved") ??
+    mine[mine.length - 1] ??
+    null
+  )
 }
 
 function roomsForWorkplace(data, workplaceId) {
@@ -281,7 +367,9 @@ export function createApp({
       if (pathname === "/api/board" && req.method === "GET") {
         const data = await store.read()
         send(res, 200, {
-          workplaces: data.workplaces.map((workplace) => publicWorkplace(data, workplace)),
+          workplaces: data.workplaces
+            .filter((workplace) => listedOnBoard(data, workplace))
+            .map((workplace) => publicWorkplace(data, workplace)),
           reports: data.reports.filter((report) => isOnBoard(report)).map(publicReport),
         })
         return
@@ -296,6 +384,16 @@ export function createApp({
 
       if (pathname === "/api/chair/reports" && req.method === "GET") {
         await listChairReports(req, res)
+        return
+      }
+
+      if (pathname === "/api/chair/store-claims" && req.method === "GET") {
+        await listStoreClaims(req, res)
+        return
+      }
+
+      if (pathname === "/api/store/home" && req.method === "GET") {
+        await storeHome(req, res)
         return
       }
 
@@ -385,6 +483,18 @@ export function createApp({
         await setReportHidden(req, res, body, false)
         return
       }
+      if (pathname === "/api/store/claims") {
+        await submitStoreClaim(req, res, body)
+        return
+      }
+      if (pathname === "/api/chair/store-claims/approve") {
+        await decideStoreClaim(req, res, body, "approved")
+        return
+      }
+      if (pathname === "/api/chair/store-claims/refuse") {
+        await decideStoreClaim(req, res, body, "refused")
+        return
+      }
 
       send(res, 404, { error: "Not found" })
     } catch (error) {
@@ -415,6 +525,7 @@ export function createApp({
         id: randomId("usr"),
         email,
         passwordHash,
+        kind: body.kind === "store" ? "store" : "reader",
         createdAt: new Date().toISOString(),
       }
       const token = randomToken()
@@ -451,6 +562,15 @@ export function createApp({
     const valid = existing ? verifyPassword(password, existing.passwordHash) : false
     if (!existing || !valid) {
       send(res, 401, { error: "Email or password is wrong." })
+      return
+    }
+    const requested = body.kind === "store" ? "store" : body.kind === "reader" ? "reader" : null
+    if (requested && requested !== accountKind(existing)) {
+      const error =
+        requested === "store"
+          ? "That email is a reader account. Store sign-in is separate."
+          : "That email is a store account. Sign in under For stores."
+      send(res, 401, { error })
       return
     }
     const token = randomToken()
@@ -506,6 +626,7 @@ export function createApp({
       }
       data.users = data.users.filter((item) => item.id !== user.id)
       data.sessions = data.sessions.filter((session) => session.userId !== user.id)
+      data.storeClaims = data.storeClaims.filter((claim) => claim.userId !== user.id)
       for (const report of data.reports) {
         if (report.ownerUserId === user.id) report.ownerUserId = null
       }
@@ -523,6 +644,9 @@ export function createApp({
     const result = await store.update((data) => {
       const user = userFrom(data, token)
       if (!user) return { status: 401, error: "Sign in before claiming the chair." }
+      if (accountKind(user) === "store") {
+        return { status: 403, error: "A store account cannot claim the platform chair." }
+      }
       if (!data.chairUserId) {
         data.chairUserId = user.id
         data.chairClaimedAt = new Date().toISOString()
@@ -577,6 +701,11 @@ export function createApp({
           }
           data.workplaces.push(workplace)
         }
+      }
+      if (workplace && filing.create) {
+        if (!workplace.city) workplace.city = filing.city
+        if (!workplace.region) workplace.region = filing.region
+        if (!workplace.industry) workplace.industry = filing.industry
       }
       const report = {
         id: randomId("rpt"),
@@ -691,6 +820,132 @@ export function createApp({
       return
     }
     send(res, 200, { retracted: true })
+  }
+
+  function requireChair(data, token) {
+    const user = userFrom(data, token)
+    if (!user) return { error: { status: 401, error: "Sign in as the platform chair." } }
+    if (data.chairUserId !== user.id) {
+      return { error: { status: 403, error: "Only the platform chair can open this queue." } }
+    }
+    return { user }
+  }
+
+  async function listStoreClaims(req, res) {
+    const data = await store.read()
+    const gate = requireChair(data, readCookie(req))
+    if (gate.error) {
+      send(res, gate.error.status, { error: gate.error.error })
+      return
+    }
+    const claims = [...data.storeClaims]
+      .sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)))
+      .map((claim) => chairClaimView(data, claim))
+    send(res, 200, { claims })
+  }
+
+  async function storeHome(req, res) {
+    const data = await store.read()
+    const user = userFrom(data, readCookie(req))
+    if (!user || accountKind(user) !== "store") {
+      send(res, 401, { error: "Sign in with a store account." })
+      return
+    }
+    const claim = activeStoreClaim(data, user.id)
+    const stores = []
+    if (claim?.status === "approved" && claim.workplaceId) {
+      const workplace = data.workplaces.find((item) => item.id === claim.workplaceId)
+      if (workplace) {
+        stores.push({
+          workplace: publicWorkplace(data, workplace),
+          reports: data.reports
+            .filter((report) => report.workplaceId === workplace.id && isOnBoard(report))
+            .map(publicReport),
+        })
+      }
+    }
+    send(res, 200, { claim: claim ? storeClaimView(claim) : null, stores })
+  }
+
+  async function submitStoreClaim(req, res, body) {
+    const parsed = parseStoreClaim(body)
+    if (parsed.error) {
+      send(res, 400, { error: parsed.error })
+      return
+    }
+    const token = readCookie(req)
+    const result = await store.update((data) => {
+      const user = userFrom(data, token)
+      if (!user || accountKind(user) !== "store") {
+        return { status: 401, error: "Sign in with a store account to claim a store." }
+      }
+      if (data.storeClaims.some((claim) => claim.userId === user.id && claim.status === "pending")) {
+        return { status: 409, error: "You already have a claim waiting for the chair." }
+      }
+      if (data.storeClaims.some((claim) => claim.userId === user.id && claim.status === "approved")) {
+        return { status: 409, error: "This account is already verified for a store." }
+      }
+      const claim = {
+        id: randomId("clm"),
+        userId: user.id,
+        ...parsed.value,
+        status: "pending",
+        workplaceId: null,
+        createdAt: new Date().toISOString(),
+        decidedAt: null,
+      }
+      data.storeClaims.push(claim)
+      return { status: 201, claim: storeClaimView(claim) }
+    })
+    if (result.error) {
+      send(res, result.status, { error: result.error })
+      return
+    }
+    send(res, result.status, { claim: result.claim })
+  }
+
+  async function decideStoreClaim(req, res, body, nextStatus) {
+    const claimId = typeof body.claimId === "string" ? body.claimId : ""
+    if (!claimId) {
+      send(res, 400, { error: "Name the claim." })
+      return
+    }
+    const allowAnother = body.allowAnother === true
+    const token = readCookie(req)
+    const result = await store.update((data) => {
+      const gate = requireChair(data, token)
+      if (gate.error) return gate.error
+      const claim = data.storeClaims.find((item) => item.id === claimId)
+      if (!claim) return { status: 404, error: "No store claim matches that id." }
+      if (nextStatus === "refused") {
+        if (claim.status === "approved") {
+          return { status: 409, error: "That claim is already verified. It stays on the store." }
+        }
+        claim.status = "refused"
+        claim.decidedAt = new Date().toISOString()
+        return { status: 200, claim: chairClaimView(data, claim) }
+      }
+      if (claim.status === "refused") {
+        return { status: 409, error: "That claim was refused. The store can send a new one." }
+      }
+      const others = verifiedClaimsForName(data, claim.businessName, claim.id)
+      if (others.length > 0 && !allowAnother) {
+        return {
+          status: 409,
+          error: "This store already has a verified claim. Confirm to add another.",
+        }
+      }
+      const workplace = ensureWorkplace(data, claim.businessName)
+      if (claim.status !== "approved") claim.decidedAt = new Date().toISOString()
+      claim.status = "approved"
+      claim.workplaceId = workplace.id
+      return { status: 200, claim: chairClaimView(data, claim) }
+    })
+    if (result.error) {
+      send(res, result.status, { error: result.error })
+      return
+    }
+    send(res, 200, { claim: result.claim })
   }
 
   const server = createServer((req, res) => {

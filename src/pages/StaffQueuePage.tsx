@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { AuthForm } from "@/components/account/AuthForm"
+import { StoreClaimsQueue } from "@/components/chair/StoreClaimsQueue"
 import { EmptyState } from "@/components/layout/EmptyState"
 import { ReportCard } from "@/components/report/ReportCard"
 import { Button } from "@/components/ui/button"
@@ -149,7 +150,25 @@ export function StaffQueuePage() {
               ? "The chair is already claimed. Sign in only if this is your account."
               : "Create an account, then claim the chair. The first account to claim it is the only one."}
           </p>
-          <AuthForm />
+          <AuthForm kind="reader" />
+        </div>
+      ) : user.kind === "store" ? (
+        <div className="max-w-xl space-y-3 rounded-xl border border-border bg-card/70 p-5">
+          <p className="text-sm">
+            Signed in as store account <span className="font-mono">{user.email}</span>
+          </p>
+          <p className="text-sm text-muted-foreground">
+            A store account cannot claim the platform chair. The chair is one seat for In the
+            Back, not for a store.
+          </p>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Button asChild className="w-full sm:w-auto">
+              <Link to="/stores/dashboard">Store dashboard</Link>
+            </Button>
+            <Button variant="outline" size="sm" className="w-full sm:w-auto" onClick={() => void onSignOut()}>
+              Sign out
+            </Button>
+          </div>
         </div>
       ) : (
         <div className="space-y-6">
@@ -166,6 +185,8 @@ export function StaffQueuePage() {
           </div>
 
           {chair.mine ? (
+            <>
+            <StoreClaimsQueue active={chair.mine} />
             <section className="space-y-3">
               <div>
                 <h2 className="font-heading text-2xl">Queue</h2>
@@ -218,6 +239,7 @@ export function StaffQueuePage() {
                 </div>
               )}
             </section>
+            </>
           ) : chair.claimed ? (
             <p className="rounded-xl border border-border bg-card/70 p-5 text-sm text-muted-foreground">
               The platform chair is already claimed. This queue belongs to the platform, once — not

@@ -36,9 +36,9 @@ export function DemoWalk() {
     },
     {
       n: "04",
-      to: "/plans",
-      title: "Browse plans",
-      body: "A later model, labeled as planned. Nothing is charged during the preview.",
+      to: "/stores",
+      title: "For stores",
+      body: "Store plans are labeled as planned. Nothing is charged during the preview.",
     },
   ]
 

@@ -32,7 +32,7 @@ export function HowItWorksPage() {
             </Button>
           )}
           <Button asChild variant="outline" className="w-full sm:w-auto">
-            <Link to="/plans">Plans (preview only)</Link>
+            <Link to="/stores">For stores</Link>
           </Button>
         </div>
       </header>
@@ -63,12 +63,12 @@ export function HowItWorksPage() {
           </p>
         </div>
         <p className="text-sm leading-relaxed text-muted-foreground">
-          Watch and Respond are facility plans, not the chair. What each one would do, and the flat
+          Watch and Respond are store plans, not the chair. What each one would do, and the flat
           monthly price, is on{" "}
-          <Link to="/plans" className="underline-offset-4 hover:underline">
-            Plans
+          <Link to="/stores" className="underline-offset-4 hover:underline">
+            For stores
           </Link>
-          . Those plans are a preview. They are not offered now.
+          . Those plans are a preview. They are not offered now. Reading and filing stay free.
         </p>
       </section>
 

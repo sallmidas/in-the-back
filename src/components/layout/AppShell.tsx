@@ -24,6 +24,7 @@ const NAV = [
   { to: "/workplaces", label: "Directory" },
   { to: "/how-it-works", label: "How it works" },
   { to: "/plans", label: "Plans" },
+  { to: "/stores", label: "For stores" },
   { to: "/staff", label: "Chair" },
 ]
 
@@ -160,6 +161,9 @@ export function AppShell({ children }: { children: ReactNode }) {
             </Link>
             <Link to="/plans" className={footerLinkClass}>
               Plans
+            </Link>
+            <Link to="/stores" className={footerLinkClass}>
+              For stores
             </Link>
             <Link to="/staff" className={footerLinkClass}>
               Chair

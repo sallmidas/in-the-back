@@ -7,7 +7,7 @@ Do not create host accounts from this repo. The notes below are what to buy and 
 ## What the host needs
 
 - A Node 22 process that stays running (`npm start`).
-- A persistent disk for `data/board.json`. The file is the whole database: accounts, password hashes, sessions, the platform-chair claim, workplaces, and filings (including retracted and hidden ones). Ephemeral container disk will wipe the board on restart.
+- A persistent disk for `data/board.json`. The file is the whole database: reader and store accounts, password hashes, sessions, the platform-chair claim, store claims, workplaces, and filings (including retracted and hidden ones). Ephemeral container disk will wipe the board on restart.
 - HTTPS on the public URL. The installable PWA needs a secure origin, and the session cookie should be marked Secure.
 - One process only. The write lock is a file next to `board.json`. Two processes, even on a shared volume, can fight that lock or corrupt the file. Do not scale the service horizontally.
 

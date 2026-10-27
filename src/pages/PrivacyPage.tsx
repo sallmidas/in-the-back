@@ -66,6 +66,13 @@ export function PrivacyPage() {
         the password hash, and the sessions. It does not retract a filing. The platform-chair
         account cannot be deleted, so the claim is not dropped by accident.
       </p>
+      <p className="text-muted-foreground">
+        A store account is separate. To claim a store we store the business name, the role, and a
+        work email, and we keep that claim pending until the platform chair approves it. The
+        public board does not show the claim. A verified store sees the same anonymous filings
+        the public sees. We do not give a store the filer’s email, name, or account. A store
+        cannot hide or delete a filing.
+      </p>
 
       <h2 className="font-heading pt-2 text-2xl">The chair and hidden filings</h2>
       <p className="text-muted-foreground">

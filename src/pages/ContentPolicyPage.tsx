@@ -50,7 +50,7 @@ export function ContentPolicyPage() {
         <li>A filing goes on the public board when it is sent.</li>
         <li>The person who filed it can retract it with the receipt or with their account. Retracting takes it off the board.</li>
         <li>The platform chair can hide a published filing that breaks these rules, and can put it back. Hiding takes it off the public board and out of the room score. The workplace can remain listed. The filing stays in the private store.</li>
-        <li>A workplace cannot delete a filing. There is no Resolve button.</li>
+        <li>A store cannot delete, hide, or edit a filing. Only the platform chair can hide one. The person who filed it can retract it. There is no Resolve button.</li>
       </ul>
 
       <h2 className="font-heading pt-2 text-2xl">Asking for a review</h2>

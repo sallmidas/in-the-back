@@ -9,6 +9,9 @@ import { HowItWorksPage } from "@/pages/HowItWorksPage"
 import { NotFoundPage } from "@/pages/NotFoundPage"
 import { ContentPolicyPage } from "@/pages/ContentPolicyPage"
 import { PlansPage } from "@/pages/PlansPage"
+import { StoreDashboardPage } from "@/pages/StoreDashboardPage"
+import { StoreLoginPage } from "@/pages/StoreLoginPage"
+import { StoresLandingPage } from "@/pages/StoresLandingPage"
 import { PrivacyPage } from "@/pages/PrivacyPage"
 import { StaffQueuePage } from "@/pages/StaffQueuePage"
 import { TermsPage } from "@/pages/TermsPage"
@@ -66,6 +69,9 @@ export default function App() {
           }
         />
         <Route path="/plans" element={<PlansPage />} />
+        <Route path="/stores" element={<StoresLandingPage />} />
+        <Route path="/stores/login" element={<StoreLoginPage />} />
+        <Route path="/stores/dashboard" element={<StoreDashboardPage />} />
         <Route path="/staff" element={<StaffQueuePage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/terms" element={<TermsPage />} />
