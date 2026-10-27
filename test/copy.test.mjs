@@ -35,7 +35,14 @@ test("user-facing copy matches the product model", () => {
   assert.match(read("src/components/layout/EmptyState.tsx"), /File a report/)
   assert.match(read("src/pages/HowItWorksPage.tsx"), /Back of house/)
   assert.match(read("src/pages/HowItWorksPage.tsx"), /one seat for the whole platform/)
-  assert.match(read("src/pages/PlansPage.tsx"), /REPORTER_REWARD_NOTE/)
+  assert.match(read("src/pages/PlansPage.tsx"), /Plans for stores/)
+  assert.match(read("src/pages/PlansPage.tsx"), /For stores & businesses/)
+  assert.match(
+    read("src/pages/PlansPage.tsx"),
+    /Reading and filing are always free\. Stores would pay for alerts/,
+  )
+  assert.doesNotMatch(read("src/pages/PlansPage.tsx"), /facility|REPORTER_REWARD_NOTE/)
+  assert.doesNotMatch(read("src/data/plans.ts"), /facility/)
   assert.match(read("src/pages/TermsPage.tsx"), /REPORTER_REWARD_NOTE/)
   assert.match(read("src/components/layout/DraftBanner.tsx"), /Draft – pending legal review/)
   assert.match(read("src/pages/PrivacyPage.tsx"), /<DraftBanner/)

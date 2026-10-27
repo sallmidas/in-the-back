@@ -18,6 +18,6 @@ export const REPORTER_REWARD_NOTE =
  * Nothing here is charged or paid during the preview.
  */
 export function kitchenPriceLabel(monthly, reporterPay) {
-  if (!monthly) return "Free during the preview. Looking at the board costs nothing."
-  return `Planned, coming later: $${monthly}/mo. A reporter would earn $${reporterPay} once the report passes review. Reports shown to be false after a dispute earn nothing.`
+  if (!monthly) return "Free for everyone reading and filing."
+  return `The store pays $${monthly}/mo. A reporter would earn $${reporterPay} once the report passes review. Reports shown to be false after a dispute earn nothing.`
 }

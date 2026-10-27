@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom"
-import { REPORTER_REWARD_NOTE } from "../../shared/plan-copy.mjs"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -20,19 +19,14 @@ export function PlansPage() {
       <header className="space-y-3">
         <div className="flex flex-wrap items-center gap-2">
           <p className="font-mono text-[11px] tracking-[0.2em] text-primary uppercase">
-            Operator plans
+            For stores & businesses
           </p>
           <Badge variant="outline">Planned, coming later</Badge>
         </div>
-        <h1 className="font-heading text-4xl tracking-tight">Free, Watch, Respond</h1>
+        <h1 className="font-heading text-4xl tracking-tight">Plans for stores</h1>
         <p className="max-w-2xl text-muted-foreground">
-          Nothing on this page is for sale. Watch and Respond are a preview of a model planned for
-          later, not a promise and not a date. A facility would pay a flat monthly price for
-          near-real-time alerts. Watch would be $129/mo. Respond would be $249/mo and would add the
-          ability to respond or dispute and recover a rating faster. {REPORTER_REWARD_NOTE} On
-          Watch that reward would be $3. On Respond it would be $5. The reward would be part of
-          that monthly price. Filing alone would not earn it.
-          The chair is not a plan.
+          Reading and filing are always free. Stores would pay for alerts — planned for later, not
+          for sale during the preview.
         </p>
       </header>
 

@@ -21,8 +21,8 @@ export const PLANS: Plan[] = [
     name: "Free",
     monthly: 0,
     priceLabel: kitchenPriceLabel(0, 0),
-    tagline: "The public board. Rooms, scores, writing.",
-    audience: "Anyone reading the board",
+    tagline: "Rooms, scores, and writing on the public board.",
+    audience: "Everyone reading and filing",
     features: [
       "Workplace directory and room scores",
       "Anonymous excerpts — never reviewer identity",
@@ -35,8 +35,8 @@ export const PLANS: Plan[] = [
     name: "Watch",
     monthly: 129,
     priceLabel: kitchenPriceLabel(129, 3),
-    tagline: "Planned: a facility would pay monthly for near-real-time alerts.",
-    audience: "A facility that would want alerts as files land",
+    tagline: "The store pays $129/mo for near-real-time alerts.",
+    audience: "A store that would want alerts as files land",
     features: [
       "Everything on Free",
       "Near-real-time alerts when a report is filed",
@@ -50,8 +50,8 @@ export const PLANS: Plan[] = [
     name: "Respond",
     monthly: 249,
     priceLabel: kitchenPriceLabel(249, 5),
-    tagline: "Planned: alerts, plus a response or dispute and a faster way to recover the rating.",
-    audience: "A facility that would want to respond and recover a rating faster",
+    tagline: "The store pays $249/mo. Adds a response or dispute and a faster way to recover the rating.",
+    audience: "A store that would want to respond and recover a rating faster",
     features: [
       "Everything on Watch",
       "Respond or dispute a filing, and recover the room rating faster",
