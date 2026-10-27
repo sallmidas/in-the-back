@@ -65,8 +65,8 @@ export function DirectoryPage() {
         </p>
         <h1 className="font-heading text-4xl tracking-tight">Find a building, then a room</h1>
         <p className="max-w-2xl text-muted-foreground">
-          Search name, city, or room. Filters live in the URL so you can share a view — never a
-          reviewer, never a chair.
+          Search a name, a city, or a room. A shared link keeps the same view. The board never
+          shows who wrote a report, or who the chair is.
           {demoSeedEnabled
             ? " Every sample listing is labeled DEMO."
             : listed > 0
@@ -164,7 +164,7 @@ export function DirectoryPage() {
 
       {listed === 0 ? (
         <EmptyState eyebrow="Directory" title="Board's quiet." primaryLabel="File a report">
-          <p>No rooms scored yet. First mark: cleanliness, safety, dignity.</p>
+          <p>No reports yet. File one about a room: cleanliness, safety, and dignity.</p>
         </EmptyState>
       ) : results.length === 0 ? (
         <EmptyState
@@ -173,7 +173,7 @@ export function DirectoryPage() {
           primaryTo="/workplaces"
           primaryLabel="Clear filters"
         >
-          <p>Loosen the cut, or open a room and leave the first score.</p>
+          <p>Nothing matched. Clear the filters, or file a report about a room.</p>
         </EmptyState>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">

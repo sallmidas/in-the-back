@@ -1,4 +1,4 @@
-import { type FormEvent, useState } from "react"
+import { type FormEvent, useEffect, useRef, useState } from "react"
 import { Link, Navigate, useSearchParams } from "react-router-dom"
 import { AuthForm } from "@/components/account/AuthForm"
 import { BoardSkeleton } from "@/components/layout/BoardSkeleton"
@@ -33,6 +33,27 @@ import { useBoard } from "@/lib/board"
 import { useSession } from "@/lib/session"
 
 const UNSET = "unset"
+const RECEIPT_KEY = "itb.lastReceipt"
+
+function sameReceipt(left: string, right: string) {
+  const norm = (value: string) => value.toUpperCase().replace(/[^A-Z0-9]/g, "")
+  const a = norm(left)
+  return a.length > 0 && a === norm(right)
+}
+
+function savedReceipt(): { receipt: string; slug: string | null } | null {
+  try {
+    const saved = JSON.parse(sessionStorage.getItem(RECEIPT_KEY) ?? "null") as {
+      receipt?: string
+      slug?: string
+    } | null
+    if (!saved?.receipt) return null
+    return { receipt: saved.receipt, slug: saved.slug ?? null }
+  } catch {
+    sessionStorage.removeItem(RECEIPT_KEY)
+    return null
+  }
+}
 
 export function WritePage() {
   const { ready, workplaces, refresh } = useBoard()
@@ -68,15 +89,33 @@ export function WritePage() {
   const [excerpt, setExcerpt] = useState("")
   const [inRoom, setInRoom] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [receipt, setReceipt] = useState<string | null>(null)
-  const [filedSlug, setFiledSlug] = useState<string | null>(null)
+  const [receipt, setReceipt] = useState<string | null>(() => savedReceipt()?.receipt ?? null)
+  const [filedSlug, setFiledSlug] = useState<string | null>(() => savedReceipt()?.slug ?? null)
   const [pending, setPending] = useState(false)
   const [retractCode, setRetractCode] = useState("")
   const [retractNotice, setRetractNotice] = useState<string | null>(null)
   const [retractError, setRetractError] = useState<string | null>(null)
   const [mine, setMine] = useState<OwnedReport[] | null>(null)
+  const [copied, setCopied] = useState(false)
+  const fileLock = useRef(false)
+  const retractLock = useRef(false)
 
   const listed = workplaces.length > 0 && !creating
+
+  useEffect(() => {
+    if (!sessionReady || !user || user.kind === "store") return
+    let cancel = false
+    myReports()
+      .then((result) => {
+        if (!cancel) setMine(result.reports)
+      })
+      .catch(() => {
+        if (!cancel) setMine(null)
+      })
+    return () => {
+      cancel = true
+    }
+  }, [sessionReady, user])
 
   async function loadMine() {
     if (!user) {
@@ -122,7 +161,7 @@ export function WritePage() {
       return
     }
     if (!inRoom) {
-      setError("Confirm you were in this room. That is your word. We do not check it.")
+      setError("Confirm you were in this room. We do not check a badge or a schedule.")
       return
     }
 
@@ -138,6 +177,8 @@ export function WritePage() {
       return
     }
 
+    if (fileLock.current) return
+    fileLock.current = true
     setPending(true)
     setError(null)
     try {
@@ -156,6 +197,11 @@ export function WritePage() {
       })
       setReceipt(result.receipt)
       setFiledSlug(result.report.workplaceSlug)
+      setCopied(false)
+      sessionStorage.setItem(
+        RECEIPT_KEY,
+        JSON.stringify({ receipt: result.receipt, slug: result.report.workplaceSlug }),
+      )
       setWorkplaceSlug(UNSET)
       setWorkplaceName("")
       setCity("")
@@ -172,21 +218,30 @@ export function WritePage() {
     } catch (err) {
       setError(err instanceof Error ? err.message : "The filing did not save.")
     } finally {
+      fileLock.current = false
       setPending(false)
     }
   }
 
   async function onRetract(event: FormEvent) {
     event.preventDefault()
+    if (retractLock.current) return
+    retractLock.current = true
     setRetractError(null)
     setRetractNotice(null)
     try {
       await retractWithReceipt(retractCode)
       setRetractCode("")
       setRetractNotice("Retracted. The file is off the public board.")
+      if (sameReceipt(retractCode, receipt ?? "")) {
+        sessionStorage.removeItem(RECEIPT_KEY)
+        setReceipt(null)
+      }
       await refresh()
     } catch (err) {
       setRetractError(err instanceof Error ? err.message : "That receipt did not retract a file.")
+    } finally {
+      retractLock.current = false
     }
   }
 
@@ -229,8 +284,21 @@ export function WritePage() {
       ) : null}
       {receipt ? (
         <div role="status" className="space-y-2 rounded-lg border border-border bg-muted/40 px-3 py-3 text-sm">
-          <p>Filed. It is on the board. Save this receipt — it is shown once and is not published.</p>
-          <p className="font-mono text-base tracking-wide">{receipt}</p>
+          <p>Filed. It is on the board. Copy this receipt now. It is not published, and we cannot show it again later. It stays on this page if you refresh this tab.</p>
+          <p className="font-mono text-base tracking-wide break-all">{receipt}</p>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              void navigator.clipboard.writeText(receipt).then(
+                () => setCopied(true),
+                () => setCopied(false),
+              )
+            }}
+          >
+            {copied ? "Copied" : "Copy receipt"}
+          </Button>
           <p className="text-muted-foreground">
             Use the receipt, or the account you were signed in with, to retract your own file. The
             chair can hide writing that breaks the content rules.
@@ -282,7 +350,7 @@ export function WritePage() {
             </Select>
             <button
               type="button"
-              className="text-sm text-muted-foreground underline-offset-4 hover:underline"
+              className="inline-flex min-h-11 items-center text-sm text-muted-foreground underline-offset-4 hover:underline"
               onClick={() => setCreating(true)}
             >
               The workplace is not listed yet
@@ -293,7 +361,7 @@ export function WritePage() {
             {workplaces.length > 0 ? (
               <button
                 type="button"
-                className="text-sm text-muted-foreground underline-offset-4 hover:underline"
+                className="inline-flex min-h-11 items-center text-sm text-muted-foreground underline-offset-4 hover:underline"
                 onClick={() => setCreating(false)}
               >
                 Pick a workplace already on the board
@@ -365,14 +433,18 @@ export function WritePage() {
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="write-score">Score /10</Label>
+          <Label htmlFor="write-score">Score, 1 to 10</Label>
           <Input
             id="write-score"
             inputMode="decimal"
             value={score}
             onChange={(event) => setScore(event.target.value)}
-            placeholder="Cleanliness, safety, dignity"
+            placeholder="1 is rough, 10 is solid"
+            aria-describedby="write-score-help"
           />
+          <p id="write-score-help" className="text-xs text-muted-foreground">
+            1 is a rough room. 10 is a solid one. Score cleanliness, safety, and dignity together.
+          </p>
         </div>
 
         <div className="space-y-1.5">
@@ -405,13 +477,14 @@ export function WritePage() {
             id="write-in-room"
             type="checkbox"
             checked={inRoom}
-            required
             onChange={(event) => setInRoom(event.target.checked)}
-            className="mt-1 size-4 accent-primary"
+            className="mt-1 size-6 accent-primary"
           />
           <div className="space-y-1">
             <Label htmlFor="write-in-room">I was in this room.</Label>
-            <p className="text-xs text-muted-foreground">Your word. Nothing checks it.</p>
+            <p className="text-xs text-muted-foreground">
+              We do not check a badge or a schedule. Check this only if you were in the room.
+            </p>
           </div>
         </div>
 
@@ -450,7 +523,7 @@ export function WritePage() {
             placeholder="Receipt"
             autoComplete="off"
           />
-          <Button type="submit" variant="outline" className="sm:w-auto">
+          <Button type="submit" variant="outline" className="min-h-11 sm:w-auto">
             Retract
           </Button>
         </form>

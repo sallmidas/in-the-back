@@ -141,7 +141,7 @@ test("a filer retracts with a receipt or their account, and a kitchen cannot del
 
     const deleted = await stranger.request("DELETE", `/api/reports/${id}`)
     assert.equal(deleted.status, 405)
-    assert.match(deleted.data.error, /cannot delete/i)
+    assert.match(deleted.data.error, /cannot be deleted/i)
 
     const resolved = await stranger.request("POST", "/api/reports/resolve", {})
     assert.equal(resolved.status, 404)

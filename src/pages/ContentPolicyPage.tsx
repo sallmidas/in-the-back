@@ -56,10 +56,10 @@ export function ContentPolicyPage() {
 
       <h2 className="font-heading pt-4 text-2xl">If you are a store</h2>
       <p className="text-muted-foreground">
-        A store cannot delete, hide, or edit a note. Only the platform chair can hide one. The
-        person who wrote it can retract it. There is no Resolve button. Notes on the board are
-        anonymous. If a note breaks these rules, write to the contact below and name the store
-        and the room. Do not include a person’s name in that note if you can point at the writing
+        A store cannot delete, hide, or edit a report. Only the platform chair can hide one. The
+        person who wrote it can retract it. There is no Resolve button. Reports on the board are
+        anonymous. If a report breaks these rules, write to the contact below and name the store
+        and the room. Do not include a person’s name in that message if you can point at the writing
         without one.
       </p>
       <ContactLine />

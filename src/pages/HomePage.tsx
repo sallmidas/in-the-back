@@ -45,8 +45,8 @@ export function HomePage() {
           </h1>
           <p className="max-w-lg text-base leading-relaxed text-muted-foreground">
             Kitchens, dish pits, walk-ins, staff bathrooms, break rooms, docks, stock, overnight.
-            Public sees the room, the score, the shift context, and the writing. Never the
-            reviewer. Reading and filing are free. This is not Glassdoor.
+            You see the room, the score, the shift, and the writing. Never who wrote it. Reading
+            and filing are free. This is not Glassdoor.
           </p>
           <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
             {demoPath ? (
@@ -147,7 +147,7 @@ export function HomePage() {
             primaryTo="/write"
             primaryLabel="File a report"
           >
-            <p>No rooms scored yet. First mark: cleanliness, safety, dignity.</p>
+            <p>No reports yet. File one about a room: cleanliness, safety, and dignity.</p>
           </EmptyState>
         ) : (
           <div className="grid gap-3">

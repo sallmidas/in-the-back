@@ -56,7 +56,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <p className="text-xs">
             <Link
               to="/stores"
-              className={cn("rounded-sm text-muted-foreground/80 underline-offset-4 hover:text-foreground hover:underline", focusRingClass)}
+              className={cn("inline-flex min-h-11 items-center rounded-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline", focusRingClass)}
             >
               Are you a store?
             </Link>

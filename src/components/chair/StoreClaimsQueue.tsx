@@ -73,7 +73,7 @@ export function StoreClaimsQueue({ active }: { active: boolean }) {
         <h2 className="font-heading text-2xl">Store claims</h2>
         <p className="text-sm text-muted-foreground">
           A store stays pending until you approve it. One verified claim per store, unless you add
-          another. Approving does not show who wrote a note.
+          another. Approving does not show who wrote a report.
         </p>
       </div>
       {error ? (

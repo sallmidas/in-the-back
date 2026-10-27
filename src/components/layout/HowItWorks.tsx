@@ -12,7 +12,7 @@ const HOW_IT_WORKS_STEPS = [
   {
     n: "02",
     title: "Write without a name",
-    body: "The board shows the room, the score, the shift context, and the writing. Reviewer identity never publishes.",
+    body: "The board shows the room, the score, the shift, and the writing. Who wrote it never shows.",
   },
   {
     n: "03",

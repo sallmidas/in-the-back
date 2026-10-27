@@ -73,7 +73,7 @@ export function AuthForm({
           onChange={(event) => setPassword(event.target.value)}
         />
         {mode === "create" ? (
-          <p className="text-xs text-muted-foreground">At least 10 characters. Stored on the server, not in this browser.</p>
+          <p className="text-xs text-muted-foreground">At least 10 characters.</p>
         ) : null}
       </div>
       <Button type="submit" className="w-full sm:w-auto" disabled={pending}>
@@ -81,7 +81,7 @@ export function AuthForm({
       </Button>
       <button
         type="button"
-        className="block text-sm text-muted-foreground underline-offset-4 hover:underline"
+        className="inline-flex min-h-11 items-center text-sm text-muted-foreground underline-offset-4 hover:underline"
         onClick={() => {
           setMode(mode === "create" ? "sign-in" : "create")
           setError(null)

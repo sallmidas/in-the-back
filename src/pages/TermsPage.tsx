@@ -67,7 +67,7 @@ export function TermsPage() {
       <p className="text-muted-foreground">
         A store account cannot claim the chair. A store claim stays pending until the chair
         approves it. One verified claim per store, unless the chair adds another. A store cannot
-        delete, hide, or edit a note.
+        delete, hide, or edit a report.
       </p>
 
       <h2 className="font-heading pt-2 text-2xl">This draft</h2>

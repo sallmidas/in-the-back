@@ -36,6 +36,11 @@ test("user-facing copy matches the product model", () => {
     /from the README|VITE_DEMO_SEED|localStorage|perReport|published report|Stripe|Payouts|held until|\bLLC\b|practice the claim|\bstub\b/i,
   )
   assert.match(read("src/pages/WritePage.tsx"), /I was in this room\./)
+  assert.match(read("src/pages/WritePage.tsx"), /1 is a rough room/)
+  assert.match(read("src/pages/WritePage.tsx"), /Copy this receipt now/)
+  assert.doesNotMatch(read("src/pages/NotFoundPage.tsx"), /this build/)
+  assert.match(read("src/lib/document-title.ts"), /Platform chair/)
+  assert.match(read("server/store-claims.mjs"), /job title/)
   assert.doesNotMatch(read("src/pages/WorkplacePage.tsx"), /This is my queue/)
   assert.match(read("src/components/layout/EmptyState.tsx"), /File a report/)
   assert.match(read("src/pages/HowItWorksPage.tsx"), /Back of house/)
@@ -110,7 +115,7 @@ test("each description speaks to one audience", () => {
   ]
     .map(read)
     .join("\n")
-  assert.match(store, /The notes are anonymous/)
+  assert.match(store, /Reports are anonymous/)
   assert.doesNotMatch(store, /Reading and filing|File a report|I was in this room|reporter would earn|reward/i)
 
   for (const path of [

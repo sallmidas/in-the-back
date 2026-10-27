@@ -1,4 +1,4 @@
-import { personalNameHit, NAME_BLOCK_MESSAGE } from "../shared/names.mjs"
+import { personalNameHit } from "../shared/names.mjs"
 import { parseEmail } from "./validate.mjs"
 
 const FREE_INBOX = new Set([
@@ -44,7 +44,7 @@ export function parseStoreClaim(body) {
   if (!workEmail) return { error: "Enter a work email." }
 
   if (personalNameHit(businessName, { solo: false }) || personalNameHit(role)) {
-    return { error: NAME_BLOCK_MESSAGE }
+    return { error: "Use a job title, not a person’s name." }
   }
 
   return {

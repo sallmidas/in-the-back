@@ -23,8 +23,8 @@ export function StorePlansPage() {
         </div>
         <h1 className="font-heading text-4xl tracking-tight">Plans for stores</h1>
         <p className="max-w-2xl text-muted-foreground">
-          Stores would pay for alerts — planned for later, not for sale during the preview. Notes
-          on the board are anonymous.
+          Stores would pay for alerts — planned for later, not for sale during the preview. Reports
+          on the board are anonymous. A higher score is a more solid room.
         </p>
       </header>
 

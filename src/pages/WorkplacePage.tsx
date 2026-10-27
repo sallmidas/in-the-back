@@ -62,9 +62,11 @@ export function WorkplacePage() {
           <p className="text-muted-foreground">
             {workplace.city}, {workplace.region}
           </p>
-          <p className="max-w-2xl text-sm leading-relaxed sm:text-[15px] sm:leading-7">
-            {workplace.blurb}
-          </p>
+          {workplace.blurb ? (
+            <p className="max-w-2xl text-sm leading-relaxed sm:text-[15px] sm:leading-7">
+              {workplace.blurb}
+            </p>
+          ) : null}
         </div>
         <div className="shrink-0 rounded-xl border border-border bg-card px-5 py-4 sm:min-w-[9.5rem] sm:text-right">
           <p className="font-mono text-[11px] tracking-[0.16em] text-muted-foreground uppercase">
@@ -76,6 +78,7 @@ export function WorkplacePage() {
               /10
             </span>
           </p>
+          <p className="mt-1 text-xs text-muted-foreground">10 is a solid room.</p>
         </div>
       </header>
 
@@ -120,7 +123,7 @@ export function WorkplacePage() {
             primaryTo={`/write?workplace=${workplace.slug}${roomFilter ? `&room=${roomFilter}` : ""}`}
             primaryLabel="File a report"
           >
-            <p>First mark sets the tone. Keep it fair, keep it specific.</p>
+            <p>No report on this room yet. File one, and keep it about the room.</p>
           </EmptyState>
         ) : (
           <div className="grid gap-3">

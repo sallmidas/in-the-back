@@ -16,8 +16,8 @@ export function StoreLoginPage() {
         <h1 className="font-heading text-4xl tracking-tight">Store sign-in</h1>
         <p className="max-w-2xl text-muted-foreground">
           A store account is separate from the platform chair. Use a work email if you have one.
-          After sign-in you can claim the store. The claim waits for the chair. Notes on the board
-          are anonymous.
+          After sign-in you can claim the store. The claim waits for the chair. Reports on the board
+          are anonymous. Reports on the board are anonymous.
         </p>
       </header>
 
@@ -53,7 +53,7 @@ export function StoreLoginPage() {
       )}
 
       <p className="text-sm text-muted-foreground">
-        Notes on the board are anonymous.{" "}
+        Reports on the board are anonymous.{" "}
         <Link to="/stores" className="underline-offset-4 hover:underline">
           Back to For stores
         </Link>

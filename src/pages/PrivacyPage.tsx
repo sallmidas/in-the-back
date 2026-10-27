@@ -26,7 +26,7 @@ export function PrivacyPage() {
 
       <h2 className="font-heading pt-2 text-2xl">If you read or file</h2>
       <p className="text-muted-foreground">
-        In the Back is a room-level board. People file notes about a room — cleanliness, safety,
+        In the Back is a room-level board. People file reports about a room — cleanliness, safety,
         dignity — not about a named person. Reading and filing are free. We do not ask for a card,
         a bank account, or a location pin.
       </p>
@@ -79,9 +79,9 @@ export function PrivacyPage() {
         A store account is separate. To claim a store we store the business name, the role, and a
         work email, and we keep that claim pending until the platform chair approves it. The
         public board does not show the claim. A verified store sees its rooms, scores, and the
-        notes on those rooms. The notes are anonymous. We do not give a store the email, name, or
-        account behind a note. A store cannot hide or delete a note. A note may be marked under
-        review. That mark does not name who wrote it. Nothing is charged during this preview.
+        reports on those rooms. Reports are anonymous. We do not give a store the email, name, or
+        account behind a report. A store cannot hide or delete a report. A report may be marked
+        under review. That mark does not name who wrote it. Nothing is charged during this preview.
       </p>
 
       <h2 className="font-heading pt-2 text-2xl">Request addresses</h2>

@@ -413,7 +413,7 @@ export function createApp({
 
       if (req.method === "DELETE" && pathname.startsWith("/api/reports")) {
         send(res, 405, {
-          error: "A kitchen cannot delete a file. The person who filed it can retract it.",
+          error: "A report cannot be deleted. The person who filed it can retract it.",
         })
         return
       }
@@ -789,7 +789,7 @@ export function createApp({
         return { status: 403, error: "Only the platform chair can hide or unhide a filing." }
       }
       const report = data.reports.find((item) => item.id === reportId)
-      if (!report) return { status: 404, error: "No filing matches that id." }
+      if (!report) return { status: 404, error: "That report is not in the queue." }
       if (hidden) {
         if (!report.hiddenAt) report.hiddenAt = new Date().toISOString()
       } else {

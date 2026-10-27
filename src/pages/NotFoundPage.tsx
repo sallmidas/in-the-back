@@ -12,7 +12,7 @@ export function NotFoundPage() {
       titleAs="h1"
     >
       <p>
-        That route isn&apos;t part of this build. Try the board, or open the directory if you were
+        That page isn&apos;t here. Go back to the board, or open the directory if you were
         looking for a room.
       </p>
       <p>

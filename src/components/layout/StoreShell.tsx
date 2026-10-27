@@ -33,7 +33,7 @@ export function StoreShell({ children }: { children: ReactNode }) {
   return (
     <SiteFrame
       nav={nav}
-      blurb="For stores. Claim the store, then see its rooms, scores, and anonymous notes. Alerts and a response are planned for later, and nothing is charged now."
+      blurb="For stores. Claim the store, then see its rooms, scores, and anonymous reports. Alerts and a response are planned for later, and nothing is charged now."
       headerExtra={
         signedIn ? (
           <Button type="button" variant="outline" size="sm" className="w-full lg:ml-1 lg:w-auto" onClick={() => void onSignOut()}>

@@ -82,7 +82,7 @@ test("a store claim stays pending until the chair approves it", async () => {
       workEmail: "desk@northkitchen.example",
     })
     assert.equal(named.status, 400)
-    assert.match(named.data.error, /names/i)
+    assert.match(named.data.error, /job title/i)
 
     const pending = await store.request("POST", "/api/store/claims", {
       businessName: "North Kitchen",
@@ -203,7 +203,7 @@ test("a store cannot hide or delete a filing", async () => {
     assert.equal(queue.status, 403)
     const deleted = await store.request("DELETE", `/api/reports/${id}`)
     assert.equal(deleted.status, 405)
-    assert.match(deleted.data.error, /cannot delete/i)
+    assert.match(deleted.data.error, /cannot be deleted/i)
     const retracted = await store.request("POST", "/api/me/reports/retract", { reportId: id })
     assert.equal(retracted.status, 404)
 

@@ -5,6 +5,7 @@ import { StoreClaimsQueue } from "@/components/chair/StoreClaimsQueue"
 import { EmptyState } from "@/components/layout/EmptyState"
 import { ReportCard } from "@/components/report/ReportCard"
 import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
 import { isIndustry, isRoomKind, ROOM_LABELS, type Report, type Workplace } from "@/data/types"
 import { chairReports, claimChair, hideReport, logoutAccount, unhideReport, type StaffReport } from "@/lib/api"
 import { useBoard } from "@/lib/board"
@@ -53,6 +54,7 @@ export function StaffQueuePage() {
   const [queueError, setQueueError] = useState<string | null>(null)
   const [reload, setReload] = useState(0)
   const [hidingId, setHidingId] = useState<string | null>(null)
+  const [sure, setSure] = useState(false)
 
   useEffect(() => {
     if (!chair.mine) return
@@ -114,7 +116,7 @@ export function StaffQueuePage() {
         <p className="font-mono text-[11px] tracking-[0.2em] text-primary uppercase">
           Platform chair
         </p>
-        <h1 className="font-heading text-4xl tracking-tight">This is my queue</h1>
+        <h1 className="font-heading text-4xl tracking-tight">Platform chair</h1>
         <p className="max-w-2xl text-muted-foreground">
           One staff queue for the whole platform. Sign in, then claim it if it is still open. The
           claim is stored on the server, once. From this queue you can hide
@@ -191,7 +193,7 @@ export function StaffQueuePage() {
               <div>
                 <h2 className="font-heading text-2xl">Queue</h2>
                 <p className="text-sm text-muted-foreground">
-                  Files stored on the server. The public still never sees you.
+                  Reports on the board, including ones you have hidden. The public still never sees you.
                 </p>
               </div>
               {queueError ? (
@@ -242,15 +244,27 @@ export function StaffQueuePage() {
             </>
           ) : chair.claimed ? (
             <p className="rounded-xl border border-border bg-card/70 p-5 text-sm text-muted-foreground">
-              The platform chair is already claimed. This queue belongs to the platform, once — not
-              to a workplace, and not to this account.
+              The platform chair is already claimed. This account is not the chair.
             </p>
           ) : (
             <div className="space-y-3 rounded-xl border border-border bg-card/70 p-5">
               <p className="text-sm text-muted-foreground">
-                Claim the platform chair once. There is no workplace to pick.
+                Claim the platform chair once. This is one seat for the whole board, and it does
+                not reopen.
               </p>
-              <Button type="button" className="w-full sm:w-auto" disabled={pending} onClick={() => void onClaim()}>
+              <div className="flex items-start gap-3">
+                <input
+                  id="chair-sure"
+                  type="checkbox"
+                  checked={sure}
+                  onChange={(event) => setSure(event.target.checked)}
+                  className="mt-1 size-6 accent-primary"
+                />
+                <Label htmlFor="chair-sure" className="text-sm leading-relaxed">
+                  I understand this can be claimed once, for the whole board.
+                </Label>
+              </div>
+              <Button type="button" className="w-full sm:w-auto" disabled={pending || !sure} onClick={() => void onClaim()}>
                 {pending ? "Claiming…" : "This is my queue"}
               </Button>
             </div>

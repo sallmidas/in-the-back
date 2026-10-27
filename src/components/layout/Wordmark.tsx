@@ -5,7 +5,7 @@ export function Wordmark({ compact = false }: { compact?: boolean }) {
   return (
     <Link
       to="/"
-      className={cn("flex items-center gap-2 rounded-md text-foreground", focusRingClass)}
+      className={cn("flex min-h-11 items-center gap-2 rounded-md text-foreground", focusRingClass)}
     >
       <svg
         viewBox="0 0 32 32"
@@ -22,7 +22,7 @@ export function Wordmark({ compact = false }: { compact?: boolean }) {
         <span className="font-heading block text-lg tracking-tight">In the Back</span>
         {compact ? null : (
           <span className="hidden font-mono text-[10px] tracking-[0.18em] text-muted-foreground uppercase sm:block">
-            BOH rooms, not résumés
+            Rooms, not résumés
           </span>
         )}
       </span>

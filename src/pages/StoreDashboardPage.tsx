@@ -168,7 +168,7 @@ function PlannedActions() {
         <div className="space-y-2 rounded-xl border border-border bg-card/70 p-4">
           <h3 className="font-heading text-lg">Alerts</h3>
           <p className="text-sm text-muted-foreground">
-            Planned. A store would be told when a new note is on this store. Not included during
+            Planned. A store would be told when a new report is on this store. Not included during
             this preview.
           </p>
           <Button type="button" variant="outline" disabled>
@@ -227,7 +227,7 @@ export function StoreDashboardPage() {
         <p className="font-mono text-[11px] tracking-[0.2em] text-primary uppercase">For stores</p>
         <h1 className="font-heading text-4xl tracking-tight">Store dashboard</h1>
         <p className="max-w-2xl text-muted-foreground">
-          Rooms, scores, and the notes on this store. The notes are anonymous.
+          Rooms, scores, and the reports on this store. Reports are anonymous.
         </p>
       </header>
 
@@ -313,7 +313,7 @@ function ApprovedStore({ stores }: { stores: StoreHomeStores }) {
           <p className="text-sm text-muted-foreground">{INDUSTRY_LABELS[workplace.industry]}</p>
         ) : null}
         <p className="max-w-2xl text-sm text-muted-foreground">
-          You cannot hide, edit, or delete a note. The notes are anonymous.
+          You cannot hide, edit, or delete a report. Reports are anonymous.
         </p>
       </header>
 
@@ -333,7 +333,7 @@ function ApprovedStore({ stores }: { stores: StoreHomeStores }) {
       <section className="space-y-3">
         <h2 className="font-heading text-2xl">Notes</h2>
         {place.reports.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No notes on this store yet.</p>
+          <p className="text-sm text-muted-foreground">No reports on this store yet.</p>
         ) : (
           <div className="grid gap-3">
             {place.reports.map((report) => {

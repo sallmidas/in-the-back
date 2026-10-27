@@ -10,7 +10,7 @@ export function StoresLandingPage() {
         </p>
         <h1 className="font-heading text-4xl tracking-tight">For stores</h1>
         <p className="max-w-2xl text-muted-foreground">
-          Claim a store to see its rooms, scores, and the notes already on those rooms. The notes
+          Claim a store to see its rooms, scores, and the reports already on those rooms. Reports
           are anonymous. Kitchens, pits, walk-ins, docks — the rooms, not the people in them.
         </p>
         <div className="flex flex-col gap-2 pt-2 sm:flex-row">
@@ -27,10 +27,10 @@ export function StoresLandingPage() {
         <h2 className="font-heading text-2xl tracking-tight">What a store would see</h2>
         <ul className="space-y-1.5 text-sm text-muted-foreground">
           <li>— The store’s rooms and room scores.</li>
-          <li>— Notes already on those rooms. No name, email, or account on a note.</li>
+          <li>— Reports already on those rooms. No name, email, or account on a report.</li>
         </ul>
         <p className="text-sm text-muted-foreground">
-          A store cannot hide, edit, or delete a note. Alerts and a response are planned for
+          A store cannot hide, edit, or delete a report. Alerts and a response are planned for
           later. They are not for sale during the preview, and nothing is charged now.
         </p>
       </section>
