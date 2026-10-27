@@ -10,6 +10,8 @@ const STATIC_TITLES: Record<string, string> = {
   "/staff": `This is my queue · ${SITE_NAME}`,
   "/write": `File a report · ${SITE_NAME}`,
   "/privacy": `Privacy · ${SITE_NAME}`,
+  "/terms": `Terms · ${SITE_NAME}`,
+  "/content": `Content policy · ${SITE_NAME}`,
   "/account/delete": `Delete account · ${SITE_NAME}`,
 }
 

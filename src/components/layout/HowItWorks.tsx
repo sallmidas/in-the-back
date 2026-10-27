@@ -17,7 +17,7 @@ const HOW_IT_WORKS_STEPS = [
   {
     n: "03",
     title: "Disputes stay a badge",
-    body: "A flagged file shows DISPUTED — UNDER REVIEW. The file stays up unless the person who filed it retracts it.",
+    body: "A flagged file shows DISPUTED — UNDER REVIEW. The person who filed it can retract it. The chair can hide a filing that breaks the content rules. A kitchen cannot delete it.",
   },
   {
     n: "04",

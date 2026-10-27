@@ -3,12 +3,13 @@ import { Link } from "react-router-dom"
 import { BoardSkeleton } from "@/components/layout/BoardSkeleton"
 import { EmptyState } from "@/components/layout/EmptyState"
 import { HowItWorksPreview } from "@/components/layout/HowItWorks"
-import { DemoWalk, HoldNotice } from "@/components/layout/HoldNotice"
+import { DemoWalk } from "@/components/layout/HoldNotice"
 import { ReportCard } from "@/components/report/ReportCard"
 import { Button } from "@/components/ui/button"
 import { WorkplaceStripCard } from "@/components/workplace/WorkplaceCard"
-import { isDemoSeedEnabled } from "@/data/demo-flag"
+import { demoSeedEnabled } from "@/data/demo-flag"
 import { useBoard } from "@/lib/board"
+import { useDemoRoomPath } from "@/lib/demo-room"
 import { cn, focusRingClass } from "@/lib/utils"
 
 export function HomePage() {
@@ -16,7 +17,8 @@ export function HomePage() {
   const reports = board.recentReports(8)
   const featured = board.disputedReports()[0]
   const demoWorkplaces = board.workplaces.filter((workplace) => workplace.demo)
-  const seeded = isDemoSeedEnabled()
+  const seeded = demoSeedEnabled
+  const demoPath = useDemoRoomPath()
   const empty = board.ready && !board.error && reports.length === 0
 
   useEffect(() => {
@@ -44,12 +46,11 @@ export function HomePage() {
             Public sees the room, the score, the shift context, and the writing. Never the
             reviewer. This is not Glassdoor.
           </p>
-          <HoldNotice />
           <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-            {seeded ? (
+            {demoPath ? (
               <>
                 <Button asChild className="w-full sm:w-auto">
-                  <Link to="/workplaces/harbor-and-rye?room=walk-in">Open the demo room</Link>
+                  <Link to={demoPath}>Open the demo room</Link>
                 </Button>
                 <Button asChild variant="outline" className="w-full sm:w-auto">
                   <Link to="/workplaces">All 10 workplaces</Link>

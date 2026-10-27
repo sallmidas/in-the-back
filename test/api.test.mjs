@@ -211,3 +211,137 @@ test("filing stays open without an account", async () => {
     assert.equal(filed.status, 201)
   })
 })
+
+test("the platform chair can hide and unhide a filing", async () => {
+  await withServer(async ({ base, client }) => {
+    const filed = await client.request("POST", "/api/reports", sampleFiling)
+    assert.equal(filed.status, 201)
+    const id = filed.data.report.id
+    const second = await client.request("POST", "/api/reports", {
+      ...sampleFiling,
+      create: false,
+      workplaceSlug: filed.data.report.workplaceSlug,
+      score: 8,
+      excerpt: "Walk-in gasket was iced over. Floor water by the dairy rack.",
+    })
+    assert.equal(second.status, 201)
+
+    const anon = await client.request("POST", "/api/chair/reports/hide", { reportId: id })
+    assert.equal(anon.status, 401)
+
+    await client.request("POST", "/api/auth/register", {
+      email: "chair@example.com",
+      password: "long-enough-password",
+    })
+    await client.request("POST", "/api/chair/claim", {})
+
+    const other = apiClient(base)
+    await other.request("POST", "/api/auth/register", {
+      email: "other@example.com",
+      password: "another-horse",
+    })
+    const refused = await other.request("POST", "/api/chair/reports/hide", { reportId: id })
+    assert.equal(refused.status, 403)
+    const queueRefused = await other.request("GET", "/api/chair/reports")
+    assert.equal(queueRefused.status, 403)
+
+    const hidden = await client.request("POST", "/api/chair/reports/hide", {
+      reportId: second.data.report.id,
+    })
+    assert.equal(hidden.status, 200)
+    assert.equal(hidden.data.hidden, true)
+
+    const board = await client.request("GET", "/api/board")
+    assert.equal(board.data.reports.length, 1)
+    assert.equal(board.data.reports[0].id, id)
+    assert.equal(Object.hasOwn(board.data.reports[0], "hidden"), false)
+    assert.equal(board.data.workplaces[0].rooms[0].score, 4)
+    assert.equal(JSON.stringify(board.data).includes("iced over"), false)
+
+    const queue = await client.request("GET", "/api/chair/reports")
+    assert.equal(queue.status, 200)
+    assert.equal(queue.data.reports.find((report) => report.id === second.data.report.id).hidden, true)
+    assert.equal(queue.data.reports.find((report) => report.id === id).hidden, false)
+
+    const again = await client.request("POST", "/api/chair/reports/hide", {
+      reportId: second.data.report.id,
+    })
+    assert.equal(again.status, 200)
+    assert.equal(again.data.hidden, true)
+
+    const back = await client.request("POST", "/api/chair/reports/unhide", {
+      reportId: second.data.report.id,
+    })
+    assert.equal(back.status, 200)
+    assert.equal(back.data.hidden, false)
+    const restored = await client.request("GET", "/api/board")
+    assert.equal(restored.data.reports.length, 2)
+    assert.equal(restored.data.workplaces[0].rooms[0].score, 6)
+
+    const missing = await client.request("POST", "/api/chair/reports/hide", { reportId: "rpt_missing" })
+    assert.equal(missing.status, 404)
+  })
+})
+
+test("a filer can see that the chair hid their file", async () => {
+  await withServer(async ({ base, client }) => {
+    await client.request("POST", "/api/auth/register", {
+      email: "filer@example.com",
+      password: "filer-password",
+    })
+    const filed = await client.request("POST", "/api/reports", sampleFiling)
+    const chair = apiClient(base)
+    await chair.request("POST", "/api/auth/register", {
+      email: "chair2@example.com",
+      password: "chair-password",
+    })
+    await chair.request("POST", "/api/chair/claim", {})
+    const hidden = await chair.request("POST", "/api/chair/reports/hide", {
+      reportId: filed.data.report.id,
+    })
+    assert.equal(hidden.status, 200)
+    const mine = await client.request("GET", "/api/me/reports")
+    assert.equal(mine.data.reports[0].hidden, true)
+    assert.equal(mine.data.reports[0].retracted, false)
+    const board = await client.request("GET", "/api/board")
+    assert.equal(board.data.reports.length, 0)
+  })
+})
+
+async function loginStatus(base, forwarded) {
+  const response = await fetch(`${base}/api/auth/login`, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "x-forwarded-for": forwarded,
+    },
+    body: JSON.stringify({ email: "nobody@example.com", password: "not-a-real-password" }),
+  })
+  return response.status
+}
+
+test("the rate limiter uses the trusted forwarded client", async () => {
+  await withServer(
+    async ({ base }) => {
+      assert.equal(await loginStatus(base, "203.0.113.8"), 401)
+      assert.equal(await loginStatus(base, "203.0.113.8"), 401)
+      assert.equal(await loginStatus(base, "203.0.113.8"), 401)
+      assert.equal(await loginStatus(base, "203.0.113.8"), 429)
+      assert.equal(await loginStatus(base, "203.0.113.9"), 401)
+      assert.equal(await loginStatus(base, "198.51.100.4, 203.0.113.8"), 429)
+    },
+    { rateLimitEnabled: true, trustProxy: "1", rateLimitMax: 3 },
+  )
+})
+
+test("a spoofed forwarded header does not split the limit when no proxy is trusted", async () => {
+  await withServer(
+    async ({ base }) => {
+      assert.equal(await loginStatus(base, "203.0.113.1"), 401)
+      assert.equal(await loginStatus(base, "203.0.113.2"), 401)
+      assert.equal(await loginStatus(base, "203.0.113.3"), 401)
+      assert.equal(await loginStatus(base, "203.0.113.4"), 429)
+    },
+    { rateLimitEnabled: true, trustProxy: "0", rateLimitMax: 3 },
+  )
+})

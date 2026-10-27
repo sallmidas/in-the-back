@@ -1,17 +1,14 @@
 /**
- * DEMO seed switch.
+ * DEMO seed switch. Off unless explicitly enabled.
  *
- * Default: the ten labeled sample workplaces are visible.
- * For a real launch with an empty directory (fast path):
- *   1. Copy `.env.example` to `.env.local`
- *   2. Set VITE_DEMO_SEED=0
- *   3. Restart `npm run dev`
+ * Sample workplaces are bundled only when this is exactly "1" at dev-server or build time:
+ *   VITE_DEMO_SEED=1
  *
- * Hard path: empty the arrays in `src/data/seed.ts`.
- *
- * Home, directory, workplace 404, and the platform-chair queue render empty-catalog states
- * when this is off. See README → “Strip the demo seed”.
+ * Unset, "0", or any other value keeps them out of the app. A production build
+ * also swaps in an empty seed module, so the sample names are not in the bundle.
  */
+export const demoSeedEnabled: boolean = import.meta.env.VITE_DEMO_SEED === "1"
+
 export function isDemoSeedEnabled(): boolean {
-  return import.meta.env.VITE_DEMO_SEED !== "0"
+  return demoSeedEnabled
 }

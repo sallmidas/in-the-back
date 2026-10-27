@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom"
-import { HoldNotice } from "@/components/layout/HoldNotice"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -20,17 +19,15 @@ export function PlansPage() {
       <header className="space-y-3">
         <div className="flex flex-wrap items-center gap-2">
           <p className="font-mono text-[11px] tracking-[0.2em] text-primary uppercase">
-            Operator plans
+            For stores & businesses
           </p>
-          <Badge variant="outline">Preview only — no checkout yet</Badge>
+          <Badge variant="outline">Planned, coming later</Badge>
         </div>
-        <h1 className="font-heading text-4xl tracking-tight">Free, Watch, Respond</h1>
+        <h1 className="font-heading text-4xl tracking-tight">Plans for stores</h1>
         <p className="max-w-2xl text-muted-foreground">
-          Kitchen plans are a flat monthly price. Reporter pay comes out of that subscription.
-          It is not an extra charge on each file. Nothing is billed until the LLC exists. The
-          chair is not a plan.
+          Reading and filing are always free. Stores would pay for alerts — planned for later, not
+          for sale during the preview.
         </p>
-        <HoldNotice />
       </header>
 
       <div className="grid gap-4 lg:grid-cols-3">
@@ -66,7 +63,7 @@ export function PlansPage() {
       </div>
 
       <p className="text-xs text-muted-foreground">
-        No card on file. Payouts and Watch billing stay held until the LLC. The{" "}
+        The{" "}
         <Link
           to="/staff"
           className={cn("rounded-sm underline-offset-4 hover:underline", focusRingClass)}

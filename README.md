@@ -6,7 +6,7 @@ Anonymous, **room-level** back-of-house workplace review board. Kitchens, dish p
 
 The public sees the room, the score, the shift context, and the writing. **Never the reviewer.** This is not Glassdoor and not a résumé site.
 
-Phase 1 is a seeded board you can run in the browser and wrap as an installable app. Same TypeScript UI both times.
+Phase 1 is a board you can run in the browser and wrap as an installable app. Same TypeScript UI both times. Sample workplaces are off unless you opt in.
 
 ## One codebase, two doors
 
@@ -29,24 +29,26 @@ npm run dev
 
 `npm run dev` starts the API on `http://127.0.0.1:43174` and the Vite app on [http://127.0.0.1:43173](http://127.0.0.1:43173). Vite proxies `/api` to the API. Filings, accounts, and the platform-chair claim are stored in `data/board.json` (gitignored).
 
-Open the app. Use **Walk the demo** on the home board, or **Open demo** in the header (Harbor & Rye walk-in, disputed). Tap a room tile to filter excerpts. **How it works** explains back of house and the chair.
+Open the app. With the demo off, the board starts empty and the primary action is **File a report**. **How it works** explains back of house and the chair.
 
-Empty launch catalog, no sample workplaces:
+To walk the labeled sample workplaces, opt in and restart:
 
 ```bash
 cp .env.example .env.local
-# set VITE_DEMO_SEED=0 in .env.local
+# set VITE_DEMO_SEED=1 in .env.local
 npm run dev
 ```
 
-File a report. It is written to the server and shows on the home board and that workplace. The first account to claim **This is my queue** on `/staff` holds the chair; later accounts are refused.
+File a report. It is written to the server and shows on the home board and that workplace. The first account to claim **This is my queue** on `/staff` holds the chair; later accounts are refused. That account can hide a filing and put it back.
 
-To serve the production bundle and the API together:
+To serve the production bundle and the API together, leave `VITE_DEMO_SEED` unset:
 
 ```bash
-VITE_DEMO_SEED=0 npm run build
+npm run build
 ITB_STATIC=dist ITB_PORT=43173 npm start
 ```
+
+Hosting notes, including the persistent disk for `data/board.json`, are in [DEPLOY.md](DEPLOY.md).
 
 ```bash
 npm run build    # production bundle into dist/
@@ -75,7 +77,7 @@ npm run cap:open:ios
 
 The web build ships a Web App Manifest, PNG icons (192 / 512 / maskable), Apple touch icon, and installable meta tags (`apple-mobile-web-app-*`, `theme-color`, `viewport-fit=cover`). A tiny production-only service worker (`public/sw.js`) registers from `src/main.tsx` so Chromium can treat the site as installable.
 
-**Network-only on purpose.** The SW has a fetch handler (required for installability) but does not put the board in Cache Storage. A last-seen / offline cache would keep serving a stale seeded catalog after `VITE_DEMO_SEED=0`. Install still works over HTTPS (or localhost); there is no offline board. That is a demo-seed safety tradeoff, not a missing feature. UI copy must not claim last-seen or offline caching.
+**Network-only on purpose.** The SW has a fetch handler (required for installability) but does not put the board in Cache Storage. A last-seen / offline cache could keep serving sample workplaces after a build that left the demo off. Install still works over HTTPS (or localhost); there is no offline board. UI copy must not claim last-seen or offline caching.
 
 Install stays optional: the browser's native Add to Home Screen UI only. This app does not intercept `beforeinstallprompt` and does not show a custom install nag.
 
@@ -83,26 +85,15 @@ Icons are generated with `python3 scripts/generate-pwa-icons.py` from the door w
 
 Capacitor remains the native store path; this PWA layer is for the browser door.
 
-## Strip the demo seed (empty directory for launch)
+## Demo seed
 
-The ten workplaces are **labeled DEMO**. They must not ship as if they were live reviews.
+The ten workplaces are **labeled DEMO**. They are not live reviews.
 
-When the seed is off, sample workplaces hide. The board shows only filings stored by the API. An empty board's primary action is **File a report**. Demo-only links (Harbor & Rye, Walk the demo) hide.
+They appear only when `VITE_DEMO_SEED=1` at dev-server or build time. Unset is off. A production build aliases the seed module to an empty file, so sample names are not in `dist/`.
 
-**Fast path (keeps the sample data in git, hides it at runtime):**
+When the seed is off, the board shows only filings stored by the API. An empty board's primary action is **File a report**.
 
-1. Copy `.env.example` to `.env.local`
-2. Set `VITE_DEMO_SEED=0`
-3. Restart `npm run dev`
-
-The home feed and directory render empty states. Restore with `VITE_DEMO_SEED=1` (or unset — default is on).
-
-**Hard path (data gone from the bundle):**
-
-1. In `src/data/seed.ts`, set `DEMO_WORKPLACES` and `DEMO_REPORTS` to `[]`
-2. Leave `isDemoSeedEnabled()` alone, or still set `VITE_DEMO_SEED=0`
-
-Switch lives in `src/data/demo-flag.ts`. Catalog helpers in `src/data/catalog.ts` already return empty arrays when the flag is off.
+Switch lives in `src/data/demo-flag.ts`. The Vite alias is in `vite.config.ts`.
 
 ## Phase 1 routes
 
@@ -112,9 +103,11 @@ Switch lives in `src/data/demo-flag.ts`. Catalog helpers in `src/data/catalog.ts
 | `/how-it-works` | Product walkthrough — rooms, scores, anonymity, flags, platform chair |
 | `/workplaces` | Directory with search + industry / room / score filters |
 | `/workplaces/:slug` | Rooms, scores, anonymous excerpts, dispute badges |
-| `/plans` | Free / Watch / Respond. Flat monthly price. Reporter pay is included, not a per-file toll. Billing held until the LLC. |
-| `/staff` | Platform chair. Email and password. **This is my queue** once, on the server, for the whole platform. |
-| `/privacy` | What the public board stores, and what an account is |
+| `/plans` | Free / Watch / Respond, labeled as a later model. Nothing is charged or paid now. |
+| `/staff` | Platform chair. Email and password. **This is my queue** once, on the server, for the whole platform. The chair can hide and unhide a filing. |
+| `/privacy` | Draft privacy notice. Pending legal review. |
+| `/terms` | Draft terms of use. Pending legal review. |
+| `/content` | Content policy. Rooms, not people. Chair hide and filer retract. |
 | `/account/delete` | Delete an account. Does not retract a file. Cannot delete the chair. |
 | `/write` | File a report. Open to anyone. Saved on the server. Retract with a receipt or the account that filed it. |
 
@@ -128,9 +121,9 @@ Each has sample rooms, scores, and anonymous reports. Two seeded disputes (Harbo
 
 ## Product rules this repo is teaching
 
-- **LLC before payouts / Watch billing.** Filing stays open. Pay stays off until the company exists. This repo has no payment code and no card form. Watch is $129/mo flat and Respond is $249/mo flat. The $3 and $5 figures are reporter pay taken from that subscription, not an extra charge to the kitchen.
-- **Platform chair.** The first real account to claim **This is my queue** holds it. The claim is stored on the server and does not reopen. It is not a per-workplace claim. The public board never shows who claimed it.
-- **Watch / Respond.** Watch: the kitchen can see new files as they land. Respond: the kitchen can flag a report. A flag leads to uphold or retract — never delete. Those plans are not wired to billing.
+- **No payments during the preview.** The company is not formed. This repo has no payment code and no card form. Nothing is charged and nothing is paid. The Plans page is a preview of a later model, not a promise and not a date: Watch $129/mo for near-real-time alerts, Respond $249/mo which would add a response or dispute and a faster way to recover a rating. Planned: reporters earn a small reward once their report passes review ($3 on Watch, $5 on Respond). Reports shown to be false after a dispute earn nothing. Filing alone would not earn the reward.
+- **Platform chair.** The first real account to claim **This is my queue** holds it. The claim is stored on the server and does not reopen. It is not a per-workplace claim. The public board never shows who claimed it. The chair can hide a published filing and put it back. Hiding is not a delete, and it is not the filer's retract.
+- **Watch / Respond.** Planned only. Watch: near-real-time alerts. Respond: alerts plus a response or dispute and a faster recovery of the rating. A flag, if that plan arrives, leads to uphold or retract — never delete. Those plans are not wired to billing.
 - **Share cards.** Static OG/Twitter title and description use the slogan. Tab titles follow the route (works with HashRouter). No reviewer or chair identity in share payloads.
 
 ## Store
@@ -141,7 +134,7 @@ Name checks on a filing are a heuristic (common first names, a single capitalize
 
 ## Out of scope
 
-Payment code, payouts, wages, GPS, OAuth providers, a Resolve action, tips, a bullying or witness lane, an employment wall, and ghostwritten files. Kitchen flagging stays a product rule, not a billed feature, until the LLC exists.
+Payment code, wages, GPS, OAuth providers, a Resolve action, tips, a bullying or witness lane, an employment wall, and ghostwritten files. Facility flagging stays a planned Respond behavior, not something the preview charges for. The contact address on the legal pages is `contact@REPLACE-ME` until a real one is chosen.
 
 ## Stack
 

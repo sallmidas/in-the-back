@@ -1,5 +1,5 @@
 import { isDemoSeedEnabled } from "./demo-flag"
-import { DEMO_REPORTS, DEMO_WORKPLACES } from "./seed"
+import { DEMO_REPORTS, DEMO_WORKPLACES } from "@/data/seed"
 import {
   ROOM_LABELS,
   type Industry,

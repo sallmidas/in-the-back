@@ -3,9 +3,9 @@ import os from "node:os"
 import path from "node:path"
 import { createApp } from "../server/app.mjs"
 
-export async function withServer(fn) {
+export async function withServer(fn, options = {}) {
   const dir = await mkdtemp(path.join(os.tmpdir(), "itb-"))
-  const { server } = createApp({ storePath: path.join(dir, "board.json") })
+  const { server } = createApp({ storePath: path.join(dir, "board.json"), ...options })
   const port = await new Promise((resolve) => {
     server.listen(0, "127.0.0.1", () => resolve(server.address().port))
   })

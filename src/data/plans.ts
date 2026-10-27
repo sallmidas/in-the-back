@@ -5,7 +5,7 @@ export type Plan = {
   id: PlanId
   name: string
   monthly: number
-  /** Flat price sentence. Reporter pay is inside the subscription, not a toll. */
+  /** Flat price sentence. Reporter pay would be inside the subscription, not a toll. */
   priceLabel: string
   tagline: string
   audience: string
@@ -13,18 +13,20 @@ export type Plan = {
   held: string | null
 }
 
+const later = "Planned, coming later. Not a promise, and not charged during this preview."
+
 export const PLANS: Plan[] = [
   {
     id: "free",
     name: "Free",
     monthly: 0,
     priceLabel: kitchenPriceLabel(0, 0),
-    tagline: "The public board. Rooms, scores, writing.",
-    audience: "Anyone reading the board",
+    tagline: "Rooms, scores, and writing on the public board.",
+    audience: "Everyone reading and filing",
     features: [
       "Workplace directory and room scores",
       "Anonymous excerpts — never reviewer identity",
-      "Dispute badges when a kitchen has flagged a report",
+      "A dispute badge when a filing is under review",
     ],
     held: null,
   },
@@ -33,27 +35,29 @@ export const PLANS: Plan[] = [
     name: "Watch",
     monthly: 129,
     priceLabel: kitchenPriceLabel(129, 3),
-    tagline: "The kitchen can see new files as they land.",
-    audience: "A kitchen that needs to see files as they land",
+    tagline: "The store pays $129/mo for near-real-time alerts.",
+    audience: "A store that would want alerts as files land",
     features: [
       "Everything on Free",
-      "See new files as they land",
-      "The $3 is reporter pay from the subscription, not an extra charge",
+      "Near-real-time alerts when a report is filed",
+      "A reporter would earn $3 once the report passes review",
+      "Reports shown to be false after a dispute earn nothing",
     ],
-    held: "Billing held until the LLC. No card on file.",
+    held: later,
   },
   {
     id: "respond",
     name: "Respond",
     monthly: 249,
     priceLabel: kitchenPriceLabel(249, 5),
-    tagline: "The kitchen can flag a report.",
-    audience: "A kitchen that needs to flag a report",
+    tagline: "The store pays $249/mo. Adds a response or dispute and a faster way to recover the rating.",
+    audience: "A store that would want to respond and recover a rating faster",
     features: [
       "Everything on Watch",
-      "Flag a report. A flag leads to uphold or retract — never delete.",
-      "The $5 is reporter pay from the subscription, not an extra charge",
+      "Respond or dispute a filing, and recover the room rating faster",
+      "A reporter would earn $5 once the report passes review",
+      "Reports shown to be false after a dispute earn nothing",
     ],
-    held: "Billing held until the LLC. No card on file.",
+    held: later,
   },
 ]

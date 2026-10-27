@@ -1,12 +1,11 @@
 import { Link } from "react-router-dom"
 import { HowItWorksSteps, SampleRoomStrip } from "@/components/layout/HowItWorks"
-import { HoldNotice } from "@/components/layout/HoldNotice"
 import { DisputeBadge } from "@/components/report/DisputeBadge"
 import { Button } from "@/components/ui/button"
-import { isDemoSeedEnabled } from "@/data/demo-flag"
+import { useDemoRoomPath } from "@/lib/demo-room"
 
 export function HowItWorksPage() {
-  const seeded = isDemoSeedEnabled()
+  const demoPath = useDemoRoomPath()
 
   return (
     <div className="space-y-10">
@@ -22,11 +21,10 @@ export function HowItWorksPage() {
           sees. You read a kitchen, a pit, a walk-in, a dock. You never read a person. This is
           not a job board and not a place to rank a CEO.
         </p>
-        <HoldNotice />
         <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-          {seeded ? (
+          {demoPath ? (
             <Button asChild className="w-full sm:w-auto">
-              <Link to="/workplaces/harbor-and-rye?room=walk-in">Open a sample room</Link>
+              <Link to={demoPath}>Open a sample room</Link>
             </Button>
           ) : (
             <Button asChild className="w-full sm:w-auto">
@@ -56,16 +54,21 @@ export function HowItWorksPage() {
           <p className="text-sm leading-relaxed text-muted-foreground">
             The chair is one seat for the whole platform. The first person to sign in and claim it
             holds the staff queue. That happens once. A workplace does not get its own queue, and
-            the public board never shows who claimed the seat.
+            the public board never shows who claimed the seat. The chair can hide a published
+            filing, and put it back, under the{" "}
+            <Link to="/content" className="underline-offset-4 hover:underline">
+              content policy
+            </Link>
+            .
           </p>
         </div>
         <p className="text-sm leading-relaxed text-muted-foreground">
-          Watch and Respond are kitchen plans, not the chair. What each one does, and the flat
+          Watch and Respond are facility plans, not the chair. What each one would do, and the flat
           monthly price, is on{" "}
           <Link to="/plans" className="underline-offset-4 hover:underline">
             Plans
           </Link>
-          . Billing is held until the LLC exists.
+          . Those plans are a preview. They are not offered now.
         </p>
       </section>
 
@@ -119,7 +122,7 @@ export function HowItWorksPage() {
             <li>Reviewer name, handle, email, badge, or login.</li>
             <li>Platform chair identity, even after they claim a queue.</li>
             <li>Hiring copy, résumés, or “rate my boss.”</li>
-            <li>Payouts and Watch billing — held until the LLC exists. Filing is open. No card on file.</li>
+            <li>Payments. This preview does not take or send money.</li>
           </ul>
         </div>
       </section>
