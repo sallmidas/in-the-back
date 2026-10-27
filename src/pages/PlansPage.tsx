@@ -30,7 +30,8 @@ export function PlansPage() {
           later, not a promise and not a date. A facility would pay a flat monthly price for
           near-real-time alerts. Watch would be $129/mo. Respond would be $249/mo and would add the
           ability to respond or dispute and recover a rating faster. {REPORTER_REWARD_NOTE} On
-          Watch that reward would be $3. On Respond it would be $5. Filing alone would not earn it.
+          Watch that reward would be $3. On Respond it would be $5. The reward would be part of
+          that monthly price. Filing alone would not earn it.
           The chair is not a plan.
         </p>
       </header>

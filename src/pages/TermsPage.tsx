@@ -20,7 +20,8 @@ export function TermsPage() {
         In the Back does not take money and does not pay money during this preview. The Plans
         page shows a model that is planned for later: a facility would pay monthly for alerts.{" "}
         {REPORTER_REWARD_NOTE} Filing alone would not earn it. In that later model the reward would
-        be $3 on Watch and $5 on Respond. That page is a preview, not an offer, not a promise, and
+        be $3 on Watch and $5 on Respond, as part of the monthly price. That page is a preview, not
+        an offer, not a promise, and
         not a date. Nothing on it is for sale.
       </p>
 
