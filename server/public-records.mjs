@@ -38,6 +38,8 @@ const HEADER_ALIASES = {
   sourceUrl: ["source_url", "url", "link"],
   recordType: ["record_type", "type", "insp_type", "dataset"],
   naics: ["naics", "naics_code", "naic_cd"],
+  violations: ["violation_items", "violation_count", "violations", "serious_items", "total_violations"],
+  reason: ["inspection_reason", "insp_reason", "reason"],
 }
 
 export function defaultMaxAgeYears(value) {
@@ -168,9 +170,29 @@ function looksLikeComplaints(rows) {
   return complaint && !citation
 }
 
-function notUpheld(row) {
-  const type = `${pick(row, "recordType")} ${pick(row, "status")}`.toLowerCase()
-  return /complaint|not upheld|unfounded|no violation|dismissed|allegation only|withdrawn/.test(type)
+function amount(value) {
+  const number = Number(String(value ?? "").replace(/[$,\s]/g, ""))
+  return Number.isFinite(number) ? number : 0
+}
+
+/** A citation, penalty, back-wage finding, or violation count. The inspection trigger is not a finding. */
+export function hasFinding(row) {
+  if (amount(pick(row, "violations")) > 0) return true
+  if ((parseMoney(pick(row, "penalty")) ?? 0) > 0) return true
+  if ((parseMoney(pick(row, "backWages")) ?? 0) > 0) return true
+  const summary = String(pick(row, "summary") ?? "")
+  return /\b(cited|citation|violation|back wages|penalty)\b/i.test(summary)
+}
+
+/**
+ * Skip a complaint that was not upheld. An OSHA inspection that produced
+ * citations is kept even when a complaint triggered it.
+ */
+export function bareComplaint(row) {
+  const kind = `${pick(row, "recordType")} ${pick(row, "status")}`.toLowerCase()
+  if (hasFinding(row)) return false
+  if (/\bcomplaint\b/.test(kind)) return true
+  return /not upheld|unfounded|no violation|dismissed|allegation only|withdrawn/.test(kind)
 }
 
 function cleanText(value) {
@@ -204,7 +226,7 @@ export function rowsToRecords(rows, sourceAgency) {
   const records = []
   let skipped = 0
   for (const row of rows) {
-    if (notUpheld(row)) {
+    if (bareComplaint(row) || !rowInLaunch(row, sourceAgency)) {
       skipped += 1
       continue
     }
@@ -234,6 +256,7 @@ export function rowsToRecords(rows, sourceAgency) {
       status: mapStatus(pick(row, "status")),
       sourceUrl: sourceUrlFor(sourceAgency, recordId, pick(row, "sourceUrl")),
       naics: String(pick(row, "naics") ?? "").replace(/\D/g, "").slice(0, 8),
+      reason: cleanText(pick(row, "reason")).slice(0, 80),
     })
   }
   return { records, skipped }
@@ -246,14 +269,16 @@ function defaultRecordType(source) {
   return "health-inspection"
 }
 
-export function filterLaunchRows(rows) {
-  return rows.filter((row) => {
-    const city = pick(row, "city")
-    const region = pick(row, "region")
-    const zip = pick(row, "zip")
-    const naics = pick(row, "naics")
-    return inLaunchArea({ city, region, zip }) && inLaunchIndustry(naics)
-  })
+function rowInLaunch(row, sourceAgency) {
+  const city = pick(row, "city")
+  const region = pick(row, "region")
+  if (!inLaunchArea({ city, region })) return false
+  if (sourceAgency === "osha" || sourceAgency === "whd") return inLaunchIndustry(pick(row, "naics"))
+  return true
+}
+
+export function filterLaunchRows(rows, sourceAgency = "osha") {
+  return rows.filter((row) => rowInLaunch(row, sourceAgency))
 }
 
 export function isVisibleRecord(record, now, maxAgeYears) {
@@ -305,6 +330,7 @@ export function applyPublicRecords(data, incoming, options = {}) {
         archivedAt: archived ? existing.archivedAt || now.toISOString() : null,
       })
       delete existing.naics
+      if (!existing.reason) delete existing.reason
       updated += 1
       continue
     }
@@ -316,6 +342,7 @@ export function applyPublicRecords(data, incoming, options = {}) {
       archivedAt: archived ? now.toISOString() : null,
     }
     delete record.naics
+    if (!record.reason) delete record.reason
     data.publicRecords.push(record)
     byKey.set(key, record)
     added += 1

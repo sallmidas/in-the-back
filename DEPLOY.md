@@ -71,9 +71,25 @@ DOL_API_KEY=your-key npm run records:dol
 npm run records:dol -- --osha-csv osha.csv --whd-csv whd.csv
 ```
 
-The DOL script keeps Springfield and Chicopee ZIP codes, plus restaurant, food-service, and retail NAICS codes. Running it again updates the same record instead of adding a duplicate. Credit lines read “Data: U.S. Department of Labor” and “Data: Massachusetts Attorney General.” That is a credit, not an endorsement.
+The loader keeps records for every city and town in Hampden, Hampshire, Franklin, and Berkshire counties. The town list is `WESTERN_MASS_TOWNS` in `server/launch-area.mjs`. A record still links to a place on the board only when the street and the city match. The same name in two towns stays two places.
 
-No live government file is shipped in this repo. Test fixtures live under `test/fixtures/` and are not loaded onto the board.
+OSHA and Wage and Hour rows also have to fall in one of these NAICS prefixes (`LAUNCH_NAICS_PREFIXES` in that same file): 722 restaurants and food service, 44 and 45 retail (including grocery 445), 48 and 49 warehousing, transport, and couriers, and 311 food manufacturing such as bakeries. Construction, other manufacturing, and healthcare stay out.
+
+An OSHA inspection that produced citations is kept even when a complaint triggered it. A complaint with no citation, penalty, or back-wage finding is skipped. Massachusetts complaint exports are still refused.
+
+Running an import again updates the same record instead of adding a duplicate. Credit lines read “Data: U.S. Department of Labor” and “Data: Massachusetts Attorney General.” That is a credit, not an endorsement.
+
+No live government file is shipped in this repo. Do not commit a DOL download. Test fixtures under `test/fixtures/` are samples and are not loaded onto the board.
+
+On Render, copy a CSV onto the disk (for example `/var/data/osha.csv`) from the service Shell, then run the import there. The service directory already has the app and `node_modules` after the Blueprint build:
+
+```bash
+npm run records:import -- --source osha --file /var/data/osha.csv
+npm run records:import -- --source whd --file /var/data/whd.csv
+npm run records:dol -- --osha-csv /var/data/osha.csv --whd-csv /var/data/whd.csv
+```
+
+Leave `DOL_API_KEY` blank unless you already have one. With a key and no CSV, `npm run records:dol` asks the DOL portal and applies the same town and industry filters. Without a key and without those files, it writes nothing.
 
 ## Contact
 

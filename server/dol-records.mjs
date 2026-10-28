@@ -70,6 +70,7 @@ export async function fetchDolDataset({ source, key, fetchImpl = fetch, pageLimi
 }
 
 export function recordsFromDolRows(rows, source) {
-  const local = filterLaunchRows(rows)
-  return rowsToRecords(local, source)
+  const local = filterLaunchRows(rows, source)
+  const parsed = rowsToRecords(local, source)
+  return { ...parsed, skipped: parsed.skipped + (rows.length - local.length) }
 }

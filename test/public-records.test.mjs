@@ -175,7 +175,7 @@ with zipfile.ZipFile(p, "w") as z:
   assert.equal(parsed.records[0].city, "Chicopee")
 })
 
-test("DOL pulls stay local to Springfield and Chicopee food and retail, and a missing key writes nothing", async () => {
+test("DOL pulls cover western Massachusetts industries, and a missing key writes nothing", async () => {
   let called = false
   const missed = await fetchDolDataset({
     source: "osha",
@@ -223,15 +223,63 @@ test("DOL pulls stay local to Springfield and Chicopee food and retail, and a mi
         site_zip: "01104",
         estab_name: "Mill Works",
         naics_code: "311111",
-        standard: "Machine guarding.",
+        standard: "OSHA cited: Citation 01001 for a bakery oven guard.",
+      },
+      {
+        activity_nr: "400",
+        open_date: "2024-06-01",
+        site_address: "8 Fenn St",
+        site_city: "Pittsfield",
+        site_state: "MA",
+        estab_name: "Pittsfield Cafe",
+        naics_code: "722511",
+        record_type: "inspection",
+        inspection_reason: "Complaint",
+        summary: "OSHA cited: Citation 01001 Serious.",
+        penalty: "1200",
+        violation_items: "1",
+        status: "closed",
+      },
+      {
+        activity_nr: "500",
+        open_date: "2024-06-01",
+        site_city: "Holyoke",
+        site_state: "MA",
+        estab_name: "Holyoke Diner",
+        naics_code: "722511",
+        record_type: "complaint",
+        status: "open",
+        summary: "A worker filed a complaint. No finding.",
+        penalty: "0",
+      },
+      {
+        activity_nr: "600",
+        open_date: "2024-06-01",
+        site_city: "Springfield",
+        site_state: "MA",
+        estab_name: "Roofing Co",
+        naics_code: "238350",
+        summary: "OSHA cited: Citation 01001 Serious.",
+        penalty: "1000",
+      },
+      {
+        activity_nr: "700",
+        open_date: "2024-06-01",
+        site_city: "Greenfield",
+        site_state: "MA",
+        estab_name: "Greenfield Warehouse",
+        naics_code: "493110",
+        summary: "OSHA cited: Citation 01001 Serious.",
+        penalty: "800",
       },
     ],
     "osha",
   )
   assert.deepEqual(
     parsed.records.map((record) => record.recordId),
-    ["100"],
+    ["100", "300", "400", "700"],
   )
+  assert.equal(parsed.records.find((record) => record.recordId === "400").reason, "Complaint")
   assert.match(parsed.records[0].sourceUrl, /osha\.gov/)
 })
 
