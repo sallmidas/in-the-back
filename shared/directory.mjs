@@ -32,7 +32,7 @@ const ROOM_LABELS = {
 
 export const RECORD_FILTERS = [
   { id: "all", label: "All" },
-  { id: "citations", label: "Has citations" },
+  { id: "citations", label: "Has citations or wage cases" },
   { id: "good", label: "Good news only" },
   { id: "none", label: "No public records found" },
 ]
@@ -87,8 +87,16 @@ export function moneyTotal(records) {
 }
 
 function moneyLabel(amount) {
-  const rounded = Math.round(amount)
-  return `$${rounded.toLocaleString("en-US")}`
+  const rounded = Math.round(Number(amount) * 100) / 100
+  if (!Number.isFinite(rounded)) return ""
+  const text = Number.isInteger(rounded)
+    ? rounded.toLocaleString("en-US")
+    : rounded.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  return `$${text}`
+}
+
+function sumField(records, field) {
+  return records.reduce((sum, record) => sum + (Number(record[field]) || 0), 0)
 }
 
 export function recordChip(workplace, records) {
@@ -106,8 +114,13 @@ export function recordChip(workplace, records) {
     }
     if (wages > 0) {
       const noun = wages === 1 ? "wage case" : "wage cases"
-      const money = moneyOf(findings.filter(isWageCase))
-      parts.push(money > 0 ? `${wages} ${noun} · ${moneyLabel(money)} back wages` : `${wages} ${noun}`)
+      const wageRecords = findings.filter(isWageCase)
+      const backWages = sumField(wageRecords, "backWages")
+      const fines = sumField(wageRecords, "penalty")
+      const bits = [`${wages} ${noun}`]
+      if (backWages > 0) bits.push(`${moneyLabel(backWages)} back wages`)
+      if (fines > 0) bits.push(`${moneyLabel(fines)} fines`)
+      parts.push(bits.join(" · "))
     }
     if (parts.length > 0) return parts.join(" · ")
   }

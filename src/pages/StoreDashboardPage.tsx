@@ -1,7 +1,7 @@
 import { type FormEvent, useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { PublicRecordCard, PublicRecordFootnote } from "@/components/record/PublicRecordCard"
-import { CITATION_NOTE, GRAVITY_LEGEND, splitRecords } from "@/lib/records"
+import { CITATION_NOTE, GRAVITY_LEGEND, WAGE_NOTE, findingNotes, splitRecords } from "@/lib/records"
 import { ReportCard } from "@/components/report/ReportCard"
 import { RoomScore } from "@/components/room/RoomScore"
 import { Badge } from "@/components/ui/badge"
@@ -168,6 +168,7 @@ function PendingClaim({ claim }: { claim: StoreClaim }) {
 function StoreRecords({ place }: { place: StoreHomeStores[number] }) {
   const records = place.publicRecords ?? []
   const { good, findings } = splitRecords(records)
+  const notes = findingNotes(findings)
   const [notice, setNotice] = useState<string | null>(null)
 
   async function onReply(recordId: string, text: string) {
@@ -215,7 +216,8 @@ function StoreRecords({ place }: { place: StoreHomeStores[number] }) {
           </div>
         )}
         <p className="text-xs text-muted-foreground">{CITATION_NOTE}</p>
-        <p className="text-xs text-muted-foreground">{GRAVITY_LEGEND}</p>
+        {notes.osha ? <p className="text-xs text-muted-foreground">{GRAVITY_LEGEND}</p> : null}
+        {notes.wageOnly ? <p className="text-xs text-muted-foreground">{WAGE_NOTE}</p> : null}
       </section>
     </>
   )

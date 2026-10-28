@@ -45,6 +45,11 @@ test("all-caps agency names become title case and NAICS gets a label", async () 
   assert.equal(toReadableCase("Bernardino'S Bakery"), "Bernardino's Bakery")
   assert.equal(toReadableCase("FAMILY DOLLAR STORES OF MASSACHUSETTS, LLC"), "Family Dollar Stores of Massachusetts, LLC")
   assert.equal(toReadableCase("BARR AND BARR, INC."), "Barr and Barr, Inc.")
+  assert.equal(toReadableCase("ACCENT ON INDUSTRIAL METAL, INC."), "Accent on Industrial Metal, Inc.")
+  assert.equal(toReadableCase("AMC ENTERPRISES LLC"), "AMC Enterprises LLC")
+  assert.equal(toReadableCase("ABC SUPPLY CO."), "ABC Supply Co.")
+  assert.equal(toReadableCase("GOMEZ ENTERPRISES III, LLC"), "Gomez Enterprises III, LLC")
+  assert.equal(toReadableCase("327 RUSSELL STREET"), "327 Russell Street")
   assert.equal(displayBusinessName("OLD SAN JUAN BAKERY, INC."), "Old San Juan Bakery, Inc.")
   assert.equal(displayBusinessName("JOHN GIL, INC."), "John Gil, Inc.")
   assert.equal(displayBusinessName("RFMC, INC. DBA BERKSHIRE ROOTER"), "Rfmc, Inc. DBA Berkshire Rooter")
@@ -101,6 +106,17 @@ test("a legal name keeps every word, and a re-import repairs a suffix-only place
     summary: "OSHA cited: Citation 01001: Serious - 29 CFR 1910.212(a)(1) (penalty $100), issued 2023-11-28",
     penalty: "100",
   }
+  const market = {
+    record_id: "WF-1",
+    record_date: "2024-06-01",
+    business_name: "WHOLE FOODS MARKET GROUP, INC.",
+    street: "327 RUSSELL STREET",
+    city: "HADLEY",
+    state: "MA",
+    zip: "01035",
+    naics: "445110",
+    status: "closed",
+  }
   const bakery = {
     record_id: "SAN-1",
     record_date: "2025-02-28",
@@ -112,28 +128,35 @@ test("a legal name keeps every word, and a re-import repairs a suffix-only place
     naics: "311812",
     status: "closed",
   }
-  await importPublicRows(store, [gil, bakery], "osha", { now, maxAgeYears: 5 })
+  await importPublicRows(store, [gil, bakery, market], "osha", { now, maxAgeYears: 5 })
   const first = await store.read()
   const gilPlace = first.workplaces.find((place) => place.city === "Ludlow")
   const bakeryPlace = first.workplaces.find((place) => place.city === "Holyoke")
+  const marketPlace = first.workplaces.find((place) => place.city === "Hadley")
   assert.equal(gilPlace.name, "John Gil, Inc.")
   assert.equal(gilPlace.slug, "john-gil-inc")
   assert.equal(bakeryPlace.name, "Old San Juan Bakery, Inc.")
   assert.equal(bakeryPlace.slug, "old-san-juan-bakery-inc")
+  assert.equal(marketPlace.name, "Whole Foods Market Group, Inc.")
+  assert.equal(marketPlace.street, "327 Russell Street")
   await store.update((data) => {
     const place = data.workplaces.find((item) => item.city === "Ludlow")
     place.name = ", Inc."
     place.slug = "inc"
     const record = data.publicRecords.find((item) => item.recordId === "GIL-1")
     record.businessName = ", Inc."
+    const foods = data.workplaces.find((item) => item.city === "Hadley")
+    foods.street = "327"
+    data.publicRecords.find((item) => item.recordId === "WF-1").street = "327"
   })
-  await importPublicRows(store, [gil], "osha", { now, maxAgeYears: 5 })
+  await importPublicRows(store, [gil, market], "osha", { now, maxAgeYears: 5 })
   const fixed = await store.read()
   const repaired = fixed.workplaces.find((place) => place.city === "Ludlow")
   assert.equal(repaired.name, "John Gil, Inc.")
   assert.equal(repaired.slug, "john-gil-inc")
   assert.equal(fixed.publicRecords.find((item) => item.recordId === "GIL-1").businessName, "John Gil, Inc.")
   assert.equal(fixed.workplaces.some((place) => place.slug === "inc"), false)
+  assert.equal(fixed.workplaces.find((place) => place.city === "Hadley").street, "327 Russell Street")
 })
 
 test("street and city match, and the same name in another city does not", () => {

@@ -85,7 +85,7 @@ test("directory chips stay neutral summaries", () => {
   ]
   assert.equal(wageCaseCount(wage), 1)
   assert.equal(citationCount(wage), 0)
-  assert.equal(recordChip(cana, wage), "1 wage case · $53,818 back wages")
+  assert.equal(recordChip(cana, wage), "1 wage case · $52,953.72 back wages · $864 fines")
   const mixed = [
     { workplaceId: "w", sourceAgency: "osha", outcome: "finding", penalty: 1000, items: [{}, {}] },
     { workplaceId: "w", sourceAgency: "ma-ag", outcome: "finding", backWages: 50, penalty: 0 },

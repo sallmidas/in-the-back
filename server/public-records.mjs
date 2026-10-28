@@ -107,9 +107,25 @@ export function clearSummary(sourceAgency, recordDate) {
   return ""
 }
 
-const KEEP_ACRONYMS = new Set(["LLC", "USA", "XPO", "BBQ", "DBA"])
+const KEEP_ACRONYMS = new Set([
+  "LLC",
+  "USA",
+  "XPO",
+  "BBQ",
+  "DBA",
+  "ABC",
+  "AMC",
+  "BBC",
+  "BMW",
+  "CBS",
+  "CVS",
+  "GE",
+  "IBM",
+  "NBA",
+])
+const ROMAN = new Set(["II", "III", "IV", "VI", "VII", "VIII", "IX", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX"])
 const SUFFIX_CASE = { INC: "Inc.", LTD: "Ltd.", CORP: "Corp.", CO: "Co." }
-const SMALL_WORDS = new Set(["of", "and", "the", "at", "in", "for"])
+const SMALL_WORDS = new Set(["of", "and", "the", "at", "in", "for", "on"])
 const SUFFIX_WORDS = new Set([
   "inc",
   "llc",
@@ -146,7 +162,7 @@ function titleWord(token, lowerSmall = false) {
   const upper = core.toUpperCase().replace(/\./g, "")
   if (SUFFIX_CASE[upper]) return SUFFIX_CASE[upper] + tail
   if (STREET_CASE[upper]) return STREET_CASE[upper] + tail
-  if (KEEP_ACRONYMS.has(upper)) return upper + tail
+  if (KEEP_ACRONYMS.has(upper) || ROMAN.has(upper)) return upper + tail
   if (/^[A-Z]{2,3}$/.test(upper) && !/[AEIOU]/.test(upper)) return upper + tail
   if (/^[A-Z]$/.test(upper)) return upper + tail
   if (lowerSmall && SMALL_WORDS.has(upper.toLowerCase())) return upper.toLowerCase() + tail
@@ -336,8 +352,13 @@ export function bareComplaint(row) {
   return /not upheld|unfounded|no violation|dismissed|allegation only|withdrawn/.test(kind)
 }
 
+function plainText(value) {
+  return String(value ?? "").replace(/\s+/g, " ").trim()
+}
+
+/** Person-name redaction is for narrative text only, not a street, city, or legal name. */
 function cleanText(value) {
-  const redacted = redactPersonalNames(String(value ?? "").replace(/\s+/g, " ").trim())
+  const redacted = redactPersonalNames(plainText(value))
   return redacted.replace(/\s{2,}/g, " ").trim()
 }
 
@@ -385,7 +406,7 @@ export function rowsToRecords(rows, sourceAgency) {
       skipped += 1
       continue
     }
-    const city = toReadableCase(cleanText(pick(row, "city")))
+    const city = toReadableCase(plainText(pick(row, "city")))
     const businessName = displayBusinessName(pick(row, "businessName"))
     const year = String(pick(row, "year") ?? "").trim()
     let recordDate = parseRecordDate(pick(row, "recordDate"))
@@ -421,9 +442,9 @@ export function rowsToRecords(rows, sourceAgency) {
       recordType: recordType.slice(0, 80),
       recordId: recordId.slice(0, 80),
       recordDate,
-      street: toReadableCase(cleanText(pick(row, "street"))),
+      street: toReadableCase(plainText(pick(row, "street"))),
       city,
-      region: cleanText(pick(row, "region")) || "MA",
+      region: plainText(pick(row, "region")) || "MA",
       zip: String(pick(row, "zip") ?? "").replace(/[^\d-]/g, "").slice(0, 10),
       businessName: businessName.slice(0, 200),
       summary: summary.slice(0, 4000),

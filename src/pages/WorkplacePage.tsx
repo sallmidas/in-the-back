@@ -2,7 +2,7 @@ import { useParams, useSearchParams } from "react-router-dom"
 import { BoardSkeleton } from "@/components/layout/BoardSkeleton"
 import { EmptyState } from "@/components/layout/EmptyState"
 import { PublicRecordCard, PublicRecordFootnote } from "@/components/record/PublicRecordCard"
-import { CITATION_NOTE, GRAVITY_LEGEND, splitRecords } from "@/lib/records"
+import { CITATION_NOTE, GRAVITY_LEGEND, WAGE_NOTE, findingNotes, splitRecords } from "@/lib/records"
 import { ReportCard } from "@/components/report/ReportCard"
 import { RoomScore } from "@/components/room/RoomScore"
 import { Badge } from "@/components/ui/badge"
@@ -45,6 +45,7 @@ export function WorkplacePage() {
     (record) => record.workplaceId === workplace.id || record.workplaceSlug === workplace.slug,
   )
   const { good, findings } = splitRecords(publicRecords)
+  const notes = findingNotes(findings)
   const shoutOuts = reports.filter((report) => report.kind === "shout-out")
   const roomReports = reports.filter((report) => report.kind !== "shout-out")
   const awards = board.ownerAwards.filter(
@@ -81,25 +82,26 @@ export function WorkplacePage() {
               {workplace.blurb}
             </p>
           ) : null}
-        </div>
-        <div className="shrink-0 rounded-xl border border-border bg-card px-5 py-4 sm:min-w-[9.5rem] sm:text-right">
           {workplace.rooms.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Not rated yet</p>
-          ) : (
-            <>
-              <p className="font-mono text-[11px] tracking-[0.16em] text-muted-foreground uppercase">
-                Room average
-              </p>
-              <p className={`font-mono text-4xl sm:text-5xl ${scoreClass(score)}`}>
-                {formatScore(score)}
-                <span className="ml-1 text-xs tracking-widest text-muted-foreground uppercase">
-                  /10
-                </span>
-              </p>
-              <p className="mt-1 text-xs text-muted-foreground">10 is a solid room.</p>
-            </>
-          )}
+            <p className="w-fit rounded-xl border border-border bg-card px-4 py-3 text-sm text-muted-foreground">
+              Not rated yet
+            </p>
+          ) : null}
         </div>
+        {workplace.rooms.length > 0 ? (
+          <div className="shrink-0 rounded-xl border border-border bg-card px-5 py-4 sm:min-w-[9.5rem] sm:text-right">
+            <p className="font-mono text-[11px] tracking-[0.16em] text-muted-foreground uppercase">
+              Room average
+            </p>
+            <p className={`font-mono text-4xl sm:text-5xl ${scoreClass(score)}`}>
+              {formatScore(score)}
+              <span className="ml-1 text-xs tracking-widest text-muted-foreground uppercase">
+                /10
+              </span>
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">10 is a solid room.</p>
+          </div>
+        ) : null}
       </header>
 
       {workplace.rooms.length > 0 ? (
@@ -201,7 +203,8 @@ export function WorkplacePage() {
           </div>
         )}
         <p className="text-xs text-muted-foreground">{CITATION_NOTE}</p>
-        <p className="text-xs text-muted-foreground">{GRAVITY_LEGEND}</p>
+        {notes.osha ? <p className="text-xs text-muted-foreground">{GRAVITY_LEGEND}</p> : null}
+        {notes.wageOnly ? <p className="text-xs text-muted-foreground">{WAGE_NOTE}</p> : null}
       </section>
     </div>
   )

@@ -94,7 +94,7 @@ export function HomePage() {
           <ul className="mt-3 space-y-2">
             <li>No names, handles, or badge numbers.</li>
             <li>No star-rating of a CEO. Rooms only.</li>
-            <li>No tips, wages, or a pile-on.</li>
+            <li>No one's personal pay or tips, and no pile-ons.</li>
           </ul>
         </aside>
       </section>
