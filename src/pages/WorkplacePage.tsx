@@ -2,7 +2,7 @@ import { useParams, useSearchParams } from "react-router-dom"
 import { BoardSkeleton } from "@/components/layout/BoardSkeleton"
 import { EmptyState } from "@/components/layout/EmptyState"
 import { PublicRecordCard, PublicRecordFootnote } from "@/components/record/PublicRecordCard"
-import { CITATION_NOTE, splitRecords } from "@/lib/records"
+import { CITATION_NOTE, GRAVITY_LEGEND, splitRecords } from "@/lib/records"
 import { ReportCard } from "@/components/report/ReportCard"
 import { RoomScore } from "@/components/room/RoomScore"
 import { Badge } from "@/components/ui/badge"
@@ -191,6 +191,7 @@ export function WorkplacePage() {
           </div>
         )}
         <p className="text-xs text-muted-foreground">{CITATION_NOTE}</p>
+        <p className="text-xs text-muted-foreground">{GRAVITY_LEGEND}</p>
       </section>
     </div>
   )

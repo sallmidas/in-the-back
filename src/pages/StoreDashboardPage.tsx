@@ -1,7 +1,7 @@
 import { type FormEvent, useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { PublicRecordCard, PublicRecordFootnote } from "@/components/record/PublicRecordCard"
-import { CITATION_NOTE, splitRecords } from "@/lib/records"
+import { CITATION_NOTE, GRAVITY_LEGEND, splitRecords } from "@/lib/records"
 import { ReportCard } from "@/components/report/ReportCard"
 import { RoomScore } from "@/components/room/RoomScore"
 import { Badge } from "@/components/ui/badge"
@@ -215,6 +215,7 @@ function StoreRecords({ place }: { place: StoreHomeStores[number] }) {
           </div>
         )}
         <p className="text-xs text-muted-foreground">{CITATION_NOTE}</p>
+        <p className="text-xs text-muted-foreground">{GRAVITY_LEGEND}</p>
       </section>
     </>
   )

@@ -82,9 +82,25 @@ export function PublicRecordCard({
         </p>
         <p className="font-mono text-xs text-muted-foreground">Record {record.recordId}</p>
       </div>
-      {record.summary ? <p className="text-sm leading-relaxed">{record.summary}</p> : null}
+      {record.items && record.items.length > 0 ? (
+        <ul className="space-y-2 text-sm leading-relaxed">
+          {record.items.map((item, index) => (
+            <li key={`${item.standard}-${index}`}>
+              <span>
+                {item.label}: {item.detail}
+              </span>
+              {item.standard ? (
+                <span className="block text-xs text-muted-foreground">{item.standard}</span>
+              ) : null}
+            </li>
+          ))}
+        </ul>
+      ) : record.summary ? (
+        <p className="text-sm leading-relaxed">{record.summary}</p>
+      ) : null}
+      {record.itemTotal ? <p className="text-sm text-muted-foreground">{record.itemTotal}</p> : null}
       {record.reply ? <p className="text-sm">Owner reply: {record.reply}</p> : null}
-      {record.outcome === "finding" && (record.backWages !== null || record.penalty !== null) ? (
+      {!record.itemTotal && record.outcome === "finding" && (record.backWages !== null || record.penalty !== null) ? (
         <p className="text-sm text-muted-foreground">
           {record.backWages !== null ? `Back wages ${formatMoney(record.backWages)}` : ""}
           {record.backWages !== null && record.penalty !== null ? " · " : ""}

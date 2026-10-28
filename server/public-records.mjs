@@ -2,6 +2,7 @@ import { createHash } from "node:crypto"
 import { randomId } from "./passwords.mjs"
 import { redactPersonalNames } from "../shared/names.mjs"
 import { inLaunchArea, inLaunchIndustry, zip5 } from "./launch-area.mjs"
+import { findingLines, findingTotal } from "./plain-findings.mjs"
 
 export const RECORD_SOURCES = ["ma-ag", "osha", "whd", "health", "osha-vpp-sharp", "hire-vets-medallion"]
 export const RECORD_STATUSES = ["open", "closed", "contested", "settled", "abated", "reinspected"]
@@ -43,6 +44,7 @@ const HEADER_ALIASES = {
   reason: ["inspection_reason", "insp_reason", "reason"],
   award: ["award", "title", "recognition"],
   year: ["year", "award_year"],
+  workers: ["employees_due_back_wages", "employees_found_violated", "ee_atp_cnt", "workers"],
 }
 
 export function defaultMaxAgeYears(value) {
@@ -342,7 +344,15 @@ export function rowsToRecords(rows, sourceAgency) {
     const finding = hasFinding(row)
     const clearable = sourceAgency === "osha" || sourceAgency === "whd"
     const outcome = recognitionSource(sourceAgency) ? "recognition" : clearable && !finding ? "clear" : "finding"
-    let summary = cleanText(pick(row, "summary"))
+    const rawSummary = String(pick(row, "summary") ?? "")
+    const items = findingLines(sourceAgency, rawSummary, {
+      backWages: pick(row, "backWages"),
+      penalty: pick(row, "penalty"),
+      violations: pick(row, "violations"),
+      workers: pick(row, "workers"),
+    })
+    let summary = cleanText(rawSummary)
+    if (items.length) summary = items.map((item) => `${item.label}: ${item.detail}`).join(" ")
     if (outcome === "clear") summary = clearSummary(sourceAgency, recordDate)
     if (outcome === "recognition") {
       const award = cleanText(pick(row, "award")) || "Recognition"
@@ -363,7 +373,13 @@ export function rowsToRecords(rows, sourceAgency) {
       region: cleanText(pick(row, "region")) || "MA",
       zip: String(pick(row, "zip") ?? "").replace(/[^\d-]/g, "").slice(0, 10),
       businessName: businessName.slice(0, 200),
-      summary: summary.slice(0, 2000),
+      summary: summary.slice(0, 4000),
+      items,
+      itemTotal: findingTotal(items, {
+        penalty: pick(row, "penalty"),
+        backWages: pick(row, "backWages"),
+        violations: pick(row, "violations"),
+      }),
       backWages: parseMoney(pick(row, "backWages")),
       penalty: parseMoney(pick(row, "penalty")),
       status: mapStatus(pick(row, "status")),
@@ -579,6 +595,8 @@ export function publicRecordView(data, record) {
     zip: record.zip,
     businessName: record.businessName,
     summary: record.summary,
+    items: Array.isArray(record.items) ? record.items : [],
+    itemTotal: record.itemTotal || "",
     backWages: record.backWages,
     penalty: record.penalty,
     status: record.status,

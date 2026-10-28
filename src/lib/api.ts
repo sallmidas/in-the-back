@@ -75,6 +75,8 @@ export type PublicRecord = {
   zip: string
   businessName: string
   summary: string
+  items?: { label: string; detail: string; standard: string; penalty: number | null; issued: string }[]
+  itemTotal?: string
   backWages: number | null
   penalty: number | null
   status: PublicRecordStatus
