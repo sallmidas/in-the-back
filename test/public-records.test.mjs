@@ -9,6 +9,7 @@ import { fetchDolDataset, recordsFromDolRows } from "../server/dol-records.mjs"
 import {
   addressKey,
   applyPublicRecords,
+  displayBusinessName,
   importPublicRows,
   industryFromNaics,
   rowsToRecords,
@@ -40,6 +41,14 @@ test("all-caps agency names become title case and NAICS gets a label", async () 
   assert.equal(toReadableCase("201 HOWLAND AVE"), "201 Howland Ave")
   assert.equal(toReadableCase("North Kitchen, Inc."), "North Kitchen, Inc.")
   assert.equal(toReadableCase("XPO BBQ USA LLC"), "XPO BBQ USA LLC")
+  assert.equal(toReadableCase("AARON'S, LLC"), "Aaron's, LLC")
+  assert.equal(toReadableCase("Bernardino'S Bakery"), "Bernardino's Bakery")
+  assert.equal(toReadableCase("FAMILY DOLLAR STORES OF MASSACHUSETTS, LLC"), "Family Dollar Stores of Massachusetts, LLC")
+  assert.equal(toReadableCase("BARR AND BARR, INC."), "Barr and Barr, Inc.")
+  assert.equal(displayBusinessName("OLD SAN JUAN BAKERY, INC."), "Old San Juan Bakery, Inc.")
+  assert.equal(displayBusinessName("JOHN GIL, INC."), "John Gil, Inc.")
+  assert.equal(displayBusinessName("RFMC, INC. DBA BERKSHIRE ROOTER"), "Rfmc, Inc. DBA Berkshire Rooter")
+  assert.equal(displayBusinessName(", INC."), ", INC.")
   assert.equal(industryFromNaics("722511").industryLabel, "Restaurant/Food service")
   assert.equal(industryFromNaics("445110").industryLabel, "Grocery")
   assert.equal(industryFromNaics("441110").industryLabel, "Retail")
@@ -75,6 +84,56 @@ test("all-caps agency names become title case and NAICS gets a label", async () 
   assert.equal(second.publicRecords.length, 1)
   assert.equal(second.workplaces[0].name, "B&B Micro Manufacturing, Inc.")
   assert.equal(second.workplaces[0].industryLabel, "Manufacturing")
+})
+
+test("a legal name keeps every word, and a re-import repairs a suffix-only place", async () => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), "itb-name-"))
+  const store = createStore(path.join(dir, "board.json"))
+  const gil = {
+    record_id: "GIL-1",
+    record_date: "2023-09-12",
+    business_name: "JOHN GIL, INC.",
+    street: "148 AMHERST ST",
+    city: "LUDLOW",
+    state: "MA",
+    zip: "01056",
+    naics: "327390",
+    summary: "OSHA cited: Citation 01001: Serious - 29 CFR 1910.212(a)(1) (penalty $100), issued 2023-11-28",
+    penalty: "100",
+  }
+  const bakery = {
+    record_id: "SAN-1",
+    record_date: "2025-02-28",
+    business_name: "OLD SAN JUAN BAKERY, INC.",
+    street: "408 HIGH ST",
+    city: "HOLYOKE",
+    state: "MA",
+    zip: "01040",
+    naics: "311812",
+    status: "closed",
+  }
+  await importPublicRows(store, [gil, bakery], "osha", { now, maxAgeYears: 5 })
+  const first = await store.read()
+  const gilPlace = first.workplaces.find((place) => place.city === "Ludlow")
+  const bakeryPlace = first.workplaces.find((place) => place.city === "Holyoke")
+  assert.equal(gilPlace.name, "John Gil, Inc.")
+  assert.equal(gilPlace.slug, "john-gil-inc")
+  assert.equal(bakeryPlace.name, "Old San Juan Bakery, Inc.")
+  assert.equal(bakeryPlace.slug, "old-san-juan-bakery-inc")
+  await store.update((data) => {
+    const place = data.workplaces.find((item) => item.city === "Ludlow")
+    place.name = ", Inc."
+    place.slug = "inc"
+    const record = data.publicRecords.find((item) => item.recordId === "GIL-1")
+    record.businessName = ", Inc."
+  })
+  await importPublicRows(store, [gil], "osha", { now, maxAgeYears: 5 })
+  const fixed = await store.read()
+  const repaired = fixed.workplaces.find((place) => place.city === "Ludlow")
+  assert.equal(repaired.name, "John Gil, Inc.")
+  assert.equal(repaired.slug, "john-gil-inc")
+  assert.equal(fixed.publicRecords.find((item) => item.recordId === "GIL-1").businessName, "John Gil, Inc.")
+  assert.equal(fixed.workplaces.some((place) => place.slug === "inc"), false)
 })
 
 test("street and city match, and the same name in another city does not", () => {

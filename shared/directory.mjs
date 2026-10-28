@@ -63,17 +63,27 @@ function isFinding(record) {
   return record.outcome !== "clear" && record.outcome !== "recognition"
 }
 
+function isWageCase(record) {
+  return record.sourceAgency === "whd" || record.sourceAgency === "ma-ag"
+}
+
 export function citationCount(records) {
-  return records.filter(isFinding).reduce((count, record) => {
+  return records.filter((record) => isFinding(record) && !isWageCase(record)).reduce((count, record) => {
     if (Array.isArray(record.items) && record.items.length > 0) return count + record.items.length
     return count + 1
   }, 0)
 }
 
+export function wageCaseCount(records) {
+  return records.filter((record) => isFinding(record) && isWageCase(record)).length
+}
+
+function moneyOf(records) {
+  return records.reduce((sum, record) => sum + (Number(record.penalty) || 0) + (Number(record.backWages) || 0), 0)
+}
+
 export function moneyTotal(records) {
-  return records.filter(isFinding).reduce((sum, record) => {
-    return sum + (Number(record.penalty) || 0) + (Number(record.backWages) || 0)
-  }, 0)
+  return moneyOf(records.filter(isFinding))
 }
 
 function moneyLabel(amount) {
@@ -86,10 +96,20 @@ export function recordChip(workplace, records) {
   const findings = mine.filter(isFinding)
   const good = mine.filter((record) => !isFinding(record))
   if (findings.length > 0) {
-    const count = citationCount(findings)
-    const money = moneyTotal(findings)
-    const noun = count === 1 ? "citation" : "citations"
-    return money > 0 ? `${count} ${noun} · ${moneyLabel(money)}` : `${count} ${noun}`
+    const parts = []
+    const citations = citationCount(findings)
+    const wages = wageCaseCount(findings)
+    if (citations > 0) {
+      const noun = citations === 1 ? "citation" : "citations"
+      const money = moneyOf(findings.filter((record) => !isWageCase(record)))
+      parts.push(money > 0 ? `${citations} ${noun} · ${moneyLabel(money)}` : `${citations} ${noun}`)
+    }
+    if (wages > 0) {
+      const noun = wages === 1 ? "wage case" : "wage cases"
+      const money = moneyOf(findings.filter(isWageCase))
+      parts.push(money > 0 ? `${wages} ${noun} · ${moneyLabel(money)} back wages` : `${wages} ${noun}`)
+    }
+    if (parts.length > 0) return parts.join(" · ")
   }
   if (good.length > 0) {
     const latest = [...good].sort((left, right) => String(right.recordDate).localeCompare(String(left.recordDate)))[0]

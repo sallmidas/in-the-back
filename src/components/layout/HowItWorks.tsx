@@ -22,7 +22,7 @@ const HOW_IT_WORKS_STEPS = [
   {
     n: "04",
     title: "Reviewed in private",
-    body: "A moderator reviews reports.",
+    body: "A moderator reviews reports before they post and removes names.",
   },
 ] as const
 

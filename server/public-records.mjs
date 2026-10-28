@@ -107,8 +107,21 @@ export function clearSummary(sourceAgency, recordDate) {
   return ""
 }
 
-const KEEP_ACRONYMS = new Set(["LLC", "USA", "XPO", "BBQ"])
+const KEEP_ACRONYMS = new Set(["LLC", "USA", "XPO", "BBQ", "DBA"])
 const SUFFIX_CASE = { INC: "Inc.", LTD: "Ltd.", CORP: "Corp.", CO: "Co." }
+const SMALL_WORDS = new Set(["of", "and", "the", "at", "in", "for"])
+const SUFFIX_WORDS = new Set([
+  "inc",
+  "llc",
+  "ltd",
+  "corp",
+  "co",
+  "dba",
+  "incorporated",
+  "corporation",
+  "company",
+  "limited",
+])
 const STREET_CASE = {
   AVE: "Ave",
   ST: "St",
@@ -123,10 +136,12 @@ const STREET_CASE = {
   TER: "Ter",
 }
 
-function titleWord(token) {
+function titleWord(token, lowerSmall = false) {
   const tail = token.match(/[,;:]+$/)?.[0] ?? ""
   const core = token.slice(0, token.length - tail.length)
   if (!core) return token
+  const possessive = core.match(/^(.*)['’]s$/i)
+  if (possessive?.[1]) return `${titleWord(possessive[1], lowerSmall)}'s${tail}`
   if (core.includes("&")) return core.toUpperCase() + tail
   const upper = core.toUpperCase().replace(/\./g, "")
   if (SUFFIX_CASE[upper]) return SUFFIX_CASE[upper] + tail
@@ -134,21 +149,59 @@ function titleWord(token) {
   if (KEEP_ACRONYMS.has(upper)) return upper + tail
   if (/^[A-Z]{2,3}$/.test(upper) && !/[AEIOU]/.test(upper)) return upper + tail
   if (/^[A-Z]$/.test(upper)) return upper + tail
+  if (lowerSmall && SMALL_WORDS.has(upper.toLowerCase())) return upper.toLowerCase() + tail
   const pretty = core
     .toLowerCase()
-    .replace(/(^|['’-])([a-z])/g, (_, mark, letter) => mark + letter.toUpperCase())
+    .replace(/(^|['’-])([a-z])/g, (_, mark, letter) => {
+      if ((mark === "'" || mark === "’") && letter === "s") return `${mark}s`
+      return mark + letter.toUpperCase()
+    })
   return pretty + tail
 }
 
-/** All-caps agency text becomes readable title case. Mixed-case text is left as written. */
+function fixPossessive(text) {
+  return text.replace(/([A-Za-z])['’]S\b/g, (_, letter) => `${letter}'s`)
+}
+
+/** All-caps agency text becomes readable title case. Mixed-case text is left as written, aside from a possessive 'S. */
 export function toReadableCase(value) {
   const text = String(value ?? "").trim()
   const letters = text.match(/[A-Za-z]/g) ?? []
-  if (letters.length === 0 || letters.some((letter) => letter !== letter.toUpperCase())) return text
-  return text
-    .split(/(\s+)/)
-    .map((part) => (/^\s+$/.test(part) ? part : titleWord(part)))
-    .join("")
+  if (letters.length === 0) return text
+  const allCaps = letters.every((letter) => letter === letter.toUpperCase())
+  const titled = allCaps
+    ? text
+        .split(/(\s+)/)
+        .map((part, index, parts) => {
+          if (/^\s+$/.test(part)) return part
+          const wordIndex = parts.slice(0, index).filter((item) => item.trim()).length
+          return titleWord(part, wordIndex > 0)
+        })
+        .join("")
+    : text
+  return fixPossessive(titled)
+}
+
+/** A name that is blank or only a corporate suffix, such as ", Inc." */
+export function isSuffixOnlyName(value) {
+  const words = String(value ?? "")
+    .replace(/&/g, " ")
+    .split(/[^A-Za-z0-9']+/)
+    .filter(Boolean)
+  if (words.length === 0) return true
+  return words.every((word) => SUFFIX_WORDS.has(word.toLowerCase().replace(/\./g, "")))
+}
+
+/**
+ * Legal names stay whole, including a DBA clause. Person-name redaction is for
+ * narratives, not the establishment name. A suffix-only result falls back to the raw name.
+ */
+export function displayBusinessName(raw) {
+  const original = String(raw ?? "").replace(/\s+/g, " ").trim()
+  if (!original) return "Business name withheld"
+  const titled = toReadableCase(original)
+  if (!titled || isSuffixOnlyName(titled)) return original
+  return titled
 }
 
 /**
@@ -333,7 +386,7 @@ export function rowsToRecords(rows, sourceAgency) {
       continue
     }
     const city = toReadableCase(cleanText(pick(row, "city")))
-    const businessName = toReadableCase(cleanText(pick(row, "businessName"))) || "Business name withheld"
+    const businessName = displayBusinessName(pick(row, "businessName"))
     const year = String(pick(row, "year") ?? "").trim()
     let recordDate = parseRecordDate(pick(row, "recordDate"))
     if (!recordDate && /^\d{4}$/.test(year)) recordDate = `${year}-01-01`
@@ -545,16 +598,17 @@ export function groupBusinesses(data) {
       else workplace = createPlaceForRecord(data, sample, { sameNameOnly: true }).workplace
     }
     if (!workplace) continue
-    refreshPlace(workplace, group)
+    refreshPlace(data, workplace, group)
     for (const record of group) {
       if (!record.workplaceId) record.workplaceId = workplace.id
     }
   }
 }
 
-function refreshPlace(workplace, group) {
+function refreshPlace(data, workplace, group) {
   const named = [...group].sort((left, right) => right.businessName.length - left.businessName.length)[0]
-  if (named?.businessName) workplace.name = named.businessName
+  if (named?.businessName && !isSuffixOnlyName(named.businessName)) workplace.name = named.businessName
+  else if (named?.businessName && isSuffixOnlyName(workplace.name)) workplace.name = named.businessName
   const street = group.find((record) => record.street)?.street
   if (street) workplace.street = street
   const city = group.find((record) => record.city)?.city
@@ -565,6 +619,9 @@ function refreshPlace(workplace, group) {
   if (label) workplace.industryLabel = label
   const industry = group.map((record) => record.industry).find(Boolean)
   if (industry) workplace.industry = industry
+  if (slugIsSuffixOnly(workplace.slug)) {
+    workplace.slug = uniqueSlug(data, slugForPlace(workplace.name, workplace.city), workplace.id)
+  }
 }
 
 export async function importPublicRows(store, rows, sourceAgency, options = {}) {
@@ -625,16 +682,7 @@ export function createPlaceForRecord(data, record, options = {}) {
     return { workplace: hits[0], created: false }
   }
   if (hits.length > 1) return { error: "More than one place has this address. Link it by hand." }
-  let slug = slugFrom(record.businessName)
-  if (data.workplaces.some((workplace) => workplace.slug === slug)) {
-    slug = slugFrom(`${record.businessName} ${record.city}`)
-  }
-  let n = 2
-  const base = slug
-  while (data.workplaces.some((workplace) => workplace.slug === slug)) {
-    slug = `${base}-${n}`
-    n += 1
-  }
+  const slug = uniqueSlug(data, slugForPlace(record.businessName, record.city))
   const workplace = {
     id: randomId("wp"),
     slug,
@@ -665,4 +713,27 @@ function slugFrom(value) {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "")
   return slug || "place"
+}
+
+function slugIsSuffixOnly(slug) {
+  const parts = String(slug ?? "").split("-").filter(Boolean)
+  return parts.length === 0 || parts.every((part) => SUFFIX_WORDS.has(part))
+}
+
+function slugForPlace(name, city) {
+  let slug = slugFrom(name)
+  if (slugIsSuffixOnly(slug)) slug = slugFrom(`${name} ${city}`)
+  if (slugIsSuffixOnly(slug)) slug = "place"
+  return slug
+}
+
+function uniqueSlug(data, base, exceptId) {
+  let slug = base || "place"
+  let n = 2
+  const root = slug
+  while (data.workplaces.some((place) => place.id !== exceptId && place.slug === slug)) {
+    slug = `${root}-${n}`
+    n += 1
+  }
+  return slug
 }

@@ -5,6 +5,7 @@ import {
   directoryTowns,
   filterAndSortWorkplaces,
   recordChip,
+  wageCaseCount,
 } from "../shared/directory.mjs"
 
 const places = [
@@ -71,4 +72,23 @@ test("directory chips stay neutral summaries", () => {
   assert.equal(recordChip(places[2], records), "3 citations · $17,349")
   assert.equal(recordChip(places[3], records), "No public records found")
   assert.equal(/shame|worst|dirty|bad/i.test(recordChip(places[0], records)), false)
+  const cana = { id: "w", slug: "cana" }
+  const wage = [
+    {
+      workplaceId: "w",
+      sourceAgency: "whd",
+      outcome: "finding",
+      backWages: 52953.72,
+      penalty: 864,
+      items: [{}, {}],
+    },
+  ]
+  assert.equal(wageCaseCount(wage), 1)
+  assert.equal(citationCount(wage), 0)
+  assert.equal(recordChip(cana, wage), "1 wage case · $53,818 back wages")
+  const mixed = [
+    { workplaceId: "w", sourceAgency: "osha", outcome: "finding", penalty: 1000, items: [{}, {}] },
+    { workplaceId: "w", sourceAgency: "ma-ag", outcome: "finding", backWages: 50, penalty: 0 },
+  ]
+  assert.equal(recordChip(cana, mixed), "2 citations · $1,000 · 1 wage case · $50 back wages")
 })

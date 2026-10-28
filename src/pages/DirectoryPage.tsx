@@ -89,9 +89,7 @@ export function DirectoryPage() {
           shows who wrote a report.
           {demoSeedEnabled
             ? " Every sample listing is labeled DEMO."
-            : listed > 0
-              ? " Workplaces show up here after someone files a room."
-              : ""}
+            : " Places come from public records and worker reports."}
         </p>
       </header>
 

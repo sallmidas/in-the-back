@@ -72,10 +72,23 @@ export function PublicRecordCard({
       <div className="flex flex-wrap items-center gap-2">
         <Badge variant={good ? "secondary" : "outline"}>{headline}</Badge>
         <Badge variant="secondary">{record.agencyLabel}</Badge>
-        <Badge variant="outline">{STATUS_LABELS[record.status] ?? record.status}</Badge>
+        {good ? null : (
+          <Badge variant="outline">{STATUS_LABELS[record.status] ?? record.status}</Badge>
+        )}
       </div>
       <div className="space-y-1">
-        <h3 className="font-heading text-xl tracking-tight">{record.businessName}</h3>
+        <h3 className="font-heading text-xl tracking-tight">
+          {showPlace && record.workplaceSlug ? (
+            <Link
+              to={`/workplaces/${record.workplaceSlug}`}
+              className={cn("rounded-sm hover:text-primary", focusRingClass)}
+            >
+              {record.businessName}
+            </Link>
+          ) : (
+            record.businessName
+          )}
+        </h3>
         <p className="text-sm text-muted-foreground">
           {formatRecordDate(record.recordDate)}
           {placeLine ? ` · ${placeLine}` : ""}
@@ -123,16 +136,6 @@ export function PublicRecordCard({
           </>
         ) : null}
       </p>
-      {showPlace && record.workplaceSlug ? (
-        <p className="text-sm">
-          <Link
-            to={`/workplaces/${record.workplaceSlug}`}
-            className={cn("underline-offset-4 hover:underline", focusRingClass)}
-          >
-            {record.workplaceName || "Place page"}
-          </Link>
-        </p>
-      ) : null}
       {sent ? <p className="text-sm">Sent to a moderator.</p> : null}
       {open ? (
         <form onSubmit={onReport} className="space-y-2">
