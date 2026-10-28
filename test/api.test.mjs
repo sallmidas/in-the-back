@@ -6,6 +6,14 @@ import path from "node:path"
 import { createApp } from "../server/app.mjs"
 import { apiClient, sampleFiling, withServer } from "./helpers.mjs"
 
+test("the health check answers before any account exists", async () => {
+  await withServer(async ({ client }) => {
+    const health = await client.request("GET", "/api/health")
+    assert.equal(health.status, 200)
+    assert.equal(health.data.ok, true)
+  })
+})
+
 test("a filed report is stored and comes back on the board", async () => {
   await withServer(async ({ client }) => {
     const filed = await client.request("POST", "/api/reports", sampleFiling)

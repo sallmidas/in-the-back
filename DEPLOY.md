@@ -85,12 +85,53 @@ Copy `ITB_STORE_PATH` (the `board.json` file) on a schedule, and again before yo
 
 Ignore `board.json.lock` and any `board.json.*.tmp` files. They are the write lock and in-progress writes, not the backup.
 
-## Hosts that fit
+## Render
 
-These three can run one Node service, attach a disk, and terminate HTTPS. Prices change; check them before signing up. This repo does not create the accounts.
+Saul picked Render: a Starter web service (about $7 a month) and a 1 GB persistent disk. `render.yaml` is the Blueprint. It creates one web service in Virginia, on Node 22, with the disk mounted at `/var/data`. The instance count is 1. Do not raise it. Two processes can corrupt `board.json`.
 
-1. **Render** — a web service plus a persistent disk mounted into the service. Set `ITB_STORE_PATH` to a file on that disk. Render sets `PORT` and sends `X-Forwarded-For`.
-2. **Railway** — a service plus a volume. Same idea: one replica, the JSON file on the volume, `ITB_TRUST_PROXY=1`.
-3. **Fly.io** — one machine and a volume. Fly terminates TLS and forwards the client address. Keep the machine count at one.
+The Blueprint sets `ITB_HOST`, `ITB_SECURE_COOKIE`, `ITB_TRUST_PROXY`, `ITB_STATIC`, `ITB_STORE_PATH`, and `NODE_ENV`. It leaves `VITE_DEMO_SEED` unset, so sample workplaces stay out of the build. Render fills in `PORT` itself. `ITB_CHAIR_EMAIL` and `DOL_API_KEY` are typed in the dashboard. They are not written in this repo.
 
-A platform that only offers ephemeral disk will forget the board every time it restarts. Don't use that for the public preview.
+### Click by click
+
+1. Open [dashboard.render.com](https://dashboard.render.com) and sign in. This repo does not create the Render account or the GitHub connection.
+2. Click **New**, then **Blueprint**.
+3. If Render asks to connect GitHub, choose the GitHub account that owns `sallmidas/in-the-back` and allow Render to read that repository.
+4. Select the repository **in-the-back**.
+5. Select the branch **`cursor/store-accounts-e486`**. That is the PR #9 branch. After this work is merged, pick the default branch instead.
+6. Render reads `render.yaml`. Before you apply it, check the preview:
+   - One web service named `in-the-back`
+   - Plan **Starter**, region **Virginia**
+   - Instances **1**
+   - Disk named `board`, mount `/var/data`, size **1 GB**
+   - Build command `npm ci && npm run build`
+   - Start command `npm start`
+   - Health check `/api/health`
+   - Node version **22**
+7. Render asks for the two values it cannot see in the file:
+   - **ITB_CHAIR_EMAIL** — the email of Saul’s chair account, the one he will sign in with. It is not the public contact address inthebackcontact@gmail.com.
+   - **DOL_API_KEY** — leave this blank. Fill it later only if you already have a DOL open-data key. Do not sign up for one as part of this deploy.
+8. Do not add `VITE_DEMO_SEED`. If a box for it appears, leave it empty.
+9. Click **Deploy** (Render may label this **Apply**). Wait until the service says **Live**. The first build installs packages and builds the site. That takes a few minutes.
+10. Open the `onrender.com` URL Render shows.
+11. On that site, create the reader account whose email is exactly `ITB_CHAIR_EMAIL`. Use a password you will remember.
+12. Open `https://<your-service>.onrender.com/staff`. Sign in if the page asks. Check the box, then click **This is my queue**. After that, the Chair link shows only while that account is signed in.
+13. A custom domain can wait. When you want one: open the service, **Settings**, **Custom Domains**, add the domain, and follow the DNS records Render prints. The session cookie is already marked Secure, which is what a custom HTTPS domain needs.
+
+### Download a backup of `board.json`
+
+Do this before you upgrade the app, and on a schedule after the board has real accounts.
+
+1. In the Render dashboard, open the **in-the-back** service.
+2. Click **Shell**.
+3. Run `ls -l /var/data/board.json` and confirm the file is there.
+4. Run `cat /var/data/board.json`.
+5. Select the whole output, paste it into a new file on your computer, and save that file as `board.json`. Keep it private. It holds password hashes, sessions, the chair claim, store claims, and filings.
+6. Also leave a copy on the disk: `cp /var/data/board.json /var/data/board.json.bak`
+
+Do not back up `board.json.lock` or any `board.json.*.tmp` file. Those are the write lock and an unfinished write.
+
+To put a backup back: suspend the service in the dashboard, replace `/var/data/board.json` from the Shell with the saved file, then resume the service. One instance only.
+
+## Other hosts
+
+Railway (one service and a volume) and Fly.io (one machine and a volume) can run the same process. Keep the machine count at one, set `ITB_TRUST_PROXY=1`, and put `board.json` on the attached disk. A host with only ephemeral disk will forget the board on every restart. Don't use that for the public preview.

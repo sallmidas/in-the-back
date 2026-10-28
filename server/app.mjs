@@ -397,6 +397,11 @@ export function createApp({
     const url = new URL(req.url ?? "/", "http://127.0.0.1")
     const { pathname } = url
 
+    if (pathname === "/api/health" && req.method === "GET") {
+      send(res, 200, { ok: true })
+      return
+    }
+
     if (pathname.startsWith("/api/") && !originAllowed(req)) {
       send(res, 403, { error: "That request came from somewhere else." })
       return
