@@ -95,7 +95,6 @@ export function HomePage() {
             <li>No names, handles, or badge numbers.</li>
             <li>No star-rating of a CEO. Rooms only.</li>
             <li>No tips, wages, or a pile-on.</li>
-            <li>A moderator's name stays off the board.</li>
           </ul>
         </aside>
       </section>

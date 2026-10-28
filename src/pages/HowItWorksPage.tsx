@@ -55,8 +55,7 @@ export function HowItWorksPage() {
             the{" "}
             <Link to="/content" className="underline-offset-4 hover:underline">
               content policy
-            </Link>
-            . The public board never shows who the moderator is.
+            </Link>.
           </p>
         </div>
         <div className="space-y-2">
@@ -119,7 +118,6 @@ export function HowItWorksPage() {
           <h2 className="font-heading text-xl tracking-tight">What stays off</h2>
           <ul className="mt-3 space-y-2 text-sm leading-relaxed text-muted-foreground">
             <li>Reviewer name, handle, email, badge, or login.</li>
-            <li>Who the moderator is.</li>
             <li>Hiring copy, résumés, or “rate my boss.”</li>
             <li>A charge. Reading and filing are free.</li>
           </ul>

@@ -46,7 +46,7 @@ export function TermsPage() {
       </p>
       <p className="text-muted-foreground">
         An account is optional for filing. It is an email and a password. Don’t share the
-        password. The moderator reviews reports. The public board does not show who that is.
+        password. The moderator reviews reports.
         Deleting an account does not delete filings. The moderator account cannot be deleted.
       </p>
       <p className="text-muted-foreground">

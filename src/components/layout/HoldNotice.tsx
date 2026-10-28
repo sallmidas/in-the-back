@@ -31,7 +31,7 @@ export function DemoWalk() {
       n: "03",
       to: "/content",
       title: "A moderator reviews reports",
-      body: "A moderator can hide writing that breaks the content rules. The public never sees who.",
+      body: "A moderator can hide writing that breaks the content rules.",
     },
     {
       n: "04",

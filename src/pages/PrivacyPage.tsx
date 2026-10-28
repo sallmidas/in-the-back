@@ -43,7 +43,6 @@ export function PrivacyPage() {
       <ul className="list-disc space-y-1 pl-5 text-muted-foreground">
         <li>Your name, email, phone, badge, or account.</li>
         <li>The receipt for a filing. We store a hash of it, not the receipt itself.</li>
-        <li>Who the moderator is.</li>
         <li>The “I was in this room” confirmation. It is required to file and then thrown away. We do not check it against a schedule, a badge, or a map.</li>
         <li>A filing the moderator has hidden, or one you have retracted.</li>
         <li>City and region are words you typed. We do not collect GPS.</li>
@@ -69,8 +68,7 @@ export function PrivacyPage() {
 
       <h3 className="font-heading pt-2 text-xl">The moderator and hidden filings</h3>
       <p className="text-muted-foreground">
-        The moderator reviews reports. We store who that is. We do not publish it. The moderator
-        can hide a published filing, and put it back. A hidden filing
+        The moderator reviews reports. The moderator can hide a published filing, and put it back. A hidden filing
         leaves the public board and the room score. It stays in the private store until you
         retract it.
       </p>

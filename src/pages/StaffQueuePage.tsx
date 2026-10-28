@@ -81,7 +81,7 @@ export function StaffQueuePage() {
     try {
       await claimChair()
       await refresh()
-      setNotice("You claimed the platform chair. The public board still does not show who.")
+      setNotice("You claimed the platform chair.")
     } catch (err) {
       setError(err instanceof Error ? err.message : "The chair was not claimed.")
     } finally {
