@@ -42,6 +42,8 @@ export const DIRECTORY_SORTS = [
   { id: "recent", label: "Most recent record" },
   { id: "money", label: "Biggest fines/back wages" },
   { id: "citations", label: "Most citations" },
+  { id: "high", label: "Highest rated" },
+  { id: "low", label: "Lowest rated" },
 ]
 
 function industryKey(workplace) {
@@ -108,7 +110,7 @@ export function directoryTowns(workplaces) {
 }
 
 function overallScore(workplace) {
-  if (!workplace.rooms?.length) return 0
+  if (!workplace.rooms?.length) return null
   const sum = workplace.rooms.reduce((acc, room) => acc + room.score, 0)
   return sum / workplace.rooms.length
 }
@@ -159,6 +161,7 @@ export function filterAndSortWorkplaces(workplaces, records, filters = {}) {
     if (room !== "all" && !(workplace.rooms ?? []).some((item) => item.kind === room)) return false
     if (band !== "all") {
       const score = overallScore(workplace)
+      if (score === null) return false
       if (band === "struggling" && score > 4.5) return false
       if (band === "mixed" && (score <= 4.5 || score >= 7.5)) return false
       if (band === "solid" && score < 7.5) return false
@@ -179,6 +182,17 @@ export function filterAndSortWorkplaces(workplaces, records, filters = {}) {
     } else if (sort === "citations") {
       const byCount = citationCount(placeRecords(right, records)) - citationCount(placeRecords(left, records))
       if (byCount) return byCount
+    } else if (sort === "high" || sort === "low") {
+      const leftScore = overallScore(left)
+      const rightScore = overallScore(right)
+      if (leftScore === null && rightScore === null) {
+        /* fall through to name */
+      } else if (leftScore === null) return 1
+      else if (rightScore === null) return -1
+      else {
+        const byScore = sort === "high" ? rightScore - leftScore : leftScore - rightScore
+        if (byScore) return byScore
+      }
     }
     return left.name.localeCompare(right.name, undefined, { sensitivity: "base" })
   })

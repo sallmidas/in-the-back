@@ -21,7 +21,7 @@ export function WorkplaceCard({
       className={cn(
         "group flex h-full flex-col rounded-xl border border-border border-l-4 bg-card/80 p-4 transition-colors hover:border-primary/50 hover:bg-card sm:p-5",
         focusRingClass,
-        scoreRailClass(score),
+        workplace.rooms.length === 0 ? "border-l-border" : scoreRailClass(score),
       )}
     >
       <div className="flex items-start justify-between gap-3">
@@ -42,14 +42,18 @@ export function WorkplaceCard({
             ) : null}
           </p>
         </div>
-        <p
-          className={`font-mono shrink-0 text-3xl leading-none tabular-nums ${scoreClass(score)}`}
-        >
-          {formatScore(score)}
-          <span className="mt-1 block text-[10px] tracking-widest text-muted-foreground uppercase">
-            /10
-          </span>
-        </p>
+        {workplace.rooms.length === 0 ? (
+          <p className="shrink-0 text-right text-xs text-muted-foreground">Not rated yet</p>
+        ) : (
+          <p
+            className={`font-mono shrink-0 text-3xl leading-none tabular-nums ${scoreClass(score)}`}
+          >
+            {formatScore(score)}
+            <span className="mt-1 block text-[10px] tracking-widest text-muted-foreground uppercase">
+              /10
+            </span>
+          </p>
+        )}
       </div>
       {recordChip ? (
         <p className="mt-3">

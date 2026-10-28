@@ -42,6 +42,27 @@ test("directory filters and sorts public records", () => {
   assert.equal(byRecent[0].id, "b")
   const byName = filterAndSortWorkplaces(places, records, {})
   assert.deepEqual(byName.map((place) => place.name), ["Alpha Cafe", "Beta Metals", "Delta Warehouse", "Gamma Grocery"])
+  const byHigh = filterAndSortWorkplaces(places, records, { sort: "high" })
+  assert.deepEqual(byHigh.map((place) => place.id), ["c", "a", "b", "d"])
+  const byLow = filterAndSortWorkplaces(places, records, { sort: "low" })
+  assert.deepEqual(byLow.map((place) => place.id), ["a", "c", "b", "d"])
+})
+
+test("rating sort puts unrated places last and keeps the band filter", () => {
+  const rated = [
+    { id: "low", name: "Low Place", city: "Springfield", rooms: [{ kind: "kitchen", score: 3 }] },
+    { id: "none", name: "No Filings", city: "Springfield", rooms: [] },
+    { id: "bee", name: "Bee Cafe", city: "Holyoke", rooms: [{ kind: "kitchen", score: 9 }] },
+    { id: "aye", name: "Aye Cafe", city: "Holyoke", rooms: [{ kind: "kitchen", score: 9 }] },
+  ]
+  const high = filterAndSortWorkplaces(rated, [], { sort: "high" })
+  assert.deepEqual(high.map((place) => place.id), ["aye", "bee", "low", "none"])
+  const low = filterAndSortWorkplaces(rated, [], { sort: "low" })
+  assert.deepEqual(low.map((place) => place.id), ["low", "aye", "bee", "none"])
+  const struggling = filterAndSortWorkplaces(rated, [], { band: "struggling" })
+  assert.deepEqual(struggling.map((place) => place.id), ["low"])
+  const solid = filterAndSortWorkplaces(rated, [], { band: "solid" })
+  assert.deepEqual(solid.map((place) => place.id), ["aye", "bee"])
 })
 
 test("directory chips stay neutral summaries", () => {

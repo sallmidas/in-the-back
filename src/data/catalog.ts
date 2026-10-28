@@ -14,7 +14,7 @@ export type DirectoryFilters = {
   room?: RoomKind | "all"
   band?: "all" | "struggling" | "mixed" | "solid"
   records?: "all" | "citations" | "good" | "none"
-  sort?: "name" | "recent" | "money" | "citations"
+  sort?: "name" | "recent" | "money" | "citations" | "high" | "low"
   town?: string
 }
 

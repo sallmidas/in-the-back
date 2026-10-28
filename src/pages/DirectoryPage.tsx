@@ -56,7 +56,7 @@ export function DirectoryPage() {
     room,
     band,
     records: recordsFilter as "all" | "citations" | "good" | "none",
-    sort: sort as "name" | "recent" | "money" | "citations",
+    sort: sort as "name" | "recent" | "money" | "citations" | "high" | "low",
     town,
   })
   const filtersOn =
