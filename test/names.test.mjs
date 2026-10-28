@@ -1,6 +1,6 @@
 import assert from "node:assert/strict"
 import test from "node:test"
-import { filingNameError, personalNameHit } from "../shared/names.mjs"
+import { filingNameError, personalNameHit, redactPersonalNames } from "../shared/names.mjs"
 
 test("allows room writing without a person", () => {
   const excerpt =
@@ -32,6 +32,17 @@ test("blocks personal names and emails", () => {
   assert.equal(personalNameHit("J. Smith was on the line."), "initial")
   assert.equal(personalNameHit("J.S. skipped the temp log."), "initial")
   assert.ok(filingNameError({ workplaceName: "Harbor & Rye", context: "close", excerpt: "Maria left the box open." }))
+})
+
+test("redacts a person's name from agency text and leaves the business", () => {
+  const text = redactPersonalNames(
+    "Citation issued to Maria Alvarez at North Kitchen for unpaid overtime. Email sam@example.com.",
+  )
+  assert.equal(text.includes("Maria"), false)
+  assert.equal(text.includes("Alvarez"), false)
+  assert.equal(text.includes("sam@"), false)
+  assert.match(text, /North Kitchen/)
+  assert.match(text, /unpaid overtime/)
 })
 
 test("does not treat a single lowercase given name as proof", () => {

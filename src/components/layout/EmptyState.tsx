@@ -1,6 +1,7 @@
 import type { ReactNode } from "react"
 import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
+import { useSession } from "@/lib/session"
 
 type EmptyStateProps = {
   eyebrow?: string
@@ -22,6 +23,10 @@ export function EmptyState({
   primaryLabel = "File a report",
   titleAs: TitleTag = "h2",
 }: EmptyStateProps) {
+  const { user } = useSession()
+  const hideFiling =
+    user?.kind === "store" && (primaryTo.startsWith("/write") || primaryLabel === "File a report")
+
   return (
     <div className="space-y-5 rounded-xl border border-dashed border-border bg-card/50 px-4 py-6 sm:px-8 sm:py-8">
       <div className="space-y-2">
@@ -31,13 +36,10 @@ export function EmptyState({
           {children}
         </div>
       </div>
-      {cta ? (
+      {cta && !hideFiling ? (
         <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
           <Button asChild className="w-full sm:w-auto">
             <Link to={primaryTo}>{primaryLabel}</Link>
-          </Button>
-          <Button asChild variant="outline" className="w-full sm:w-auto">
-            <Link to="/plans">Browse plans</Link>
           </Button>
         </div>
       ) : null}

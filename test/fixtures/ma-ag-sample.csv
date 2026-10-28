@@ -1,0 +1,5 @@
+record_id,citation_date,street,city,state,zip,business_name,summary,penalty,status,naics
+FIXTURE-AG-1,2024-03-02,10 Main Street,Springfield,MA,01103,Sample Fixture Kitchen,"SAMPLE FIXTURE. Not an agency record. Citation for unpaid overtime.",450,open,722511
+FIXTURE-AG-OLD,2018-01-15,10 Main Street,Springfield,MA,01103,Sample Fixture Kitchen,"SAMPLE FIXTURE. Not an agency record. Old citation.",100,closed,722511
+FIXTURE-AG-NAME,2024-04-01,10 Main Street,Springfield,MA,01103,Sample Fixture Kitchen,"SAMPLE FIXTURE. Citation issued to Maria Alvarez for unpaid overtime.",200,settled,722511
+FIXTURE-COMPLAINT,2024-05-01,10 Main Street,Springfield,MA,01103,Sample Fixture Kitchen,Complaint dismissed. Not upheld.,0,complaint dismissed,722511

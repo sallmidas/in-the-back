@@ -36,6 +36,7 @@ export function ReportCard({ report, workplace, showWorkplace = true }: Props) {
             </Link>
           ) : null}
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
+            {report.kind === "shout-out" ? <Badge variant="secondary">Shout-out</Badge> : null}
             <Badge variant="outline" className="font-normal">
               {ROOM_LABELS[report.roomKind]}
             </Badge>

@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -11,9 +10,8 @@ import {
 } from "@/components/ui/card"
 import { PLANS } from "@/data/plans"
 import { formatMoney } from "@/lib/format"
-import { cn, focusRingClass } from "@/lib/utils"
 
-export function PlansPage() {
+export function StorePlansPage() {
   return (
     <div className="space-y-8">
       <header className="space-y-3">
@@ -25,13 +23,13 @@ export function PlansPage() {
         </div>
         <h1 className="font-heading text-4xl tracking-tight">Plans for stores</h1>
         <p className="max-w-2xl text-muted-foreground">
-          Reading and filing are always free. Stores would pay for alerts — planned for later, not
-          for sale during the preview.
+          Stores would pay for alerts — planned for later, not for sale during the preview. Reports
+          on the board are anonymous. A higher score is a more solid room.
         </p>
       </header>
 
-      <div className="grid gap-4 lg:grid-cols-3">
-        {PLANS.map((plan) => (
+      <div className="grid gap-4 lg:grid-cols-2">
+        {PLANS.filter((plan) => plan.id !== "free").map((plan) => (
           <Card key={plan.id}>
             <CardHeader>
               <CardTitle className="font-heading text-2xl">{plan.name}</CardTitle>
@@ -52,10 +50,8 @@ export function PlansPage() {
               </ul>
             </CardContent>
             <CardFooter>
-              <Button asChild className="w-full" variant="outline">
-                <Link to={plan.id === "free" ? "/workplaces" : "/how-it-works"}>
-                  {plan.id === "free" ? "Read the board" : "Preview only"}
-                </Link>
+              <Button className="w-full" variant="outline" disabled>
+                Planned
               </Button>
             </CardFooter>
           </Card>
@@ -63,14 +59,8 @@ export function PlansPage() {
       </div>
 
       <p className="text-xs text-muted-foreground">
-        The{" "}
-        <Link
-          to="/staff"
-          className={cn("rounded-sm underline-offset-4 hover:underline", focusRingClass)}
-        >
-          platform chair
-        </Link>{" "}
-        is claimed once for In the Back, not for a workplace.
+        Nothing on this page is for sale. One verified claim per store, unless a moderator adds
+        another.
       </p>
     </div>
   )

@@ -5,7 +5,13 @@ import { INDUSTRY_LABELS, ROOM_LABELS, type Workplace } from "@/data/types"
 import { formatScore, scoreClass, scoreRailClass } from "@/lib/format"
 import { cn, focusRingClass } from "@/lib/utils"
 
-export function WorkplaceCard({ workplace }: { workplace: Workplace }) {
+export function WorkplaceCard({
+  workplace,
+  recordChip,
+}: {
+  workplace: Workplace
+  recordChip?: string
+}) {
   const score = overallScore(workplace)
   const weak = weakestRoom(workplace)
 
@@ -15,7 +21,7 @@ export function WorkplaceCard({ workplace }: { workplace: Workplace }) {
       className={cn(
         "group flex h-full flex-col rounded-xl border border-border border-l-4 bg-card/80 p-4 transition-colors hover:border-primary/50 hover:bg-card sm:p-5",
         focusRingClass,
-        scoreRailClass(score),
+        workplace.rooms.length === 0 ? "border-l-border" : scoreRailClass(score),
       )}
     >
       <div className="flex items-start justify-between gap-3">
@@ -25,25 +31,37 @@ export function WorkplaceCard({ workplace }: { workplace: Workplace }) {
           </p>
           <p className="mt-1 text-sm leading-snug text-muted-foreground">
             {workplace.city}, {workplace.region}
-            {workplace.industry ? (
+            {workplace.industryLabel || workplace.industry ? (
               <>
                 <span className="mx-1.5 text-border" aria-hidden>
                   ·
                 </span>
-                {INDUSTRY_LABELS[workplace.industry]}
+                {workplace.industryLabel ||
+                  (workplace.industry ? INDUSTRY_LABELS[workplace.industry] : "")}
               </>
             ) : null}
           </p>
         </div>
-        <p
-          className={`font-mono shrink-0 text-3xl leading-none tabular-nums ${scoreClass(score)}`}
-        >
-          {formatScore(score)}
-          <span className="mt-1 block text-[10px] tracking-widest text-muted-foreground uppercase">
-            /10
+        {workplace.rooms.length === 0 ? (
+          <p className="shrink-0 text-right text-xs text-muted-foreground">Not rated yet</p>
+        ) : (
+          <p
+            className={`font-mono shrink-0 text-3xl leading-none tabular-nums ${scoreClass(score)}`}
+          >
+            {formatScore(score)}
+            <span className="mt-1 block text-[10px] tracking-widest text-muted-foreground uppercase">
+              /10
+            </span>
+          </p>
+        )}
+      </div>
+      {recordChip ? (
+        <p className="mt-3">
+          <span className="inline-flex rounded-md border border-border px-2 py-1 text-xs text-muted-foreground">
+            {recordChip}
           </span>
         </p>
-      </div>
+      ) : null}
       {workplace.blurb ? (
         <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-foreground/85">
           {workplace.blurb}
@@ -75,9 +93,6 @@ export function WorkplaceCard({ workplace }: { workplace: Workplace }) {
       {workplace.demo ? (
         <div className="mt-4 flex flex-wrap gap-1.5">
           <Badge variant="outline">DEMO</Badge>
-          <Badge variant="secondary" className="capitalize">
-            {workplace.listedPlan} · preview
-          </Badge>
         </div>
       ) : null}
     </Link>

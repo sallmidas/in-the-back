@@ -11,6 +11,11 @@ export function emptyStore() {
     chairClaimedAt: null,
     workplaces: [],
     reports: [],
+    storeClaims: [],
+    publicRecords: [],
+    recordErrors: [],
+    ownerAwards: [],
+    recordReplies: [],
   }
 }
 
@@ -21,7 +26,13 @@ export function createStore(filePath) {
     try {
       const raw = await readFile(filePath, "utf8")
       const parsed = JSON.parse(raw)
-      return { ...emptyStore(), ...parsed }
+      const data = { ...emptyStore(), ...parsed }
+      if (!Array.isArray(data.storeClaims)) data.storeClaims = []
+      if (!Array.isArray(data.publicRecords)) data.publicRecords = []
+      if (!Array.isArray(data.recordErrors)) data.recordErrors = []
+      if (!Array.isArray(data.ownerAwards)) data.ownerAwards = []
+      if (!Array.isArray(data.recordReplies)) data.recordReplies = []
+      return data
     } catch (error) {
       if (error && error.code === "ENOENT") return emptyStore()
       throw error

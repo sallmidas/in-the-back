@@ -12,17 +12,17 @@ const HOW_IT_WORKS_STEPS = [
   {
     n: "02",
     title: "Write without a name",
-    body: "The board shows the room, the score, the shift context, and the writing. Reviewer identity never publishes.",
+    body: "The board shows the room, the score, the shift, and the writing. Who wrote it never shows.",
   },
   {
     n: "03",
-    title: "Disputes stay a badge",
-    body: "A flagged file shows DISPUTED — UNDER REVIEW. The person who filed it can retract it. The chair can hide a filing that breaks the content rules. A kitchen cannot delete it.",
+    title: "Take your file back",
+    body: "You can retract your own file with the receipt or your account. A moderator can hide writing that breaks the content rules. The public still never sees who wrote it.",
   },
   {
     n: "04",
-    title: "One chair, privately",
-    body: "One person claims the platform queue, once. Who that is stays off the public board.",
+    title: "Reviewed in private",
+    body: "A moderator reviews reports before they post and removes names.",
   },
 ] as const
 

@@ -7,14 +7,19 @@ export class ApiError extends Error {
   }
 }
 
+export type AccountKind = "reader" | "store"
+
 export type AccountUser = {
   id: string
   email: string
+  kind: AccountKind
 }
 
 export type ChairState = {
   claimed: boolean
   mine: boolean
+  canClaim: boolean
+  open: boolean
 }
 
 export type MeResponse = {
@@ -35,6 +40,7 @@ export type LiveReport = {
   excerpt: string
   publishedAt: string
   disputed: boolean
+  kind?: "report" | "shout-out"
 }
 
 export type LiveWorkplace = {
@@ -42,17 +48,64 @@ export type LiveWorkplace = {
   slug: string
   name: string
   industry: string | null
+  industryLabel?: string
   city: string
   region: string
+  street?: string
+  zip?: string
   blurb: string
   rooms: { kind: string; score: number }[]
   listedPlan: "free"
   demo: false
 }
 
+export type PublicRecordStatus = "open" | "closed" | "contested" | "settled" | "abated" | "reinspected"
+
+export type PublicRecord = {
+  id: string
+  sourceAgency: string
+  agencyLabel: string
+  credit: string
+  recordType: string
+  recordId: string
+  recordDate: string
+  street: string
+  city: string
+  region: string
+  zip: string
+  businessName: string
+  summary: string
+  items?: { label: string; detail: string; standard: string; penalty: number | null; issued: string }[]
+  itemTotal?: string
+  backWages: number | null
+  penalty: number | null
+  status: PublicRecordStatus
+  sourceUrl: string
+  fetchedAt: string
+  outcome?: "finding" | "clear" | "recognition"
+  awardLabel?: string
+  reply?: string | null
+  workplaceId: string | null
+  workplaceSlug: string | null
+  workplaceName: string | null
+}
+
+export type OwnerAward = {
+  id: string
+  workplaceId: string
+  workplaceSlug: string | null
+  workplaceName: string | null
+  title: string
+  year: string
+  status: string
+  label: string
+}
+
 export type BoardPayload = {
   workplaces: LiveWorkplace[]
   reports: LiveReport[]
+  publicRecords?: PublicRecord[]
+  ownerAwards?: OwnerAward[]
 }
 
 export type OwnedReport = LiveReport & { retracted: boolean; hidden: boolean }
@@ -72,6 +125,7 @@ export type FilingInput = {
   excerpt: string
   /** Self-attested. Required to file. Not stored or shown on the board. */
   inRoom: boolean
+  kind?: "report" | "shout-out"
 }
 
 function apiUrl(path: string) {
@@ -113,17 +167,17 @@ export function getMe() {
   return request<MeResponse>("/api/auth/me")
 }
 
-export function registerAccount(email: string, password: string) {
+export function registerAccount(email: string, password: string, kind: AccountKind = "reader") {
   return request<MeResponse>("/api/auth/register", {
     method: "POST",
-    body: { email, password },
+    body: { email, password, kind },
   })
 }
 
-export function loginAccount(email: string, password: string) {
+export function loginAccount(email: string, password: string, kind: AccountKind = "reader") {
   return request<MeResponse>("/api/auth/login", {
     method: "POST",
-    body: { email, password },
+    body: { email, password, kind },
   })
 }
 
@@ -183,4 +237,140 @@ export function retractOwnReport(reportId: string) {
     method: "POST",
     body: { reportId },
   })
+}
+
+export type StoreClaimStatus = "pending" | "approved" | "refused"
+
+export type StoreClaim = {
+  id: string
+  businessName: string
+  role: string
+  workEmail: string
+  freeInbox: boolean
+  status: StoreClaimStatus
+  createdAt: string
+}
+
+export type StoreHome = {
+  claim: StoreClaim | null
+  stores: { workplace: LiveWorkplace; reports: LiveReport[]; publicRecords?: PublicRecord[] }[]
+}
+
+export type ChairStoreClaim = StoreClaim & {
+  accountEmail: string | null
+  decidedAt: string | null
+  verifiedCount: number
+  workplaceName: string | null
+}
+
+export function storeHome() {
+  return request<StoreHome>("/api/store/home")
+}
+
+export function submitStoreClaim(body: { businessName: string; role: string; workEmail: string }) {
+  return request<{ claim: StoreClaim }>("/api/store/claims", { method: "POST", body })
+}
+
+export function chairStoreClaims() {
+  return request<{ claims: ChairStoreClaim[] }>("/api/chair/store-claims")
+}
+
+export function approveStoreClaim(claimId: string, allowAnother = false) {
+  return request<{ claim: ChairStoreClaim }>("/api/chair/store-claims/approve", {
+    method: "POST",
+    body: { claimId, allowAnother },
+  })
+}
+
+export function refuseStoreClaim(claimId: string) {
+  return request<{ claim: ChairStoreClaim }>("/api/chair/store-claims/refuse", {
+    method: "POST",
+    body: { claimId },
+  })
+}
+
+export function reportRecordError(recordId: string, note: string) {
+  return request<{ sent: boolean }>("/api/public-records/error", {
+    method: "POST",
+    body: { recordId, note },
+  })
+}
+
+export type ChairPublicRecordQueue = {
+  records: PublicRecord[]
+  workplaces: { id: string; name: string; city: string; street: string }[]
+}
+
+export function chairPublicRecords() {
+  return request<ChairPublicRecordQueue>("/api/chair/public-records")
+}
+
+export function linkPublicRecord(id: string, workplaceId: string) {
+  return request<{ record: PublicRecord }>("/api/chair/public-records/link", {
+    method: "POST",
+    body: { id, workplaceId },
+  })
+}
+
+export function placePublicRecord(id: string) {
+  return request<{ record: PublicRecord; created: boolean }>("/api/chair/public-records/place", {
+    method: "POST",
+    body: { id },
+  })
+}
+
+export type RecordErrorItem = {
+  id: string
+  note: string
+  createdAt: string
+  record: PublicRecord | null
+}
+
+export function chairRecordErrors() {
+  return request<{ errors: RecordErrorItem[] }>("/api/chair/record-errors")
+}
+
+export function closeRecordError(id: string) {
+  return request<{ closed: boolean }>("/api/chair/record-errors/close", {
+    method: "POST",
+    body: { id },
+  })
+}
+
+export function submitOwnerAward(body: { title: string; year: string; proofUrl: string }) {
+  return request<{ award: { id: string; status: string } }>("/api/store/awards", {
+    method: "POST",
+    body,
+  })
+}
+
+export function chairOwnerAwards() {
+  return request<{ awards: (OwnerAward & { proofUrl?: string })[] }>("/api/chair/owner-awards")
+}
+
+export function decideOwnerAward(id: string, approve: boolean) {
+  return request<{ award: OwnerAward }>(
+    approve ? "/api/chair/owner-awards/approve" : "/api/chair/owner-awards/refuse",
+    { method: "POST", body: { id } },
+  )
+}
+
+export function submitRecordReply(recordId: string, text: string) {
+  return request<{ sent: boolean }>("/api/store/record-replies", {
+    method: "POST",
+    body: { recordId, text },
+  })
+}
+
+export function chairRecordReplies() {
+  return request<{ replies: { id: string; text: string; record: PublicRecord | null }[] }>(
+    "/api/chair/record-replies",
+  )
+}
+
+export function decideRecordReply(id: string, approve: boolean) {
+  return request<{ status: string }>(
+    approve ? "/api/chair/record-replies/approve" : "/api/chair/record-replies/refuse",
+    { method: "POST", body: { id } },
+  )
 }

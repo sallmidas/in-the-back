@@ -36,6 +36,10 @@ export function formatPublishedAt(iso: string): string {
 }
 
 export function formatMoney(amount: number): string {
-  if (amount === 0) return "$0"
-  return `$${amount.toLocaleString("en-US")}`
+  const rounded = Math.round(amount * 100) / 100
+  if (!Number.isFinite(rounded) || rounded === 0) return "$0"
+  const text = Number.isInteger(rounded)
+    ? rounded.toLocaleString("en-US")
+    : rounded.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  return `$${text}`
 }

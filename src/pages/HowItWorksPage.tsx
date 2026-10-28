@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom"
 import { HowItWorksSteps, SampleRoomStrip } from "@/components/layout/HowItWorks"
-import { DisputeBadge } from "@/components/report/DisputeBadge"
 import { Button } from "@/components/ui/button"
 import { useDemoRoomPath } from "@/lib/demo-room"
 
@@ -32,7 +31,7 @@ export function HowItWorksPage() {
             </Button>
           )}
           <Button asChild variant="outline" className="w-full sm:w-auto">
-            <Link to="/plans">Plans (preview only)</Link>
+            <Link to="/write">File a report</Link>
           </Button>
         </div>
       </header>
@@ -50,25 +49,28 @@ export function HowItWorksPage() {
           </p>
         </div>
         <div className="space-y-2">
-          <h3 className="font-heading text-xl tracking-tight">Chair</h3>
+          <h3 className="font-heading text-xl tracking-tight">A moderator</h3>
           <p className="text-sm leading-relaxed text-muted-foreground">
-            The chair is one seat for the whole platform. The first person to sign in and claim it
-            holds the staff queue. That happens once. A workplace does not get its own queue, and
-            the public board never shows who claimed the seat. The chair can hide a published
-            filing, and put it back, under the{" "}
+            A moderator reviews reports. They can hide a published filing, and put it back, under
+            the{" "}
             <Link to="/content" className="underline-offset-4 hover:underline">
               content policy
-            </Link>
-            .
+            </Link>.
+          </p>
+        </div>
+        <div className="space-y-2">
+          <h3 className="font-heading text-xl tracking-tight">Public records</h3>
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            Some pages also show official records: a Massachusetts citation, a federal safety
+            inspection, or a wage case. Each one is labeled Public record. It is not a worker
+            report. A person's name in an agency file is left off the page. The line under the
+            record names the agency. That is a credit. It is not an endorsement. An inspection
+            with no citations, or a wage case with no violations, is listed as good news. A
+            shout-out is a filing that praises a room. It follows the same rules as any other filing.
           </p>
         </div>
         <p className="text-sm leading-relaxed text-muted-foreground">
-          Watch and Respond are facility plans, not the chair. What each one would do, and the flat
-          monthly price, is on{" "}
-          <Link to="/plans" className="underline-offset-4 hover:underline">
-            Plans
-          </Link>
-          . Those plans are a preview. They are not offered now.
+          Reading and filing are free. The writing is about the room, never a person.
         </p>
       </section>
 
@@ -95,9 +97,8 @@ export function HowItWorksPage() {
               Walk-in was 48° at 2am. Dairy sitting in a sheet pan on the floor. Nobody logged a
               temp all close.
             </p>
-            <DisputeBadge className="mt-3" />
             <p className="mt-3 text-xs text-muted-foreground">
-              Illustration of layout and the dispute badge. No reviewer name, ever.
+              Illustration of the layout. No name on the writing, ever.
             </p>
           </article>
         </div>
@@ -110,19 +111,15 @@ export function HowItWorksPage() {
             <li>Workplace, city, industry, rooms.</li>
             <li>Room scores and anonymous excerpts.</li>
             <li>Shift or station context written without a name.</li>
-            <li>
-              A dispute badge when a kitchen has flagged a report — exactly{" "}
-              <span className="text-destructive">DISPUTED — UNDER REVIEW</span>.
-            </li>
+            <li>Nothing that names who wrote it.</li>
           </ul>
         </div>
         <div>
           <h2 className="font-heading text-xl tracking-tight">What stays off</h2>
           <ul className="mt-3 space-y-2 text-sm leading-relaxed text-muted-foreground">
             <li>Reviewer name, handle, email, badge, or login.</li>
-            <li>Platform chair identity, even after they claim a queue.</li>
             <li>Hiring copy, résumés, or “rate my boss.”</li>
-            <li>Payments. This preview does not take or send money.</li>
+            <li>A charge. Reading and filing are free.</li>
           </ul>
         </div>
       </section>

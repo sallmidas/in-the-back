@@ -1,25 +1,37 @@
 import { useEffect } from "react"
-import { Link } from "react-router-dom"
+import { Link, useSearchParams } from "react-router-dom"
 import { BoardSkeleton } from "@/components/layout/BoardSkeleton"
 import { EmptyState } from "@/components/layout/EmptyState"
 import { HowItWorksPreview } from "@/components/layout/HowItWorks"
 import { DemoWalk } from "@/components/layout/HoldNotice"
+import { PublicRecordCard, PublicRecordFootnote } from "@/components/record/PublicRecordCard"
 import { ReportCard } from "@/components/report/ReportCard"
 import { Button } from "@/components/ui/button"
 import { WorkplaceStripCard } from "@/components/workplace/WorkplaceCard"
 import { demoSeedEnabled } from "@/data/demo-flag"
 import { useBoard } from "@/lib/board"
+import { useSession } from "@/lib/session"
 import { useDemoRoomPath } from "@/lib/demo-room"
 import { cn, focusRingClass } from "@/lib/utils"
 
 export function HomePage() {
   const board = useBoard()
+  const { user } = useSession()
+  const storeSession = user?.kind === "store"
   const reports = board.recentReports(8)
-  const featured = board.disputedReports()[0]
+  const records = board.publicRecords.slice(0, 12)
   const demoWorkplaces = board.workplaces.filter((workplace) => workplace.demo)
   const seeded = demoSeedEnabled
   const demoPath = useDemoRoomPath()
-  const empty = board.ready && !board.error && reports.length === 0
+  const [params, setParams] = useSearchParams()
+  const layer = params.get("layer") === "records" || params.get("layer") === "reports" ? params.get("layer") : "all"
+  const showReports = layer !== "records"
+  const showRecords = layer !== "reports"
+  const empty =
+    board.ready &&
+    !board.error &&
+    (showReports ? reports.length === 0 : true) &&
+    (showRecords ? records.length === 0 : true)
 
   useEffect(() => {
     const id = window.location.hash.replace("#", "")
@@ -43,8 +55,8 @@ export function HomePage() {
           </h1>
           <p className="max-w-lg text-base leading-relaxed text-muted-foreground">
             Kitchens, dish pits, walk-ins, staff bathrooms, break rooms, docks, stock, overnight.
-            Public sees the room, the score, the shift context, and the writing. Never the
-            reviewer. This is not Glassdoor.
+            You see the room, the score, the shift, and the writing. Never who wrote it. Reading
+            and filing are free. This is not Glassdoor.
           </p>
           <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
             {demoPath ? (
@@ -58,10 +70,12 @@ export function HomePage() {
               </>
             ) : (
               <>
-                <Button asChild className="w-full sm:w-auto">
-                  <Link to="/write">File a report</Link>
-                </Button>
-                <Button asChild variant="outline" className="w-full sm:w-auto">
+                {storeSession ? null : (
+                  <Button asChild className="w-full sm:w-auto">
+                    <Link to="/write">File a report</Link>
+                  </Button>
+                )}
+                <Button asChild variant={storeSession ? "default" : "outline"} className="w-full sm:w-auto">
                   <Link to="/workplaces">Open directory</Link>
                 </Button>
               </>
@@ -80,8 +94,7 @@ export function HomePage() {
           <ul className="mt-3 space-y-2">
             <li>No names, handles, or badge numbers.</li>
             <li>No star-rating of a CEO. Rooms only.</li>
-            <li>Disputes become a public badge, not a pile-on.</li>
-            <li>The chair's name stays off the board.</li>
+            <li>No one's personal pay or tips, and no pile-ons.</li>
           </ul>
         </aside>
       </section>
@@ -89,13 +102,6 @@ export function HomePage() {
       <HowItWorksPreview />
 
       {seeded ? <DemoWalk /> : null}
-
-      {featured ? (
-        <section className="space-y-3">
-          <h2 className="font-heading text-2xl tracking-tight">Pinned dispute</h2>
-          <ReportCard report={featured} workplace={featured.workplace} />
-        </section>
-      ) : null}
 
       {demoWorkplaces.length > 0 ? (
         <section className="space-y-3">
@@ -120,17 +126,42 @@ export function HomePage() {
       ) : null}
 
       <section className="space-y-4">
-        <div className="flex items-end justify-between gap-3">
-          <h2 className="font-heading text-2xl tracking-tight">Recent reports</h2>
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <h2 className="font-heading text-2xl tracking-tight">On the board</h2>
           <Link
             to="/workplaces"
             className={cn(
-              "rounded-sm text-sm text-muted-foreground hover:text-foreground",
+              "inline-flex min-h-11 items-center rounded-sm text-sm text-muted-foreground hover:text-foreground",
               focusRingClass,
             )}
           >
             Full directory
           </Link>
+        </div>
+        <div className="flex flex-wrap gap-2" role="group" aria-label="Board filter">
+          {(
+            [
+              ["all", "All"],
+              ["reports", "Worker reports"],
+              ["records", "Public records"],
+            ] as const
+          ).map(([value, label]) => (
+            <Button
+              key={value}
+              type="button"
+              size="sm"
+              variant={layer === value ? "default" : "outline"}
+              aria-pressed={layer === value}
+              onClick={() => {
+                const next = new URLSearchParams(params)
+                if (value === "all") next.delete("layer")
+                else next.set("layer", value)
+                setParams(next, { replace: true })
+              }}
+            >
+              {label}
+            </Button>
+          ))}
         </div>
         {!board.ready ? (
           <BoardSkeleton />
@@ -150,13 +181,19 @@ export function HomePage() {
             primaryTo="/write"
             primaryLabel="File a report"
           >
-            <p>No rooms scored yet. First mark: cleanliness, safety, dignity.</p>
+            <p>No reports yet. File one about a room: cleanliness, safety, and dignity.</p>
           </EmptyState>
         ) : (
           <div className="grid gap-3">
-            {reports.map((report) => (
-              <ReportCard key={report.id} report={report} workplace={report.workplace} />
-            ))}
+            {showReports
+              ? reports.map((report) => (
+                  <ReportCard key={report.id} report={report} workplace={report.workplace} />
+                ))
+              : null}
+            {showRecords
+              ? records.map((record) => <PublicRecordCard key={record.id} record={record} showPlace />)
+              : null}
+            {showRecords && records.length > 0 ? <PublicRecordFootnote /> : null}
           </div>
         )}
       </section>

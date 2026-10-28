@@ -162,6 +162,33 @@ function capsHit(text) {
   return false
 }
 
+/** Drop person names from agency text. Company names and room words stay. */
+export function redactPersonalNames(text) {
+  if (!text || typeof text !== "string") return ""
+  let out = text
+  out = out.replace(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi, "")
+  out = out.replace(/\b(?:Mr|Mrs|Ms|Mx|Dr|Prof)\.?\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?/g, "")
+  out = out.replace(
+    /\b(?:my name is|i am|i'm|i’m|named|called|aka|a\.k\.a\.)\s+[A-Za-z][A-Za-z'’-]+(?:\s+[A-Z][a-z]+)?/gi,
+    "",
+  )
+  out = out.replace(
+    /\b(?:Chef|Manager|Supervisor|Owner|Server|Cook|Bartender|Host|Sous|Boss|GM)\s+[A-Z][a-z]+\b/g,
+    (match) => (roleHit(match) ? "" : match),
+  )
+  out = out.replace(/\b([A-Z][a-z]+)\s+([A-Z][A-Za-z'’-]+)\b/g, (match) => (pairHit(match) ? "" : match))
+  out = out.replace(/\b([A-Z]{2,})\s+([A-Z]{2,})\b/g, (match) => (capsHit(match) ? "" : match))
+  out = out.replace(/\b[A-Z]\.?\s+[A-Z][a-z]{2,}\b/g, (match) => (initialHit(match) ? "" : match))
+  out = out.replace(/\b[A-Z]\.\s*[A-Z]\./g, (match) => (initialHit(match) ? "" : match))
+  out = out.replace(/\b[A-Z][a-z]{2,}\b/g, (match) => (personalNameHit(match) === "solo" ? "" : match))
+  return out
+    .replace(/\b(to|for|by|of|from)\s+(to|for|by|of|from)\b/gi, "$2")
+    .replace(/[ \t]{2,}/g, " ")
+    .replace(/\s+([,.;:])/g, "$1")
+    .replace(/\(\s*\)/g, "")
+    .trim()
+}
+
 export function filingNameError(fields) {
   for (const key of ["workplaceName", "city", "region"]) {
     if (personalNameHit(fields?.[key], { solo: false })) return NAME_BLOCK_MESSAGE

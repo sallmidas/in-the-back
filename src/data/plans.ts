@@ -1,11 +1,11 @@
-import { kitchenPriceLabel } from "../../shared/plan-copy.mjs"
+import { storePriceLabel } from "../../shared/plan-copy.mjs"
 import type { PlanId } from "./types"
 
 export type Plan = {
   id: PlanId
   name: string
   monthly: number
-  /** Flat price sentence. Reporter pay would be inside the subscription, not a toll. */
+  /** Flat monthly price in the planned store model. */
   priceLabel: string
   tagline: string
   audience: string
@@ -20,28 +20,22 @@ export const PLANS: Plan[] = [
     id: "free",
     name: "Free",
     monthly: 0,
-    priceLabel: kitchenPriceLabel(0, 0),
-    tagline: "Rooms, scores, and writing on the public board.",
-    audience: "Everyone reading and filing",
-    features: [
-      "Workplace directory and room scores",
-      "Anonymous excerpts — never reviewer identity",
-      "A dispute badge when a filing is under review",
-    ],
+    priceLabel: storePriceLabel(0),
+    tagline: "Not a store plan.",
+    audience: "Not offered on this page",
+    features: ["Stores are not on a free plan"],
     held: null,
   },
   {
     id: "watch",
     name: "Watch",
     monthly: 129,
-    priceLabel: kitchenPriceLabel(129, 3),
+    priceLabel: storePriceLabel(129),
     tagline: "The store pays $129/mo for near-real-time alerts.",
-    audience: "A store that would want alerts as files land",
+    audience: "A store that would want alerts when a new report is on its rooms",
     features: [
-      "Everything on Free",
-      "Near-real-time alerts when a report is filed",
-      "A reporter would earn $3 once the report passes review",
-      "Reports shown to be false after a dispute earn nothing",
+      "Near-real-time alerts when a new report is on this store",
+      "The same anonymous reports, with no name attached",
     ],
     held: later,
   },
@@ -49,14 +43,12 @@ export const PLANS: Plan[] = [
     id: "respond",
     name: "Respond",
     monthly: 249,
-    priceLabel: kitchenPriceLabel(249, 5),
-    tagline: "The store pays $249/mo. Adds a response or dispute and a faster way to recover the rating.",
+    priceLabel: storePriceLabel(249),
+    tagline: "The store pays $249/mo. A store could answer a report, or mark it under review, and the room score would come back faster.",
     audience: "A store that would want to respond and recover a rating faster",
     features: [
       "Everything on Watch",
-      "Respond or dispute a filing, and recover the room rating faster",
-      "A reporter would earn $5 once the report passes review",
-      "Reports shown to be false after a dispute earn nothing",
+      "Answer a report, or mark it under review, so the room score can come back faster",
     ],
     held: later,
   },

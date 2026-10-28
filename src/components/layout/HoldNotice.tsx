@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom"
-import { PREVIEW_NOTE } from "../../../shared/plan-copy.mjs"
 import { demoSeedEnabled } from "@/data/demo-flag"
 import { useDemoRoomPath } from "@/lib/demo-room"
 import { cn, focusRingClass } from "@/lib/utils"
@@ -7,7 +6,7 @@ import { cn, focusRingClass } from "@/lib/utils"
 export function HoldNotice({ className = "" }: { className?: string }) {
   return (
     <p className={className}>
-      {PREVIEW_NOTE}
+      Reading and filing are free during this preview.
       {demoSeedEnabled ? " The sample workplaces are labeled DEMO." : ""}
     </p>
   )
@@ -19,8 +18,8 @@ export function DemoWalk() {
     {
       n: "01",
       to: demoPath,
-      title: "A disputed room",
-      body: "A labeled DEMO room — score, writing, DISPUTED badge. No reviewer name.",
+      title: "A sample room",
+      body: "A labeled DEMO room — score and writing. No reviewer name.",
     },
     {
       n: "02",
@@ -30,15 +29,15 @@ export function DemoWalk() {
     },
     {
       n: "03",
-      to: "/staff",
-      title: "Platform chair",
-      body: "Sign in and claim the one platform queue. It is not a workplace. The public never sees who.",
+      to: "/content",
+      title: "A moderator reviews reports",
+      body: "A moderator can hide writing that breaks the content rules.",
     },
     {
       n: "04",
-      to: "/plans",
-      title: "Browse plans",
-      body: "A later model, labeled as planned. Nothing is charged during the preview.",
+      to: "/write",
+      title: "File a report",
+      body: "Score a room. The writing is about the room, not a person.",
     },
   ]
 

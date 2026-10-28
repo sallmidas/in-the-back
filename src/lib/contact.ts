@@ -1,2 +1,2 @@
-/** Swap this before a public launch. It is not a live inbox. */
-export const CONTACT_EMAIL = "contact@REPLACE-ME"
+/** Public contact address on the legal pages. */
+export const CONTACT_EMAIL = "inthebackcontact@gmail.com"

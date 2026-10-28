@@ -10,9 +10,12 @@ import {
 
 export type DirectoryFilters = {
   query?: string
-  industry?: Industry | "all"
+  industry?: Industry | "all" | string
   room?: RoomKind | "all"
   band?: "all" | "struggling" | "mixed" | "solid"
+  records?: "all" | "citations" | "good" | "none"
+  sort?: "name" | "recent" | "money" | "citations" | "high" | "low"
+  town?: string
 }
 
 export type ReportWithWorkplace = Report & { workplace: Workplace }

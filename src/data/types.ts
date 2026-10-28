@@ -40,8 +40,12 @@ export type Workplace = {
   slug: string
   name: string
   industry: Industry | null
+  /** Friendly label from an imported NAICS code, when the place came from a public record. */
+  industryLabel?: string
   city: string
   region: string
+  street?: string
+  zip?: string
   blurb: string
   rooms: Room[]
   listedPlan: PlanId
@@ -59,6 +63,7 @@ export type Report = {
   excerpt: string
   publishedAt: string
   disputed: boolean
+  kind?: "report" | "shout-out"
 }
 
 export const ROOM_LABELS: Record<RoomKind, string> = {

@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { AuthForm } from "@/components/account/AuthForm"
+import { PublicRecordsQueue } from "@/components/chair/PublicRecordsQueue"
+import { StoreClaimsQueue } from "@/components/chair/StoreClaimsQueue"
 import { EmptyState } from "@/components/layout/EmptyState"
 import { ReportCard } from "@/components/report/ReportCard"
 import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
 import { isIndustry, isRoomKind, ROOM_LABELS, type Report, type Workplace } from "@/data/types"
 import { chairReports, claimChair, hideReport, logoutAccount, unhideReport, type StaffReport } from "@/lib/api"
 import { useBoard } from "@/lib/board"
@@ -52,6 +55,7 @@ export function StaffQueuePage() {
   const [queueError, setQueueError] = useState<string | null>(null)
   const [reload, setReload] = useState(0)
   const [hidingId, setHidingId] = useState<string | null>(null)
+  const [sure, setSure] = useState(false)
 
   useEffect(() => {
     if (!chair.mine) return
@@ -77,7 +81,7 @@ export function StaffQueuePage() {
     try {
       await claimChair()
       await refresh()
-      setNotice("You claimed the platform chair. The public board still does not show who.")
+      setNotice("You claimed the platform chair.")
     } catch (err) {
       setError(err instanceof Error ? err.message : "The chair was not claimed.")
     } finally {
@@ -113,11 +117,10 @@ export function StaffQueuePage() {
         <p className="font-mono text-[11px] tracking-[0.2em] text-primary uppercase">
           Platform chair
         </p>
-        <h1 className="font-heading text-4xl tracking-tight">This is my queue</h1>
+        <h1 className="font-heading text-4xl tracking-tight">Platform chair</h1>
         <p className="max-w-2xl text-muted-foreground">
-          One staff queue for the whole platform. Sign in, then claim it if it is still open. The
-          claim is stored on the server, once. It is not a workplace. From this queue you can hide
-          a published filing that breaks the{" "}
+          One staff queue for the whole platform. From this queue you can hide a published filing
+          that breaks the{" "}
           <Link to="/content" className={cn("rounded-sm underline-offset-4 hover:underline", focusRingClass)}>
             content policy
           </Link>
@@ -145,11 +148,31 @@ export function StaffQueuePage() {
       ) : !user ? (
         <div className="max-w-md space-y-3 rounded-xl border border-border bg-card/70 p-5">
           <p className="text-sm text-muted-foreground">
-            {chair.claimed
-              ? "The chair is already claimed. Sign in only if this is your account."
-              : "Create an account, then claim the chair. The first account to claim it is the only one."}
+            {chair.open
+              ? "Create an account, then claim the chair. The first account to claim it is the only one."
+              : "Sign in if this is your account."}
           </p>
-          <AuthForm />
+          <AuthForm kind="reader" />
+        </div>
+      ) : user.kind === "store" && !chair.open ? (
+        <p className="text-sm text-muted-foreground">Not found.</p>
+      ) : user.kind === "store" ? (
+        <div className="max-w-xl space-y-3 rounded-xl border border-border bg-card/70 p-5">
+          <p className="text-sm">
+            Signed in as store account <span className="font-mono">{user.email}</span>
+          </p>
+          <p className="text-sm text-muted-foreground">
+            A store account cannot claim the platform chair. The chair is one seat for In the
+            Back, not for a store.
+          </p>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Button asChild className="w-full sm:w-auto">
+              <Link to="/stores/dashboard">Store dashboard</Link>
+            </Button>
+            <Button variant="outline" size="sm" className="w-full sm:w-auto" onClick={() => void onSignOut()}>
+              Sign out
+            </Button>
+          </div>
         </div>
       ) : (
         <div className="space-y-6">
@@ -166,11 +189,14 @@ export function StaffQueuePage() {
           </div>
 
           {chair.mine ? (
+            <>
+            <StoreClaimsQueue active={chair.mine} />
+            <PublicRecordsQueue active={chair.mine} />
             <section className="space-y-3">
               <div>
                 <h2 className="font-heading text-2xl">Queue</h2>
                 <p className="text-sm text-muted-foreground">
-                  Files stored on the server. The public still never sees you.
+                  Reports on the board, including ones you have hidden. The public still never sees you.
                 </p>
               </div>
               {queueError ? (
@@ -218,20 +244,35 @@ export function StaffQueuePage() {
                 </div>
               )}
             </section>
-          ) : chair.claimed ? (
-            <p className="rounded-xl border border-border bg-card/70 p-5 text-sm text-muted-foreground">
-              The platform chair is already claimed. This queue belongs to the platform, once — not
-              to a workplace, and not to this account.
-            </p>
-          ) : (
+            </>
+          ) : chair.canClaim ? (
             <div className="space-y-3 rounded-xl border border-border bg-card/70 p-5">
               <p className="text-sm text-muted-foreground">
-                Claim the platform chair once. There is no workplace to pick.
+                Claim the platform chair once. This is one seat for the whole board, and it does
+                not reopen.
               </p>
-              <Button type="button" className="w-full sm:w-auto" disabled={pending} onClick={() => void onClaim()}>
+              <div className="flex items-start gap-3">
+                <input
+                  id="chair-sure"
+                  type="checkbox"
+                  checked={sure}
+                  onChange={(event) => setSure(event.target.checked)}
+                  className="mt-1 size-6 accent-primary"
+                />
+                <Label htmlFor="chair-sure" className="text-sm leading-relaxed">
+                  I understand this can be claimed once, for the whole board.
+                </Label>
+              </div>
+              <Button type="button" className="w-full sm:w-auto" disabled={pending || !sure} onClick={() => void onClaim()}>
                 {pending ? "Claiming…" : "This is my queue"}
               </Button>
             </div>
+          ) : chair.open && chair.claimed ? (
+            <p className="rounded-xl border border-border bg-card/70 p-5 text-sm text-muted-foreground">
+              The platform chair is already claimed. This account is not the chair.
+            </p>
+          ) : (
+            <p className="text-sm text-muted-foreground">Not found.</p>
           )}
         </div>
       )}

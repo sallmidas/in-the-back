@@ -1,0 +1,34 @@
+# Render Blueprint for one web service. The JSON store cannot run on more than one instance.
+services:
+  - type: web
+    name: in-the-back
+    runtime: node
+    region: virginia
+    plan: starter
+    numInstances: 1
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NODE_ENV
+        value: production
+      - key: ITB_HOST
+        value: 0.0.0.0
+      - key: ITB_SECURE_COOKIE
+        value: "1"
+      - key: ITB_TRUST_PROXY
+        value: "1"
+      - key: ITB_STATIC
+        value: dist
+      - key: ITB_STORE_PATH
+        value: /var/data/board.json
+      - key: ITB_CHAIR_EMAIL
+        sync: false
+      - key: DOL_API_KEY
+        sync: false
+    disk:
+      name: board
+      mountPath: /var/data
+      sizeGB: 1
