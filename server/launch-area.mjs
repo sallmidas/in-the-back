@@ -149,10 +149,10 @@ export const WESTERN_MASS_TOWNS = [
  * 722 restaurants and other food service.
  * 44 and 45 retail, which includes grocery 445.
  * 48 and 49 warehousing, transport, and couriers.
- * 311 food manufacturing, including bakeries.
- * Construction, other manufacturing, and healthcare are not in this list.
+ * 31, 32, and 33 all manufacturing: food, paper, metal, plastics, and the rest of the sector.
+ * Construction and healthcare are not in this list.
  */
-export const LAUNCH_NAICS_PREFIXES = ["722", "44", "45", "48", "49", "311"]
+export const LAUNCH_NAICS_PREFIXES = ["722", "44", "45", "48", "49", "31", "32", "33"]
 
 const TOWN_NAMES = new Set()
 for (const town of WESTERN_MASS_TOWNS) {

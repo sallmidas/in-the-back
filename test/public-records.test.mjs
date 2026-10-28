@@ -272,12 +272,32 @@ test("DOL pulls cover western Massachusetts industries, and a missing key writes
         summary: "OSHA cited: Citation 01001 Serious.",
         penalty: "800",
       },
+      {
+        activity_nr: "800",
+        open_date: "2024-06-01",
+        site_city: "Westfield",
+        site_state: "MA",
+        estab_name: "Westfield Metal",
+        naics_code: "332710",
+        summary: "OSHA cited: Citation 01001 Serious.",
+        penalty: "900",
+      },
+      {
+        activity_nr: "900",
+        open_date: "2024-06-01",
+        site_city: "Holyoke",
+        site_state: "MA",
+        estab_name: "Holyoke Hospital",
+        naics_code: "622110",
+        summary: "OSHA cited: Citation 01001 Serious.",
+        penalty: "500",
+      },
     ],
     "osha",
   )
   assert.deepEqual(
     parsed.records.map((record) => record.recordId),
-    ["100", "300", "400", "700"],
+    ["100", "300", "400", "700", "800"],
   )
   assert.equal(parsed.records.find((record) => record.recordId === "400").reason, "Complaint")
   assert.match(parsed.records[0].sourceUrl, /osha\.gov/)

@@ -73,7 +73,7 @@ npm run records:dol -- --osha-csv osha.csv --whd-csv whd.csv
 
 The loader keeps records for every city and town in Hampden, Hampshire, Franklin, and Berkshire counties. The town list is `WESTERN_MASS_TOWNS` in `server/launch-area.mjs`. A record still links to a place on the board only when the street and the city match. The same name in two towns stays two places.
 
-OSHA and Wage and Hour rows also have to fall in one of these NAICS prefixes (`LAUNCH_NAICS_PREFIXES` in that same file): 722 restaurants and food service, 44 and 45 retail (including grocery 445), 48 and 49 warehousing, transport, and couriers, and 311 food manufacturing such as bakeries. Construction, other manufacturing, and healthcare stay out.
+OSHA and Wage and Hour rows also have to fall in one of these NAICS prefixes (`LAUNCH_NAICS_PREFIXES` in that same file): 722 restaurants and food service, 44 and 45 retail (including grocery 445), 48 and 49 warehousing, transport, and couriers, and 31, 32, and 33 manufacturing (food, paper, metal, plastics, and the rest of that sector). Construction and healthcare stay out.
 
 An OSHA inspection that produced citations is kept even when a complaint triggered it. A complaint with no citation, penalty, or back-wage finding is skipped. Massachusetts complaint exports are still refused.
 
