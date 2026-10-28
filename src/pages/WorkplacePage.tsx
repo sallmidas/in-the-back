@@ -65,8 +65,11 @@ export function WorkplacePage() {
         <div className="min-w-0 space-y-3">
           <div className="flex flex-wrap gap-2">
             {workplace.demo ? <Badge variant="outline">DEMO</Badge> : null}
-            {workplace.industry ? (
-              <Badge variant="secondary">{INDUSTRY_LABELS[workplace.industry]}</Badge>
+            {workplace.industryLabel || workplace.industry ? (
+              <Badge variant="secondary">
+                {workplace.industryLabel ||
+                  (workplace.industry ? INDUSTRY_LABELS[workplace.industry] : "")}
+              </Badge>
             ) : null}
           </div>
           <h1 className="font-heading text-3xl tracking-tight sm:text-4xl">{workplace.name}</h1>

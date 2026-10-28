@@ -34,6 +34,7 @@ function asWorkplace(value: unknown): Workplace | null {
   return {
     ...workplace,
     industry: workplace.industry && isIndustry(workplace.industry) ? workplace.industry : null,
+    industryLabel: workplace.industryLabel || "",
     city: workplace.city ?? "",
     region: workplace.region ?? "",
     street: workplace.street ?? "",

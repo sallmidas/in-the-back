@@ -10,7 +10,9 @@ import {
   addressKey,
   applyPublicRecords,
   importPublicRows,
+  industryFromNaics,
   rowsToRecords,
+  toReadableCase,
   visibleRecords,
 } from "../server/public-records.mjs"
 import { parseCsv, readTable } from "../server/tabular.mjs"
@@ -32,6 +34,48 @@ function workplace(id, name, city, street) {
     claimOnly: true,
   }
 }
+
+test("all-caps agency names become title case and NAICS gets a label", async () => {
+  assert.equal(toReadableCase("B&B MICRO MANUFACTURING, INC."), "B&B Micro Manufacturing, Inc.")
+  assert.equal(toReadableCase("201 HOWLAND AVE"), "201 Howland Ave")
+  assert.equal(toReadableCase("North Kitchen, Inc."), "North Kitchen, Inc.")
+  assert.equal(toReadableCase("XPO BBQ USA LLC"), "XPO BBQ USA LLC")
+  assert.equal(industryFromNaics("722511").industryLabel, "Restaurant/Food service")
+  assert.equal(industryFromNaics("445110").industryLabel, "Grocery")
+  assert.equal(industryFromNaics("441110").industryLabel, "Retail")
+  assert.equal(industryFromNaics("493110").industryLabel, "Transport & warehousing")
+  assert.equal(industryFromNaics("312111").industryLabel, "Food & beverage maker")
+  assert.equal(industryFromNaics("332710").industryLabel, "Manufacturing")
+  assert.equal(industryFromNaics("238350").industryLabel, "")
+
+  const dir = await mkdtemp(path.join(os.tmpdir(), "itb-case-"))
+  const store = createStore(path.join(dir, "board.json"))
+  const row = {
+    record_id: "CAPS-1",
+    record_date: "2024-06-01",
+    business_name: "B&B MICRO MANUFACTURING, INC.",
+    street: "201 HOWLAND AVE",
+    city: "ADAMS",
+    state: "MA",
+    zip: "01220",
+    naics: "332710",
+    summary: "OSHA cited: Citation 01001.",
+    penalty: "100",
+    violation_items: "1",
+  }
+  await importPublicRows(store, [row], "osha", { now, maxAgeYears: 5 })
+  const first = await store.read()
+  assert.equal(first.workplaces[0].name, "B&B Micro Manufacturing, Inc.")
+  assert.equal(first.workplaces[0].street, "201 Howland Ave")
+  assert.equal(first.workplaces[0].industryLabel, "Manufacturing")
+  assert.equal(first.publicRecords[0].businessName, "B&B Micro Manufacturing, Inc.")
+  await importPublicRows(store, [row], "osha", { now, maxAgeYears: 5 })
+  const second = await store.read()
+  assert.equal(second.workplaces.length, 1)
+  assert.equal(second.publicRecords.length, 1)
+  assert.equal(second.workplaces[0].name, "B&B Micro Manufacturing, Inc.")
+  assert.equal(second.workplaces[0].industryLabel, "Manufacturing")
+})
 
 test("street and city match, and the same name in another city does not", () => {
   assert.equal(addressKey("10 Main St.", "Springfield"), addressKey("10 Main Street", "springfield"))

@@ -48,6 +48,7 @@ export type LiveWorkplace = {
   slug: string
   name: string
   industry: string | null
+  industryLabel?: string
   city: string
   region: string
   street?: string

@@ -27,6 +27,7 @@ function asWorkplace(workplace: LiveWorkplace): Workplace {
     slug: workplace.slug,
     name: workplace.name,
     industry: workplace.industry && isIndustry(workplace.industry) ? workplace.industry : null,
+    industryLabel: workplace.industryLabel || "",
     city: workplace.city,
     region: workplace.region,
     blurb: "",
@@ -417,8 +418,11 @@ function ApprovedStore({ stores }: { stores: StoreHomeStores }) {
           <Badge variant="outline">Verified</Badge>
         </div>
         {placeLabel ? <p className="text-muted-foreground">{placeLabel}</p> : null}
-        {workplace.industry ? (
-          <p className="text-sm text-muted-foreground">{INDUSTRY_LABELS[workplace.industry]}</p>
+        {workplace.industryLabel || workplace.industry ? (
+          <p className="text-sm text-muted-foreground">
+            {workplace.industryLabel ||
+              (workplace.industry ? INDUSTRY_LABELS[workplace.industry] : "")}
+          </p>
         ) : null}
         <p className="max-w-2xl text-sm text-muted-foreground">
           You cannot hide, edit, or delete a report. Reports are anonymous.

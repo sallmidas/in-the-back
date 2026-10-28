@@ -105,6 +105,69 @@ export function clearSummary(sourceAgency, recordDate) {
   return ""
 }
 
+const KEEP_ACRONYMS = new Set(["LLC", "USA", "XPO", "BBQ"])
+const SUFFIX_CASE = { INC: "Inc.", LTD: "Ltd.", CORP: "Corp.", CO: "Co." }
+const STREET_CASE = {
+  AVE: "Ave",
+  ST: "St",
+  RD: "Rd",
+  DR: "Dr",
+  LN: "Ln",
+  CT: "Ct",
+  PL: "Pl",
+  BLVD: "Blvd",
+  HWY: "Hwy",
+  PKWY: "Pkwy",
+  TER: "Ter",
+}
+
+function titleWord(token) {
+  const tail = token.match(/[,;:]+$/)?.[0] ?? ""
+  const core = token.slice(0, token.length - tail.length)
+  if (!core) return token
+  if (core.includes("&")) return core.toUpperCase() + tail
+  const upper = core.toUpperCase().replace(/\./g, "")
+  if (SUFFIX_CASE[upper]) return SUFFIX_CASE[upper] + tail
+  if (STREET_CASE[upper]) return STREET_CASE[upper] + tail
+  if (KEEP_ACRONYMS.has(upper)) return upper + tail
+  if (/^[A-Z]{2,3}$/.test(upper) && !/[AEIOU]/.test(upper)) return upper + tail
+  if (/^[A-Z]$/.test(upper)) return upper + tail
+  const pretty = core
+    .toLowerCase()
+    .replace(/(^|['’-])([a-z])/g, (_, mark, letter) => mark + letter.toUpperCase())
+  return pretty + tail
+}
+
+/** All-caps agency text becomes readable title case. Mixed-case text is left as written. */
+export function toReadableCase(value) {
+  const text = String(value ?? "").trim()
+  const letters = text.match(/[A-Za-z]/g) ?? []
+  if (letters.length === 0 || letters.some((letter) => letter !== letter.toUpperCase())) return text
+  return text
+    .split(/(\s+)/)
+    .map((part) => (/^\s+$/.test(part) ? part : titleWord(part)))
+    .join("")
+}
+
+/**
+ * Friendly label for a NAICS code we import.
+ * 722 food service, 445 grocery, other 44–45 retail, 48–49 transport and warehousing,
+ * 311–312 food and beverage makers, other 31–33 manufacturing.
+ */
+export function industryFromNaics(naics) {
+  const code = String(naics ?? "").replace(/\D/g, "")
+  if (!code) return { industry: null, industryLabel: "" }
+  if (code.startsWith("722")) return { industry: "restaurant", industryLabel: "Restaurant/Food service" }
+  if (code.startsWith("445")) return { industry: "grocery", industryLabel: "Grocery" }
+  if (code.startsWith("44") || code.startsWith("45")) return { industry: null, industryLabel: "Retail" }
+  if (code.startsWith("48") || code.startsWith("49")) return { industry: "logistics", industryLabel: "Transport & warehousing" }
+  if (code.startsWith("311") || code.startsWith("312")) return { industry: null, industryLabel: "Food & beverage maker" }
+  if (code.startsWith("31") || code.startsWith("32") || code.startsWith("33")) {
+    return { industry: null, industryLabel: "Manufacturing" }
+  }
+  return { industry: null, industryLabel: "" }
+}
+
 export function normalizeBusinessName(value) {
   return String(value ?? "")
     .toLowerCase()
@@ -267,8 +330,8 @@ export function rowsToRecords(rows, sourceAgency) {
       skipped += 1
       continue
     }
-    const city = cleanText(pick(row, "city"))
-    const businessName = cleanText(pick(row, "businessName")) || "Business name withheld"
+    const city = toReadableCase(cleanText(pick(row, "city")))
+    const businessName = toReadableCase(cleanText(pick(row, "businessName"))) || "Business name withheld"
     const year = String(pick(row, "year") ?? "").trim()
     let recordDate = parseRecordDate(pick(row, "recordDate"))
     if (!recordDate && /^\d{4}$/.test(year)) recordDate = `${year}-01-01`
@@ -295,7 +358,7 @@ export function rowsToRecords(rows, sourceAgency) {
       recordType: recordType.slice(0, 80),
       recordId: recordId.slice(0, 80),
       recordDate,
-      street: cleanText(pick(row, "street")),
+      street: toReadableCase(cleanText(pick(row, "street"))),
       city,
       region: cleanText(pick(row, "region")) || "MA",
       zip: String(pick(row, "zip") ?? "").replace(/[^\d-]/g, "").slice(0, 10),
@@ -306,6 +369,7 @@ export function rowsToRecords(rows, sourceAgency) {
       status: mapStatus(pick(row, "status")),
       sourceUrl: sourceUrlFor(sourceAgency, recordId, pick(row, "sourceUrl")),
       naics: String(pick(row, "naics") ?? "").replace(/\D/g, "").slice(0, 8),
+      ...industryFromNaics(pick(row, "naics")),
       reason: cleanText(pick(row, "reason")).slice(0, 80),
       outcome,
       awardLabel: recognitionSource(sourceAgency) ? cleanText(pick(row, "award")).slice(0, 120) : "",
@@ -465,10 +529,26 @@ export function groupBusinesses(data) {
       else workplace = createPlaceForRecord(data, sample, { sameNameOnly: true }).workplace
     }
     if (!workplace) continue
+    refreshPlace(workplace, group)
     for (const record of group) {
       if (!record.workplaceId) record.workplaceId = workplace.id
     }
   }
+}
+
+function refreshPlace(workplace, group) {
+  const named = [...group].sort((left, right) => right.businessName.length - left.businessName.length)[0]
+  if (named?.businessName) workplace.name = named.businessName
+  const street = group.find((record) => record.street)?.street
+  if (street) workplace.street = street
+  const city = group.find((record) => record.city)?.city
+  if (city) workplace.city = city
+  const zip = group.find((record) => record.zip)?.zip
+  if (zip) workplace.zip = zip
+  const label = group.map((record) => record.industryLabel).find(Boolean)
+  if (label) workplace.industryLabel = label
+  const industry = group.map((record) => record.industry).find(Boolean)
+  if (industry) workplace.industry = industry
 }
 
 export async function importPublicRows(store, rows, sourceAgency, options = {}) {
@@ -541,7 +621,8 @@ export function createPlaceForRecord(data, record, options = {}) {
     id: randomId("wp"),
     slug,
     name: record.businessName,
-    industry: null,
+    industry: record.industry ?? null,
+    industryLabel: record.industryLabel || "",
     city: record.city,
     region: record.region || "MA",
     street: record.street,

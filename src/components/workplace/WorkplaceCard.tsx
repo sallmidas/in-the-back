@@ -25,12 +25,13 @@ export function WorkplaceCard({ workplace }: { workplace: Workplace }) {
           </p>
           <p className="mt-1 text-sm leading-snug text-muted-foreground">
             {workplace.city}, {workplace.region}
-            {workplace.industry ? (
+            {workplace.industryLabel || workplace.industry ? (
               <>
                 <span className="mx-1.5 text-border" aria-hidden>
                   ·
                 </span>
-                {INDUSTRY_LABELS[workplace.industry]}
+                {workplace.industryLabel ||
+                  (workplace.industry ? INDUSTRY_LABELS[workplace.industry] : "")}
               </>
             ) : null}
           </p>
