@@ -61,6 +61,7 @@ export type Report = {
   excerpt: string
   publishedAt: string
   disputed: boolean
+  kind?: "report" | "shout-out"
 }
 
 export const ROOM_LABELS: Record<RoomKind, string> = {

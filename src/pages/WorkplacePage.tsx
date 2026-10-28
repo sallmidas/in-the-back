@@ -2,6 +2,7 @@ import { useParams, useSearchParams } from "react-router-dom"
 import { BoardSkeleton } from "@/components/layout/BoardSkeleton"
 import { EmptyState } from "@/components/layout/EmptyState"
 import { PublicRecordCard, PublicRecordFootnote } from "@/components/record/PublicRecordCard"
+import { CITATION_NOTE, splitRecords } from "@/lib/records"
 import { ReportCard } from "@/components/report/ReportCard"
 import { RoomScore } from "@/components/room/RoomScore"
 import { Badge } from "@/components/ui/badge"
@@ -42,6 +43,12 @@ export function WorkplacePage() {
   )
   const publicRecords = board.publicRecords.filter(
     (record) => record.workplaceId === workplace.id || record.workplaceSlug === workplace.slug,
+  )
+  const { good, findings } = splitRecords(publicRecords)
+  const shoutOuts = reports.filter((report) => report.kind === "shout-out")
+  const roomReports = reports.filter((report) => report.kind !== "shout-out")
+  const awards = board.ownerAwards.filter(
+    (award) => award.workplaceId === workplace.id || award.workplaceSlug === workplace.slug,
   )
   const score = overallScore(workplace)
 
@@ -120,7 +127,7 @@ export function WorkplacePage() {
             {roomFilter ? `${ROOM_LABELS[roomFilter]} excerpts` : "Anonymous excerpts"}
           </h2>
         </div>
-        {reports.length === 0 ? (
+        {roomReports.length === 0 ? (
           <EmptyState
             eyebrow="This room"
             title="This room's unscored."
@@ -131,7 +138,7 @@ export function WorkplacePage() {
           </EmptyState>
         ) : (
           <div className="grid gap-3">
-            {reports.map((report) => (
+            {roomReports.map((report) => (
               <ReportCard
                 key={report.id}
                 report={report}
@@ -144,19 +151,43 @@ export function WorkplacePage() {
       </section>
 
       <section className="space-y-3">
-        <h2 className="font-heading text-2xl tracking-tight">Public records</h2>
-        {publicRecords.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            No official record is linked to this address.
-          </p>
+        <h2 className="font-heading text-2xl tracking-tight">Good news</h2>
+        <p className="text-sm text-muted-foreground">
+          An inspection or case with no finding, a government award, or a shout-out. This is not a rating of the whole business.
+        </p>
+        {good.length === 0 && shoutOuts.length === 0 && awards.length === 0 ? (
+          <p className="text-sm text-muted-foreground">No good-news records yet.</p>
         ) : (
           <div className="grid gap-3">
-            {publicRecords.map((record) => (
+            {awards.map((award) => (
+              <article key={award.id} className="space-y-2 rounded-xl border border-l-4 border-l-emerald-400 border-border bg-card/80 p-4">
+                <p className="text-sm font-medium">{award.title}, {award.year}</p>
+                <p className="text-xs text-muted-foreground">{award.label}</p>
+              </article>
+            ))}
+            {good.map((record) => (
+              <PublicRecordCard key={record.id} record={record} />
+            ))}
+            {shoutOuts.map((report) => (
+              <ReportCard key={report.id} report={report} workplace={workplace} showWorkplace={false} />
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="font-heading text-2xl tracking-tight">Public records</h2>
+        {findings.length === 0 ? (
+          <p className="text-sm text-muted-foreground">No public records found.</p>
+        ) : (
+          <div className="grid gap-3">
+            {findings.map((record) => (
               <PublicRecordCard key={record.id} record={record} />
             ))}
             <PublicRecordFootnote />
           </div>
         )}
+        <p className="text-xs text-muted-foreground">{CITATION_NOTE}</p>
       </section>
     </div>
   )

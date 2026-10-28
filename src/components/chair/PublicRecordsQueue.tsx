@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react"
 import {
+  chairOwnerAwards,
   chairPublicRecords,
   chairRecordErrors,
+  chairRecordReplies,
   closeRecordError,
+  decideOwnerAward,
+  decideRecordReply,
   linkPublicRecord,
   placePublicRecord,
   type PublicRecord,
@@ -14,6 +18,8 @@ export function PublicRecordsQueue({ active }: { active: boolean }) {
   const [records, setRecords] = useState<PublicRecord[] | null>(null)
   const [workplaces, setWorkplaces] = useState<{ id: string; name: string; city: string; street: string }[]>([])
   const [errors, setErrors] = useState<RecordErrorItem[] | null>(null)
+  const [awards, setAwards] = useState<{ id: string; title: string; year: string; proofUrl?: string }[] | null>(null)
+  const [replies, setReplies] = useState<{ id: string; text: string }[] | null>(null)
   const [choice, setChoice] = useState<Record<string, string>>({})
   const [message, setMessage] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -21,12 +27,14 @@ export function PublicRecordsQueue({ active }: { active: boolean }) {
   useEffect(() => {
     if (!active) return
     let cancel = false
-    Promise.all([chairPublicRecords(), chairRecordErrors()])
-      .then(([queue, notes]) => {
+    Promise.all([chairPublicRecords(), chairRecordErrors(), chairOwnerAwards(), chairRecordReplies()])
+      .then(([queue, notes, awardQueue, replyQueue]) => {
         if (cancel) return
         setRecords(queue.records)
         setWorkplaces(queue.workplaces)
         setErrors(notes.errors)
+        setAwards(awardQueue.awards)
+        setReplies(replyQueue.replies)
         setError(null)
       })
       .catch((err: unknown) => {
@@ -39,10 +47,17 @@ export function PublicRecordsQueue({ active }: { active: boolean }) {
   }, [active])
 
   async function refresh() {
-    const [queue, notes] = await Promise.all([chairPublicRecords(), chairRecordErrors()])
+    const [queue, notes, awardQueue, replyQueue] = await Promise.all([
+      chairPublicRecords(),
+      chairRecordErrors(),
+      chairOwnerAwards(),
+      chairRecordReplies(),
+    ])
     setRecords(queue.records)
     setWorkplaces(queue.workplaces)
     setErrors(notes.errors)
+    setAwards(awardQueue.awards)
+    setReplies(replyQueue.replies)
   }
 
   async function onPlace(record: PublicRecord) {
@@ -150,6 +165,32 @@ export function PublicRecordsQueue({ active }: { active: boolean }) {
       )}
 
       <div className="space-y-2 pt-2">
+        <h3 className="font-heading text-xl">Owner awards</h3>
+        {(awards ?? []).length === 0 ? (
+          <p className="text-sm text-muted-foreground">No awards waiting.</p>
+        ) : (
+          awards?.map((award) => (
+            <div key={award.id} className="flex flex-col gap-2 rounded-xl border border-border p-4 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-sm">{award.title}, {award.year}</p>
+              <Button type="button" size="sm" onClick={() => void decideOwnerAward(award.id, true).then(() => refresh())}>
+                Approve award
+              </Button>
+            </div>
+          ))
+        )}
+        <h3 className="font-heading text-xl">Record replies</h3>
+        {(replies ?? []).length === 0 ? (
+          <p className="text-sm text-muted-foreground">No replies waiting.</p>
+        ) : (
+          replies?.map((reply) => (
+            <div key={reply.id} className="flex flex-col gap-2 rounded-xl border border-border p-4 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-sm">{reply.text}</p>
+              <Button type="button" size="sm" onClick={() => void decideRecordReply(reply.id, true).then(() => refresh())}>
+                Approve reply
+              </Button>
+            </div>
+          ))
+        )}
         <h3 className="font-heading text-xl">Record errors</h3>
         {errors === null ? (
           <p className="text-sm text-muted-foreground">Opening notes…</p>

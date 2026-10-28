@@ -35,6 +35,15 @@ export function PublicRecordCard({
   const [pending, setPending] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [sent, setSent] = useState(false)
+  const good = record.outcome === "clear" || record.outcome === "recognition"
+  const headline =
+    record.outcome === "clear"
+      ? record.sourceAgency === "whd"
+        ? "No violations found"
+        : "Passed inspection"
+      : record.outcome === "recognition"
+        ? record.awardLabel || "Recognition"
+        : "Public record"
   const placeLine = [record.street, record.city, record.region, record.zip].filter(Boolean).join(", ")
 
   async function onReport(event: FormEvent) {
@@ -54,9 +63,14 @@ export function PublicRecordCard({
   }
 
   return (
-    <article className="space-y-3 rounded-xl border border-border bg-card/80 p-4 sm:p-5">
+    <article
+      className={cn(
+        "space-y-3 rounded-xl border border-border bg-card/80 p-4 sm:p-5",
+        good ? "border-l-4 border-l-emerald-400" : "",
+      )}
+    >
       <div className="flex flex-wrap items-center gap-2">
-        <Badge variant="outline">Public record</Badge>
+        <Badge variant={good ? "secondary" : "outline"}>{headline}</Badge>
         <Badge variant="secondary">{record.agencyLabel}</Badge>
         <Badge variant="outline">{STATUS_LABELS[record.status] ?? record.status}</Badge>
       </div>
@@ -69,7 +83,8 @@ export function PublicRecordCard({
         <p className="font-mono text-xs text-muted-foreground">Record {record.recordId}</p>
       </div>
       {record.summary ? <p className="text-sm leading-relaxed">{record.summary}</p> : null}
-      {record.backWages !== null || record.penalty !== null ? (
+      {record.reply ? <p className="text-sm">Owner reply: {record.reply}</p> : null}
+      {record.outcome === "finding" && (record.backWages !== null || record.penalty !== null) ? (
         <p className="text-sm text-muted-foreground">
           {record.backWages !== null ? `Back wages ${formatMoney(record.backWages)}` : ""}
           {record.backWages !== null && record.penalty !== null ? " · " : ""}

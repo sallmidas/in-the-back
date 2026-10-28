@@ -97,6 +97,7 @@ export function parseFiling(body) {
       context,
       excerpt,
       score: Math.round(score * 10) / 10,
+      kind: body?.kind === "shout-out" ? "shout-out" : "report",
     },
   }
 }

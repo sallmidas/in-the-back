@@ -8,7 +8,7 @@ import {
   type ReportWithWorkplace,
 } from "@/data/catalog"
 import { isIndustry, isRoomKind, type Report, type Workplace } from "@/data/types"
-import { getBoard, type BoardPayload, type PublicRecord } from "@/lib/api"
+import { getBoard, type BoardPayload, type OwnerAward, type PublicRecord } from "@/lib/api"
 
 type BoardValue = {
   ready: boolean
@@ -16,6 +16,7 @@ type BoardValue = {
   workplaces: Workplace[]
   reports: ReportWithWorkplace[]
   publicRecords: PublicRecord[]
+  ownerAwards: OwnerAward[]
   refresh: () => Promise<void>
   workplaceBySlug: (slug: string) => Workplace | undefined
   reportsForWorkplace: (workplaceId: string) => Report[]
@@ -96,6 +97,7 @@ export function BoardProvider({ children }: { children: ReactNode }) {
     const publicRecords = [...(live?.publicRecords ?? [])].sort((a, b) =>
       b.recordDate.localeCompare(a.recordDate),
     )
+    const ownerAwards = live?.ownerAwards ?? []
 
     return {
       ready,
@@ -103,6 +105,7 @@ export function BoardProvider({ children }: { children: ReactNode }) {
       workplaces,
       reports,
       publicRecords,
+      ownerAwards,
       refresh,
       workplaceBySlug: (slug) => workplaces.find((workplace) => workplace.slug === slug),
       reportsForWorkplace: (workplaceId) =>

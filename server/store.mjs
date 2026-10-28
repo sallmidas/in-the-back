@@ -14,6 +14,8 @@ export function emptyStore() {
     storeClaims: [],
     publicRecords: [],
     recordErrors: [],
+    ownerAwards: [],
+    recordReplies: [],
   }
 }
 
@@ -28,6 +30,8 @@ export function createStore(filePath) {
       if (!Array.isArray(data.storeClaims)) data.storeClaims = []
       if (!Array.isArray(data.publicRecords)) data.publicRecords = []
       if (!Array.isArray(data.recordErrors)) data.recordErrors = []
+      if (!Array.isArray(data.ownerAwards)) data.ownerAwards = []
+      if (!Array.isArray(data.recordReplies)) data.recordReplies = []
       return data
     } catch (error) {
       if (error && error.code === "ENOENT") return emptyStore()

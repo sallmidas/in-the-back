@@ -65,7 +65,9 @@ export function HowItWorksPage() {
             Some pages also show official records: a Massachusetts citation, a federal safety
             inspection, or a wage case. Each one is labeled Public record. It is not a worker
             report. A person's name in an agency file is left off the page. The line under the
-            record names the agency. That is a credit. It is not an endorsement.
+            record names the agency. That is a credit. It is not an endorsement. An inspection
+            with no citations, or a wage case with no violations, is listed as good news. A
+            shout-out is a filing that praises a room. It follows the same rules as any other filing.
           </p>
         </div>
         <p className="text-sm leading-relaxed text-muted-foreground">

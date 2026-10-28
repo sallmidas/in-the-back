@@ -85,6 +85,7 @@ export function WritePage() {
     setRoomState(value)
   }
   const [score, setScore] = useState("")
+  const [shoutOut, setShoutOut] = useState(false)
   const [context, setContext] = useState("")
   const [excerpt, setExcerpt] = useState("")
   const [inRoom, setInRoom] = useState(false)
@@ -194,6 +195,7 @@ export function WritePage() {
         context: context.trim(),
         excerpt: excerpt.trim(),
         inRoom: true,
+        kind: shoutOut ? "shout-out" : "report",
       })
       setReceipt(result.receipt)
       setFiledSlug(result.report.workplaceSlug)
@@ -488,6 +490,21 @@ export function WritePage() {
           </div>
         </div>
 
+        <div className="flex items-start gap-3">
+          <input
+            id="write-shout-out"
+            type="checkbox"
+            checked={shoutOut}
+            onChange={(event) => setShoutOut(event.target.checked)}
+            className="mt-1 size-6 accent-primary"
+          />
+          <div className="space-y-1">
+            <Label htmlFor="write-shout-out">This is a shout-out.</Label>
+            <p className="text-xs text-muted-foreground">
+              A shout-out praises the room. It still cannot name a person, and it follows the same rules as any other filing.
+            </p>
+          </div>
+        </div>
         <Button type="submit" className="h-11 w-full" disabled={pending}>
           {pending ? "Filing…" : "File report"}
         </Button>

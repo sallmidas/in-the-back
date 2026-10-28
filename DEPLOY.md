@@ -86,8 +86,23 @@ On Render, copy a CSV onto the disk (for example `/var/data/osha.csv`) from the 
 ```bash
 npm run records:import -- --source osha --file /var/data/osha.csv
 npm run records:import -- --source whd --file /var/data/whd.csv
+npm run records:import -- --source osha --file /var/data/osha-no-citations.csv
+npm run records:import -- --source whd --file /var/data/whd-no-violations.csv
 npm run records:dol -- --osha-csv /var/data/osha.csv --whd-csv /var/data/whd.csv
+npm run records:import -- --source osha-vpp-sharp --file /var/data/vpp-sharp.csv
+npm run records:import -- --source hire-vets-medallion --file /var/data/hire-vets.csv
 ```
+
+The same commands work on a laptop. Point `--file` at the CSVs on your computer and set `ITB_STORE_PATH` if the board file is not `data/board.json`:
+
+```bash
+ITB_STORE_PATH=data/board.json npm run records:import -- --source osha --file osha_western_mass.csv
+ITB_STORE_PATH=data/board.json npm run records:import -- --source whd --file whd_western_mass.csv
+ITB_STORE_PATH=data/board.json npm run records:import -- --source osha --file osha_no_citations_western_mass.csv
+ITB_STORE_PATH=data/board.json npm run records:import -- --source whd --file whd_no_violations_western_mass.csv
+```
+
+Inspections and cases with no finding are stored as good news: “OSHA inspection, YYYY-MM-DD: no citations issued.” or “Wage and Hour case, YYYY-MM-DD: no violations found.” Recognition CSVs use columns `business_name, street, city, state, zip, award, year, source_url`. A claimed store can also submit an award or one reply per record. Those wait for the moderator and do not remove the record.
 
 Leave `DOL_API_KEY` blank unless you already have one. With a key and no CSV, `npm run records:dol` asks the DOL portal and applies the same town and industry filters. Without a key and without those files, it writes nothing.
 

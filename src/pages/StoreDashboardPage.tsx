@@ -1,6 +1,7 @@
 import { type FormEvent, useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { PublicRecordCard, PublicRecordFootnote } from "@/components/record/PublicRecordCard"
+import { CITATION_NOTE, splitRecords } from "@/lib/records"
 import { ReportCard } from "@/components/report/ReportCard"
 import { RoomScore } from "@/components/room/RoomScore"
 import { Badge } from "@/components/ui/badge"
@@ -11,6 +12,7 @@ import { isIndustry, isRoomKind, INDUSTRY_LABELS, type Report, type Workplace } 
 import {
   logoutAccount,
   storeHome,
+  submitRecordReply,
   submitStoreClaim,
   type LiveReport,
   type LiveWorkplace,
@@ -162,6 +164,105 @@ function PendingClaim({ claim }: { claim: StoreClaim }) {
   )
 }
 
+function StoreRecords({ place }: { place: StoreHomeStores[number] }) {
+  const records = place.publicRecords ?? []
+  const { good, findings } = splitRecords(records)
+  const [notice, setNotice] = useState<string | null>(null)
+
+  async function onReply(recordId: string, text: string) {
+    await submitRecordReply(recordId, text)
+    setNotice("Sent to a moderator. It shows after approval.")
+  }
+
+  return (
+    <>
+      <section className="space-y-3">
+        <h2 className="font-heading text-2xl">Good news</h2>
+        <p className="text-sm text-muted-foreground">
+          Official records with no citation or no violation, and awards. Reports are anonymous. This is not a rating of the whole business.
+        </p>
+        {good.length === 0 && (place.ownerAwards ?? []).length === 0 ? (
+          <p className="text-sm text-muted-foreground">No good-news records yet.</p>
+        ) : (
+          <div className="grid gap-3">
+            {(place.ownerAwards ?? []).map((award) => (
+              <article key={award.id} className="rounded-xl border border-l-4 border-l-emerald-400 border-border bg-card/80 p-4 text-sm">
+                <p>{award.title}, {award.year}</p>
+                <p className="text-xs text-muted-foreground">{award.label}</p>
+              </article>
+            ))}
+            {good.map((record) => (
+              <PublicRecordCard key={record.id} record={record} />
+            ))}
+          </div>
+        )}
+      </section>
+      <section className="space-y-3">
+        <h2 className="font-heading text-2xl">Public records</h2>
+        {notice ? <p className="text-sm">{notice}</p> : null}
+        {findings.length === 0 ? (
+          <p className="text-sm text-muted-foreground">No public records found.</p>
+        ) : (
+          <div className="grid gap-3">
+            {findings.map((record) => (
+              <div key={record.id} className="space-y-2">
+                <PublicRecordCard record={record} />
+                <ReplyForm recordId={record.id} onReply={onReply} />
+              </div>
+            ))}
+            <PublicRecordFootnote />
+          </div>
+        )}
+        <p className="text-xs text-muted-foreground">{CITATION_NOTE}</p>
+      </section>
+    </>
+  )
+}
+
+function ReplyForm({
+  recordId,
+  onReply,
+}: {
+  recordId: string
+  onReply: (recordId: string, text: string) => Promise<void>
+}) {
+  const [text, setText] = useState("")
+  const [error, setError] = useState<string | null>(null)
+  const [pending, setPending] = useState(false)
+
+  async function onSubmit(event: FormEvent) {
+    event.preventDefault()
+    setPending(true)
+    setError(null)
+    try {
+      await onReply(recordId, text)
+      setText("")
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "The reply was not sent.")
+    } finally {
+      setPending(false)
+    }
+  }
+
+  return (
+    <form onSubmit={onSubmit} className="space-y-2">
+      <Label htmlFor={`reply-${recordId}`}>One public reply</Label>
+      <textarea
+        id={`reply-${recordId}`}
+        value={text}
+        maxLength={280}
+        required
+        onChange={(event) => setText(event.target.value)}
+        className="min-h-20 w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+      />
+      {error ? <p className="text-sm text-destructive">{error}</p> : null}
+      <Button type="submit" size="sm" variant="outline" disabled={pending}>
+        {pending ? "Sending…" : "Send reply"}
+      </Button>
+    </form>
+  )
+}
+
 function PlannedActions() {
   return (
     <section className="space-y-3">
@@ -293,7 +394,12 @@ export function StoreDashboardPage() {
   )
 }
 
-type StoreHomeStores = { workplace: LiveWorkplace; reports: LiveReport[]; publicRecords?: PublicRecord[] }[]
+type StoreHomeStores = {
+  workplace: LiveWorkplace
+  reports: LiveReport[]
+  publicRecords?: PublicRecord[]
+  ownerAwards?: { id: string; title: string; year: string; label: string }[]
+}[]
 
 function ApprovedStore({ stores }: { stores: StoreHomeStores }) {
   const place = stores[0]
@@ -333,7 +439,7 @@ function ApprovedStore({ stores }: { stores: StoreHomeStores }) {
       </section>
 
       <section className="space-y-3">
-        <h2 className="font-heading text-2xl">Notes</h2>
+        <h2 className="font-heading text-2xl">Reports</h2>
         {place.reports.length === 0 ? (
           <p className="text-sm text-muted-foreground">No reports on this store yet.</p>
         ) : (
@@ -347,22 +453,7 @@ function ApprovedStore({ stores }: { stores: StoreHomeStores }) {
         )}
       </section>
 
-      <section className="space-y-3">
-        <h2 className="font-heading text-2xl">Public records</h2>
-        <p className="text-sm text-muted-foreground">
-          Official records for this address. Not a worker report. Reports are anonymous.
-        </p>
-        {(place.publicRecords ?? []).length === 0 ? (
-          <p className="text-sm text-muted-foreground">No official record is linked to this address.</p>
-        ) : (
-          <div className="grid gap-3">
-            {(place.publicRecords ?? []).map((record) => (
-              <PublicRecordCard key={record.id} record={record} />
-            ))}
-            <PublicRecordFootnote />
-          </div>
-        )}
-      </section>
+      <StoreRecords place={place} />
 
       <PlannedActions />
     </div>

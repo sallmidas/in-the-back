@@ -17,7 +17,7 @@ import {
 import { clientAddress } from "./client-ip.mjs"
 import { parseStoreClaim } from "./store-claims.mjs"
 import { parseEmail, parseFiling, parsePassword, slugify } from "./validate.mjs"
-import { redactPersonalNames } from "../shared/names.mjs"
+import { personalNameHit, redactPersonalNames } from "../shared/names.mjs"
 import {
   createPlaceForRecord,
   defaultMaxAgeYears,
@@ -212,6 +212,7 @@ function publicReport(report) {
     excerpt: report.excerpt,
     publishedAt: report.publishedAt,
     disputed: false,
+    kind: report.kind === "shout-out" ? "shout-out" : "report",
   }
 }
 
@@ -417,6 +418,7 @@ export function createApp({
             .map((workplace) => publicWorkplace(data, workplace)),
           reports: data.reports.filter((report) => isOnBoard(report)).map(publicReport),
           publicRecords: visibleRecords(data, now, maxAgeYears).map((record) => publicRecordView(data, record)),
+          ownerAwards: approvedAwards(data),
         })
         return
       }
@@ -445,6 +447,16 @@ export function createApp({
 
       if (pathname === "/api/chair/record-errors" && req.method === "GET") {
         await listRecordErrors(req, res)
+        return
+      }
+
+      if (pathname === "/api/chair/owner-awards" && req.method === "GET") {
+        await listOwnerAwards(req, res)
+        return
+      }
+
+      if (pathname === "/api/chair/record-replies" && req.method === "GET") {
+        await listRecordReplies(req, res)
         return
       }
 
@@ -565,6 +577,30 @@ export function createApp({
       }
       if (pathname === "/api/chair/record-errors/close") {
         await closeRecordError(req, res, body)
+        return
+      }
+      if (pathname === "/api/store/awards") {
+        await submitOwnerAward(req, res, body)
+        return
+      }
+      if (pathname === "/api/chair/owner-awards/approve") {
+        await decideOwnerAward(req, res, body, "approved")
+        return
+      }
+      if (pathname === "/api/chair/owner-awards/refuse") {
+        await decideOwnerAward(req, res, body, "refused")
+        return
+      }
+      if (pathname === "/api/store/record-replies") {
+        await submitRecordReply(req, res, body)
+        return
+      }
+      if (pathname === "/api/chair/record-replies/approve") {
+        await decideRecordReply(req, res, body, "approved")
+        return
+      }
+      if (pathname === "/api/chair/record-replies/refuse") {
+        await decideRecordReply(req, res, body, "refused")
         return
       }
 
@@ -804,6 +840,7 @@ export function createApp({
         hiddenAt: null,
         receiptHash,
         ownerUserId: user?.id ?? null,
+        kind: filing.kind,
       }
       data.reports.push(report)
       return {
@@ -944,6 +981,7 @@ export function createApp({
           publicRecords: visibleRecords(data, new Date(), maxAgeYears)
             .filter((record) => record.workplaceId === workplace.id)
             .map((record) => publicRecordView(data, record)),
+          ownerAwards: approvedAwards(data).filter((award) => award.workplaceId === workplace.id),
         })
       }
     }
@@ -1072,6 +1110,183 @@ export function createApp({
       return
     }
     send(res, 200, { closed: true })
+  }
+
+  function approvedAwards(data) {
+    return (data.ownerAwards ?? [])
+      .filter((award) => award.status === "approved")
+      .map((award) => ownerAwardView(data, award))
+  }
+
+  function ownerAwardView(data, award) {
+    const workplace = data.workplaces.find((item) => item.id === award.workplaceId)
+    return {
+      id: award.id,
+      workplaceId: award.workplaceId,
+      workplaceSlug: workplace?.slug ?? null,
+      workplaceName: workplace?.name ?? null,
+      title: award.title,
+      year: award.year,
+      status: award.status,
+      label: "Added by owner, verified by moderator",
+    }
+  }
+
+  function storeWorkplace(data, user) {
+    const claim = activeStoreClaim(data, user.id)
+    if (!claim || claim.status !== "approved" || !claim.workplaceId) return null
+    return data.workplaces.find((item) => item.id === claim.workplaceId) ?? null
+  }
+
+  async function submitOwnerAward(req, res, body) {
+    const title = redactPersonalNames(typeof body.title === "string" ? body.title : "").slice(0, 120)
+    const year = String(body.year ?? "").trim()
+    const proofUrl = typeof body.proofUrl === "string" ? body.proofUrl.trim() : ""
+    if (!title || personalNameHit(title)) {
+      send(res, 400, { error: "Name the award. Leave personal names out." })
+      return
+    }
+    if (!/^\d{4}$/.test(year)) {
+      send(res, 400, { error: "Use a four-digit year." })
+      return
+    }
+    if (!/^https?:\/\//i.test(proofUrl)) {
+      send(res, 400, { error: "Add a proof link that starts with http." })
+      return
+    }
+    const result = await store.update((data) => {
+      const user = userFrom(data, readCookie(req))
+      if (!user || accountKind(user) !== "store") {
+        return { status: 401, error: "Sign in with a store account." }
+      }
+      const workplace = storeWorkplace(data, user)
+      if (!workplace) return { status: 403, error: "This store is not verified yet." }
+      if (!Array.isArray(data.ownerAwards)) data.ownerAwards = []
+      const award = {
+        id: randomId("awd"),
+        workplaceId: workplace.id,
+        userId: user.id,
+        title,
+        year,
+        proofUrl,
+        status: "pending",
+        createdAt: new Date().toISOString(),
+        decidedAt: null,
+      }
+      data.ownerAwards.push(award)
+      return { status: 201, award: { id: award.id, status: award.status } }
+    })
+    if (result.error) {
+      send(res, result.status, { error: result.error })
+      return
+    }
+    send(res, 201, { award: result.award })
+  }
+
+  async function listOwnerAwards(req, res) {
+    const data = await store.read()
+    const gate = requireChair(data, readCookie(req))
+    if (gate.error) {
+      send(res, gate.error.status, { error: gate.error.error })
+      return
+    }
+    const awards = (data.ownerAwards ?? [])
+      .filter((award) => award.status === "pending")
+      .map((award) => ({ ...ownerAwardView(data, award), proofUrl: award.proofUrl }))
+    send(res, 200, { awards })
+  }
+
+  async function decideOwnerAward(req, res, body, status) {
+    const result = await store.update((data) => {
+      const gate = requireChair(data, readCookie(req))
+      if (gate.error) return gate.error
+      const award = (data.ownerAwards ?? []).find((item) => item.id === body.id)
+      if (!award) return { status: 404, error: "Not found." }
+      award.status = status
+      award.decidedAt = new Date().toISOString()
+      return { status: 200, award: ownerAwardView(data, award) }
+    })
+    if (result.error) {
+      send(res, result.status, { error: result.error })
+      return
+    }
+    send(res, 200, { award: result.award })
+  }
+
+  async function submitRecordReply(req, res, body) {
+    const text = redactPersonalNames(typeof body.text === "string" ? body.text : "").slice(0, 280)
+    const recordId = typeof body.recordId === "string" ? body.recordId : ""
+    if (!text || personalNameHit(text)) {
+      send(res, 400, { error: "Write a short reply. Leave personal names out." })
+      return
+    }
+    const result = await store.update((data) => {
+      const user = userFrom(data, readCookie(req))
+      if (!user || accountKind(user) !== "store") {
+        return { status: 401, error: "Sign in with a store account." }
+      }
+      const workplace = storeWorkplace(data, user)
+      if (!workplace) return { status: 403, error: "This store is not verified yet." }
+      const record = (data.publicRecords ?? []).find((item) => item.id === recordId && item.workplaceId === workplace.id)
+      if (!record) return { status: 404, error: "Not found." }
+      if (!Array.isArray(data.recordReplies)) data.recordReplies = []
+      const existing = data.recordReplies.find((item) => item.recordId === record.id && item.status !== "refused")
+      if (existing) return { status: 409, error: "This record already has a reply." }
+      data.recordReplies.push({
+        id: randomId("rpl"),
+        recordId: record.id,
+        workplaceId: workplace.id,
+        userId: user.id,
+        text,
+        status: "pending",
+        createdAt: new Date().toISOString(),
+        decidedAt: null,
+      })
+      return { status: 201 }
+    })
+    if (result.error) {
+      send(res, result.status, { error: result.error })
+      return
+    }
+    send(res, 201, { sent: true })
+  }
+
+  async function listRecordReplies(req, res) {
+    const data = await store.read()
+    const gate = requireChair(data, readCookie(req))
+    if (gate.error) {
+      send(res, gate.error.status, { error: gate.error.error })
+      return
+    }
+    const replies = (data.recordReplies ?? [])
+      .filter((item) => item.status === "pending")
+      .map((item) => {
+        const record = data.publicRecords.find((row) => row.id === item.recordId)
+        return {
+          id: item.id,
+          text: item.text,
+          createdAt: item.createdAt,
+          record: record ? publicRecordView(data, record) : null,
+        }
+      })
+    send(res, 200, { replies })
+  }
+
+  async function decideRecordReply(req, res, body, status) {
+    const result = await store.update((data) => {
+      const gate = requireChair(data, readCookie(req))
+      if (gate.error) return gate.error
+      const reply = (data.recordReplies ?? []).find((item) => item.id === body.id)
+      if (!reply) return { status: 404, error: "Not found." }
+      reply.status = status
+      reply.decidedAt = new Date().toISOString()
+      return { status: 200 }
+    })
+    if (result.error) {
+      send(res, result.status, { error: result.error })
+      return
+    }
+    send(res, 200, { status })
   }
 
   async function submitStoreClaim(req, res, body) {

@@ -40,6 +40,7 @@ export type LiveReport = {
   excerpt: string
   publishedAt: string
   disputed: boolean
+  kind?: "report" | "shout-out"
 }
 
 export type LiveWorkplace = {
@@ -78,15 +79,30 @@ export type PublicRecord = {
   status: PublicRecordStatus
   sourceUrl: string
   fetchedAt: string
+  outcome?: "finding" | "clear" | "recognition"
+  awardLabel?: string
+  reply?: string | null
   workplaceId: string | null
   workplaceSlug: string | null
   workplaceName: string | null
+}
+
+export type OwnerAward = {
+  id: string
+  workplaceId: string
+  workplaceSlug: string | null
+  workplaceName: string | null
+  title: string
+  year: string
+  status: string
+  label: string
 }
 
 export type BoardPayload = {
   workplaces: LiveWorkplace[]
   reports: LiveReport[]
   publicRecords?: PublicRecord[]
+  ownerAwards?: OwnerAward[]
 }
 
 export type OwnedReport = LiveReport & { retracted: boolean; hidden: boolean }
@@ -106,6 +122,7 @@ export type FilingInput = {
   excerpt: string
   /** Self-attested. Required to file. Not stored or shown on the board. */
   inRoom: boolean
+  kind?: "report" | "shout-out"
 }
 
 function apiUrl(path: string) {
@@ -315,4 +332,42 @@ export function closeRecordError(id: string) {
     method: "POST",
     body: { id },
   })
+}
+
+export function submitOwnerAward(body: { title: string; year: string; proofUrl: string }) {
+  return request<{ award: { id: string; status: string } }>("/api/store/awards", {
+    method: "POST",
+    body,
+  })
+}
+
+export function chairOwnerAwards() {
+  return request<{ awards: (OwnerAward & { proofUrl?: string })[] }>("/api/chair/owner-awards")
+}
+
+export function decideOwnerAward(id: string, approve: boolean) {
+  return request<{ award: OwnerAward }>(
+    approve ? "/api/chair/owner-awards/approve" : "/api/chair/owner-awards/refuse",
+    { method: "POST", body: { id } },
+  )
+}
+
+export function submitRecordReply(recordId: string, text: string) {
+  return request<{ sent: boolean }>("/api/store/record-replies", {
+    method: "POST",
+    body: { recordId, text },
+  })
+}
+
+export function chairRecordReplies() {
+  return request<{ replies: { id: string; text: string; record: PublicRecord | null }[] }>(
+    "/api/chair/record-replies",
+  )
+}
+
+export function decideRecordReply(id: string, approve: boolean) {
+  return request<{ status: string }>(
+    approve ? "/api/chair/record-replies/approve" : "/api/chair/record-replies/refuse",
+    { method: "POST", body: { id } },
+  )
 }
