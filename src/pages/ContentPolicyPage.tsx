@@ -26,7 +26,8 @@ export function ContentPolicyPage() {
         Write about a room. Cleanliness, safety, and dignity in a kitchen, dish pit, walk-in,
         staff bathroom, break room, dock, stock room, or overnight area. Score the space and the
         shift. The public sees the room, the score, the context, and the writing. Reading and
-        filing are free.
+        filing are free. A public record on a page is the agency's text, labeled Public record. It
+        is not a filing.
       </p>
 
       <h3 className="font-heading pt-2 text-xl">What to leave out</h3>

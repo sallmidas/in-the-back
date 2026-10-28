@@ -1,9 +1,10 @@
 import { useEffect } from "react"
-import { Link } from "react-router-dom"
+import { Link, useSearchParams } from "react-router-dom"
 import { BoardSkeleton } from "@/components/layout/BoardSkeleton"
 import { EmptyState } from "@/components/layout/EmptyState"
 import { HowItWorksPreview } from "@/components/layout/HowItWorks"
 import { DemoWalk } from "@/components/layout/HoldNotice"
+import { PublicRecordCard, PublicRecordFootnote } from "@/components/record/PublicRecordCard"
 import { ReportCard } from "@/components/report/ReportCard"
 import { Button } from "@/components/ui/button"
 import { WorkplaceStripCard } from "@/components/workplace/WorkplaceCard"
@@ -18,10 +19,19 @@ export function HomePage() {
   const { user } = useSession()
   const storeSession = user?.kind === "store"
   const reports = board.recentReports(8)
+  const records = board.publicRecords.slice(0, 12)
   const demoWorkplaces = board.workplaces.filter((workplace) => workplace.demo)
   const seeded = demoSeedEnabled
   const demoPath = useDemoRoomPath()
-  const empty = board.ready && !board.error && reports.length === 0
+  const [params, setParams] = useSearchParams()
+  const layer = params.get("layer") === "records" || params.get("layer") === "reports" ? params.get("layer") : "all"
+  const showReports = layer !== "records"
+  const showRecords = layer !== "reports"
+  const empty =
+    board.ready &&
+    !board.error &&
+    (showReports ? reports.length === 0 : true) &&
+    (showRecords ? records.length === 0 : true)
 
   useEffect(() => {
     const id = window.location.hash.replace("#", "")
@@ -117,17 +127,42 @@ export function HomePage() {
       ) : null}
 
       <section className="space-y-4">
-        <div className="flex items-end justify-between gap-3">
-          <h2 className="font-heading text-2xl tracking-tight">Recent reports</h2>
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <h2 className="font-heading text-2xl tracking-tight">On the board</h2>
           <Link
             to="/workplaces"
             className={cn(
-              "rounded-sm text-sm text-muted-foreground hover:text-foreground",
+              "inline-flex min-h-11 items-center rounded-sm text-sm text-muted-foreground hover:text-foreground",
               focusRingClass,
             )}
           >
             Full directory
           </Link>
+        </div>
+        <div className="flex flex-wrap gap-2" role="group" aria-label="Board filter">
+          {(
+            [
+              ["all", "All"],
+              ["reports", "Worker reports"],
+              ["records", "Public records"],
+            ] as const
+          ).map(([value, label]) => (
+            <Button
+              key={value}
+              type="button"
+              size="sm"
+              variant={layer === value ? "default" : "outline"}
+              aria-pressed={layer === value}
+              onClick={() => {
+                const next = new URLSearchParams(params)
+                if (value === "all") next.delete("layer")
+                else next.set("layer", value)
+                setParams(next, { replace: true })
+              }}
+            >
+              {label}
+            </Button>
+          ))}
         </div>
         {!board.ready ? (
           <BoardSkeleton />
@@ -151,9 +186,15 @@ export function HomePage() {
           </EmptyState>
         ) : (
           <div className="grid gap-3">
-            {reports.map((report) => (
-              <ReportCard key={report.id} report={report} workplace={report.workplace} />
-            ))}
+            {showReports
+              ? reports.map((report) => (
+                  <ReportCard key={report.id} report={report} workplace={report.workplace} />
+                ))
+              : null}
+            {showRecords
+              ? records.map((record) => <PublicRecordCard key={record.id} record={record} showPlace />)
+              : null}
+            {showRecords && records.length > 0 ? <PublicRecordFootnote /> : null}
           </div>
         )}
       </section>

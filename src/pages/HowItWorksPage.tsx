@@ -59,6 +59,15 @@ export function HowItWorksPage() {
             . The public board never shows who the moderator is.
           </p>
         </div>
+        <div className="space-y-2">
+          <h3 className="font-heading text-xl tracking-tight">Public records</h3>
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            Some pages also show official records: a Massachusetts citation, a federal safety
+            inspection, or a wage case. Each one is labeled Public record. It is not a worker
+            report. A person's name in an agency file is left off the page. The line under the
+            record names the agency. That is a credit. It is not an endorsement.
+          </p>
+        </div>
         <p className="text-sm leading-relaxed text-muted-foreground">
           Reading and filing are free. The writing is about the room, never a person.
         </p>

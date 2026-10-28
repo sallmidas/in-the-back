@@ -12,6 +12,8 @@ export function emptyStore() {
     workplaces: [],
     reports: [],
     storeClaims: [],
+    publicRecords: [],
+    recordErrors: [],
   }
 }
 
@@ -24,6 +26,8 @@ export function createStore(filePath) {
       const parsed = JSON.parse(raw)
       const data = { ...emptyStore(), ...parsed }
       if (!Array.isArray(data.storeClaims)) data.storeClaims = []
+      if (!Array.isArray(data.publicRecords)) data.publicRecords = []
+      if (!Array.isArray(data.recordErrors)) data.recordErrors = []
       return data
     } catch (error) {
       if (error && error.code === "ENOENT") return emptyStore()

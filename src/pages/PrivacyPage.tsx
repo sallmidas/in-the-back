@@ -36,6 +36,7 @@ export function PrivacyPage() {
         <li>Workplace name, city, region, industry, and room list.</li>
         <li>Room scores and the writing on filings that are still on the board.</li>
         <li>Shift or station context written without a name.</li>
+        <li>Official records we copied from a government agency: the agency's words, the date, the address, amounts, and a link to the source. People's names are left off.</li>
       </ul>
 
       <h3 className="font-heading pt-2 text-xl">What stays off the board</h3>
@@ -73,6 +74,12 @@ export function PrivacyPage() {
         leaves the public board and the room score. It stays in the private store until you
         retract it.
       </p>
+      <h3 className="font-heading pt-2 text-xl">Public records</h3>
+      <p className="text-muted-foreground">
+        We also keep official records, such as a citation or an inspection, with an as-of date.
+        Records older than five years are hidden. These are not worker reports. A note that a
+        record looks wrong is stored for a moderator. We do not ask who sent the note.
+      </p>
 
       <h2 className="font-heading pt-4 text-2xl">If you are a store</h2>
       <p className="text-muted-foreground">
@@ -81,7 +88,8 @@ export function PrivacyPage() {
         public board does not show the claim. A verified store sees its rooms, scores, and the
         reports on those rooms. Reports are anonymous. We do not give a store the email, name, or
         account behind a report. A store cannot hide or delete a report. A report may be marked
-        under review. That mark does not name who wrote it. Nothing is charged during this preview.
+        under review. That mark does not name who wrote it. A store sees the same public records
+        as everyone else, and can report an error in one. Nothing is charged during this preview.
       </p>
 
       <h2 className="font-heading pt-2 text-2xl">Request addresses</h2>

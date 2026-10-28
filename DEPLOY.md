@@ -53,6 +53,28 @@ On a public host (`NODE_ENV=production` or `ITB_SECURE_COOKIE=1`), a missing `IT
 
 Reader and store pages say “a moderator.” The `/staff` title stays Platform chair.
 
+## Public records
+
+Official records sit beside worker reports. They are labeled Public record. The board can filter Worker reports and Public records. A record links to a place by street address and city. Unmatched records wait on `/staff` for the chair. Records older than five years are hidden. Set `ITB_RECORD_MAX_AGE_YEARS` to change that window.
+
+Massachusetts AG citations and later health-inspection batches are a CSV or Excel file you already have:
+
+```bash
+npm run records:import -- --source ma-ag --file citations.csv
+npm run records:import -- --source health --file health.xlsx
+```
+
+OSHA and Wage and Hour use the DOL data portal. That API needs `DOL_API_KEY`. This repo does not sign you up for a key. If the key is unset, the script writes nothing. If you already downloaded a bulk CSV from the portal, pass the files:
+
+```bash
+DOL_API_KEY=your-key npm run records:dol
+npm run records:dol -- --osha-csv osha.csv --whd-csv whd.csv
+```
+
+The DOL script keeps Springfield and Chicopee ZIP codes, plus restaurant, food-service, and retail NAICS codes. Running it again updates the same record instead of adding a duplicate. Credit lines read “Data: U.S. Department of Labor” and “Data: Massachusetts Attorney General.” That is a credit, not an endorsement.
+
+No live government file is shipped in this repo. Test fixtures live under `test/fixtures/` and are not loaded onto the board.
+
 ## Contact
 
 The address on the privacy, terms, and content policy pages is inthebackcontact@gmail.com. The privacy and terms pages stay marked draft until legal review.

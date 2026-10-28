@@ -1,6 +1,7 @@
 import { useParams, useSearchParams } from "react-router-dom"
 import { BoardSkeleton } from "@/components/layout/BoardSkeleton"
 import { EmptyState } from "@/components/layout/EmptyState"
+import { PublicRecordCard, PublicRecordFootnote } from "@/components/record/PublicRecordCard"
 import { ReportCard } from "@/components/report/ReportCard"
 import { RoomScore } from "@/components/room/RoomScore"
 import { Badge } from "@/components/ui/badge"
@@ -39,6 +40,9 @@ export function WorkplacePage() {
   const reports = board.reportsForWorkplace(workplace.id).filter((report) =>
     roomFilter ? report.roomKind === roomFilter : true,
   )
+  const publicRecords = board.publicRecords.filter(
+    (record) => record.workplaceId === workplace.id || record.workplaceSlug === workplace.slug,
+  )
   const score = overallScore(workplace)
 
   function toggleRoom(kind: string) {
@@ -60,7 +64,7 @@ export function WorkplacePage() {
           </div>
           <h1 className="font-heading text-3xl tracking-tight sm:text-4xl">{workplace.name}</h1>
           <p className="text-muted-foreground">
-            {workplace.city}, {workplace.region}
+            {[workplace.street, workplace.city, workplace.region, workplace.zip].filter(Boolean).join(", ")}
           </p>
           {workplace.blurb ? (
             <p className="max-w-2xl text-sm leading-relaxed sm:text-[15px] sm:leading-7">
@@ -135,6 +139,22 @@ export function WorkplacePage() {
                 showWorkplace={false}
               />
             ))}
+          </div>
+        )}
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="font-heading text-2xl tracking-tight">Public records</h2>
+        {publicRecords.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            No official record is linked to this address.
+          </p>
+        ) : (
+          <div className="grid gap-3">
+            {publicRecords.map((record) => (
+              <PublicRecordCard key={record.id} record={record} />
+            ))}
+            <PublicRecordFootnote />
           </div>
         )}
       </section>

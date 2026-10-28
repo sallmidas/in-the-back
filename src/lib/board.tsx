@@ -8,13 +8,14 @@ import {
   type ReportWithWorkplace,
 } from "@/data/catalog"
 import { isIndustry, isRoomKind, type Report, type Workplace } from "@/data/types"
-import { getBoard, type BoardPayload } from "@/lib/api"
+import { getBoard, type BoardPayload, type PublicRecord } from "@/lib/api"
 
 type BoardValue = {
   ready: boolean
   error: string | null
   workplaces: Workplace[]
   reports: ReportWithWorkplace[]
+  publicRecords: PublicRecord[]
   refresh: () => Promise<void>
   workplaceBySlug: (slug: string) => Workplace | undefined
   reportsForWorkplace: (workplaceId: string) => Report[]
@@ -34,6 +35,8 @@ function asWorkplace(value: unknown): Workplace | null {
     industry: workplace.industry && isIndustry(workplace.industry) ? workplace.industry : null,
     city: workplace.city ?? "",
     region: workplace.region ?? "",
+    street: workplace.street ?? "",
+    zip: workplace.zip ?? "",
     blurb: workplace.blurb ?? "",
     rooms: (workplace.rooms ?? []).flatMap((room) =>
       room && isRoomKind(room.kind) ? [{ kind: room.kind, score: room.score }] : [],
@@ -90,12 +93,16 @@ export function BoardProvider({ children }: { children: ReactNode }) {
       return [{ ...normalized, workplace }]
     })
     reports.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt))
+    const publicRecords = [...(live?.publicRecords ?? [])].sort((a, b) =>
+      b.recordDate.localeCompare(a.recordDate),
+    )
 
     return {
       ready,
       error,
       workplaces,
       reports,
+      publicRecords,
       refresh,
       workplaceBySlug: (slug) => workplaces.find((workplace) => workplace.slug === slug),
       reportsForWorkplace: (workplaceId) =>

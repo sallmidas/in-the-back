@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { AuthForm } from "@/components/account/AuthForm"
+import { PublicRecordsQueue } from "@/components/chair/PublicRecordsQueue"
 import { StoreClaimsQueue } from "@/components/chair/StoreClaimsQueue"
 import { EmptyState } from "@/components/layout/EmptyState"
 import { ReportCard } from "@/components/report/ReportCard"
@@ -190,6 +191,7 @@ export function StaffQueuePage() {
           {chair.mine ? (
             <>
             <StoreClaimsQueue active={chair.mine} />
+            <PublicRecordsQueue active={chair.mine} />
             <section className="space-y-3">
               <div>
                 <h2 className="font-heading text-2xl">Queue</h2>

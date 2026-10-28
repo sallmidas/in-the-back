@@ -42,6 +42,8 @@ export type Workplace = {
   industry: Industry | null
   city: string
   region: string
+  street?: string
+  zip?: string
   blurb: string
   rooms: Room[]
   listedPlan: PlanId

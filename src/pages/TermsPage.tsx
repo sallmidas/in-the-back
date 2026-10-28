@@ -55,6 +55,12 @@ export function TermsPage() {
         will be up, complete, or error-free. Sample workplaces, if a demo is switched on, are
         labeled DEMO and are not live reviews.
       </p>
+      <p className="text-muted-foreground">
+        Public records on a page come from the agency that published them. In the Back did not
+        decide the case. The agency's words are shown as published. Data: U.S. Department of Labor
+        and the Massachusetts Attorney General. That is a credit, not an endorsement. If a record
+        is on the wrong place, use Report an error.
+      </p>
 
       <h2 className="font-heading pt-4 text-2xl">If you are a store</h2>
       <p className="text-muted-foreground">
@@ -66,7 +72,7 @@ export function TermsPage() {
       <p className="text-muted-foreground">
         A store account is not the moderator. A store claim stays pending until the moderator
         approves it. One verified claim per store, unless the moderator adds another. A store cannot
-        delete, hide, or edit a report.
+        delete, hide, or edit a report. A store sees the same public records as any reader.
       </p>
 
       <h2 className="font-heading pt-2 text-2xl">This draft</h2>

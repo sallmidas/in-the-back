@@ -5,13 +5,14 @@ import { createApp } from "../server/app.mjs"
 
 export async function withServer(fn, options = {}) {
   const dir = await mkdtemp(path.join(os.tmpdir(), "itb-"))
-  const { server } = createApp({ storePath: path.join(dir, "board.json"), ...options })
+  const storePath = path.join(dir, "board.json")
+  const { server } = createApp({ storePath, ...options })
   const port = await new Promise((resolve) => {
     server.listen(0, "127.0.0.1", () => resolve(server.address().port))
   })
   const base = `http://127.0.0.1:${port}`
   try {
-    await fn({ base, client: apiClient(base) })
+    await fn({ base, client: apiClient(base), storePath })
   } finally {
     await new Promise((resolve) => server.close(resolve))
     await rm(dir, { recursive: true, force: true })

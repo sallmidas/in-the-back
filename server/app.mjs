@@ -17,6 +17,15 @@ import {
 import { clientAddress } from "./client-ip.mjs"
 import { parseStoreClaim } from "./store-claims.mjs"
 import { parseEmail, parseFiling, parsePassword, slugify } from "./validate.mjs"
+import { redactPersonalNames } from "../shared/names.mjs"
+import {
+  createPlaceForRecord,
+  defaultMaxAgeYears,
+  isVisibleRecord,
+  matchPublicRecords,
+  publicRecordView,
+  visibleRecords,
+} from "./public-records.mjs"
 
 const SESSION_MS = 30 * 24 * 60 * 60 * 1000
 const RATE_LIMIT = 80
@@ -72,9 +81,10 @@ function isOnBoard(report) {
   return !report.retractedAt && !report.hiddenAt
 }
 
-function listedOnBoard(data, workplace) {
+function listedOnBoard(data, workplace, now, maxAgeYears) {
   if (!workplace.claimOnly) return true
-  return data.reports.some((report) => report.workplaceId === workplace.id && isOnBoard(report))
+  if (data.reports.some((report) => report.workplaceId === workplace.id && isOnBoard(report))) return true
+  return visibleRecords(data, now, maxAgeYears).some((record) => record.workplaceId === workplace.id)
 }
 
 function ensureWorkplace(data, businessName) {
@@ -94,6 +104,8 @@ function ensureWorkplace(data, businessName) {
     industry: null,
     city: "",
     region: "",
+    street: "",
+    zip: "",
     createdAt: new Date().toISOString(),
     claimOnly: true,
   }
@@ -178,6 +190,8 @@ function publicWorkplace(data, workplace) {
     city: workplace.city,
     region: workplace.region,
     blurb: "",
+    street: workplace.street ?? "",
+    zip: workplace.zip ?? "",
     rooms: roomsForWorkplace(data, workplace.id),
     listedPlan: "free",
     demo: false,
@@ -217,7 +231,9 @@ export function createApp({
   rateLimitMax = RATE_LIMIT,
   chairEmail,
   production,
+  recordMaxAgeYears,
 }) {
+  const maxAgeYears = defaultMaxAgeYears(recordMaxAgeYears)
   const chairPolicy = resolveChairPolicy({ chairEmail, production })
   if (chairPolicy.production && !chairPolicy.chairEmail) {
     console.warn("ITB_CHAIR_EMAIL is unset. Nobody can claim the platform chair.")
@@ -389,11 +405,13 @@ export function createApp({
     try {
       if (pathname === "/api/board" && req.method === "GET") {
         const data = await store.read()
+        const now = new Date()
         send(res, 200, {
           workplaces: data.workplaces
-            .filter((workplace) => listedOnBoard(data, workplace))
+            .filter((workplace) => listedOnBoard(data, workplace, now, maxAgeYears))
             .map((workplace) => publicWorkplace(data, workplace)),
           reports: data.reports.filter((report) => isOnBoard(report)).map(publicReport),
+          publicRecords: visibleRecords(data, now, maxAgeYears).map((record) => publicRecordView(data, record)),
         })
         return
       }
@@ -412,6 +430,16 @@ export function createApp({
 
       if (pathname === "/api/chair/store-claims" && req.method === "GET") {
         await listStoreClaims(req, res)
+        return
+      }
+
+      if (pathname === "/api/chair/public-records" && req.method === "GET") {
+        await listPublicRecords(req, res)
+        return
+      }
+
+      if (pathname === "/api/chair/record-errors" && req.method === "GET") {
+        await listRecordErrors(req, res)
         return
       }
 
@@ -516,6 +544,22 @@ export function createApp({
       }
       if (pathname === "/api/chair/store-claims/refuse") {
         await decideStoreClaim(req, res, body, "refused")
+        return
+      }
+      if (pathname === "/api/public-records/error") {
+        await reportRecordError(req, res, body)
+        return
+      }
+      if (pathname === "/api/chair/public-records/link") {
+        await linkPublicRecord(req, res, body)
+        return
+      }
+      if (pathname === "/api/chair/public-records/place") {
+        await placePublicRecord(req, res, body)
+        return
+      }
+      if (pathname === "/api/chair/record-errors/close") {
+        await closeRecordError(req, res, body)
         return
       }
 
@@ -726,6 +770,8 @@ export function createApp({
             industry: filing.industry,
             city: filing.city,
             region: filing.region,
+            street: "",
+            zip: "",
             createdAt: new Date().toISOString(),
           }
           data.workplaces.push(workplace)
@@ -890,10 +936,137 @@ export function createApp({
           reports: data.reports
             .filter((report) => report.workplaceId === workplace.id && isOnBoard(report))
             .map(publicReport),
+          publicRecords: visibleRecords(data, new Date(), maxAgeYears)
+            .filter((record) => record.workplaceId === workplace.id)
+            .map((record) => publicRecordView(data, record)),
         })
       }
     }
     send(res, 200, { claim: claim ? storeClaimView(claim) : null, stores })
+  }
+
+  async function listPublicRecords(req, res) {
+    const data = await store.read()
+    const gate = requireChair(data, readCookie(req))
+    if (gate.error) {
+      send(res, gate.error.status, { error: gate.error.error })
+      return
+    }
+    const now = new Date()
+    const records = (data.publicRecords ?? [])
+      .filter((record) => !record.workplaceId && isVisibleRecord(record, now, maxAgeYears))
+      .map((record) => publicRecordView(data, record))
+    const workplaces = data.workplaces.map((workplace) => ({
+      id: workplace.id,
+      name: workplace.name,
+      city: workplace.city,
+      street: workplace.street ?? "",
+    }))
+    send(res, 200, { records, workplaces })
+  }
+
+  async function listRecordErrors(req, res) {
+    const data = await store.read()
+    const gate = requireChair(data, readCookie(req))
+    if (gate.error) {
+      send(res, gate.error.status, { error: gate.error.error })
+      return
+    }
+    const errors = (data.recordErrors ?? [])
+      .filter((item) => !item.closedAt)
+      .map((item) => {
+        const record = data.publicRecords.find((row) => row.id === item.recordId)
+        return {
+          id: item.id,
+          note: item.note,
+          createdAt: item.createdAt,
+          record: record ? publicRecordView(data, record) : null,
+        }
+      })
+    send(res, 200, { errors })
+  }
+
+  async function reportRecordError(_req, res, body) {
+    const recordId = typeof body.recordId === "string" ? body.recordId : ""
+    const note = redactPersonalNames(typeof body.note === "string" ? body.note : "").slice(0, 500)
+    if (!note) {
+      send(res, 400, { error: "Write what looks wrong. Leave names out." })
+      return
+    }
+    const result = await store.update((data) => {
+      const record = (data.publicRecords ?? []).find((item) => item.id === recordId)
+      if (!record || !isVisibleRecord(record, new Date(), maxAgeYears)) {
+        return { status: 404, error: "Not found." }
+      }
+      if (!Array.isArray(data.recordErrors)) data.recordErrors = []
+      data.recordErrors.push({
+        id: randomId("err"),
+        recordId: record.id,
+        note,
+        createdAt: new Date().toISOString(),
+        closedAt: null,
+      })
+      return { status: 200 }
+    })
+    if (result.error) {
+      send(res, result.status, { error: result.error })
+      return
+    }
+    send(res, 200, { sent: true })
+  }
+
+  async function linkPublicRecord(req, res, body) {
+    const result = await store.update((data) => {
+      const gate = requireChair(data, readCookie(req))
+      if (gate.error) return gate.error
+      const record = (data.publicRecords ?? []).find((item) => item.id === body.id)
+      const workplace = data.workplaces.find((item) => item.id === body.workplaceId)
+      if (!record || !workplace) return { status: 404, error: "Not found." }
+      record.workplaceId = workplace.id
+      if (!workplace.street && record.street) workplace.street = record.street
+      if (!workplace.zip && record.zip) workplace.zip = record.zip
+      if (!workplace.city && record.city) workplace.city = record.city
+      matchPublicRecords(data)
+      return { status: 200, record: publicRecordView(data, record) }
+    })
+    if (result.error) {
+      send(res, result.status, { error: result.error })
+      return
+    }
+    send(res, 200, { record: result.record })
+  }
+
+  async function placePublicRecord(req, res, body) {
+    const result = await store.update((data) => {
+      const gate = requireChair(data, readCookie(req))
+      if (gate.error) return gate.error
+      const record = (data.publicRecords ?? []).find((item) => item.id === body.id)
+      if (!record) return { status: 404, error: "Not found." }
+      const placed = createPlaceForRecord(data, record)
+      if (placed.error) return { status: 409, error: placed.error }
+      return { status: 200, record: publicRecordView(data, record), created: placed.created }
+    })
+    if (result.error) {
+      send(res, result.status, { error: result.error })
+      return
+    }
+    send(res, 200, { record: result.record, created: result.created })
+  }
+
+  async function closeRecordError(req, res, body) {
+    const result = await store.update((data) => {
+      const gate = requireChair(data, readCookie(req))
+      if (gate.error) return gate.error
+      const item = (data.recordErrors ?? []).find((row) => row.id === body.id)
+      if (!item) return { status: 404, error: "Not found." }
+      item.closedAt = new Date().toISOString()
+      return { status: 200 }
+    })
+    if (result.error) {
+      send(res, result.status, { error: result.error })
+      return
+    }
+    send(res, 200, { closed: true })
   }
 
   async function submitStoreClaim(req, res, body) {

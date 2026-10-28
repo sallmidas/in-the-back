@@ -49,15 +49,44 @@ export type LiveWorkplace = {
   industry: string | null
   city: string
   region: string
+  street?: string
+  zip?: string
   blurb: string
   rooms: { kind: string; score: number }[]
   listedPlan: "free"
   demo: false
 }
 
+export type PublicRecordStatus = "open" | "closed" | "contested" | "settled" | "abated" | "reinspected"
+
+export type PublicRecord = {
+  id: string
+  sourceAgency: string
+  agencyLabel: string
+  credit: string
+  recordType: string
+  recordId: string
+  recordDate: string
+  street: string
+  city: string
+  region: string
+  zip: string
+  businessName: string
+  summary: string
+  backWages: number | null
+  penalty: number | null
+  status: PublicRecordStatus
+  sourceUrl: string
+  fetchedAt: string
+  workplaceId: string | null
+  workplaceSlug: string | null
+  workplaceName: string | null
+}
+
 export type BoardPayload = {
   workplaces: LiveWorkplace[]
   reports: LiveReport[]
+  publicRecords?: PublicRecord[]
 }
 
 export type OwnedReport = LiveReport & { retracted: boolean; hidden: boolean }
@@ -204,7 +233,7 @@ export type StoreClaim = {
 
 export type StoreHome = {
   claim: StoreClaim | null
-  stores: { workplace: LiveWorkplace; reports: LiveReport[] }[]
+  stores: { workplace: LiveWorkplace; reports: LiveReport[]; publicRecords?: PublicRecord[] }[]
 }
 
 export type ChairStoreClaim = StoreClaim & {
@@ -237,5 +266,53 @@ export function refuseStoreClaim(claimId: string) {
   return request<{ claim: ChairStoreClaim }>("/api/chair/store-claims/refuse", {
     method: "POST",
     body: { claimId },
+  })
+}
+
+export function reportRecordError(recordId: string, note: string) {
+  return request<{ sent: boolean }>("/api/public-records/error", {
+    method: "POST",
+    body: { recordId, note },
+  })
+}
+
+export type ChairPublicRecordQueue = {
+  records: PublicRecord[]
+  workplaces: { id: string; name: string; city: string; street: string }[]
+}
+
+export function chairPublicRecords() {
+  return request<ChairPublicRecordQueue>("/api/chair/public-records")
+}
+
+export function linkPublicRecord(id: string, workplaceId: string) {
+  return request<{ record: PublicRecord }>("/api/chair/public-records/link", {
+    method: "POST",
+    body: { id, workplaceId },
+  })
+}
+
+export function placePublicRecord(id: string) {
+  return request<{ record: PublicRecord; created: boolean }>("/api/chair/public-records/place", {
+    method: "POST",
+    body: { id },
+  })
+}
+
+export type RecordErrorItem = {
+  id: string
+  note: string
+  createdAt: string
+  record: PublicRecord | null
+}
+
+export function chairRecordErrors() {
+  return request<{ errors: RecordErrorItem[] }>("/api/chair/record-errors")
+}
+
+export function closeRecordError(id: string) {
+  return request<{ closed: boolean }>("/api/chair/record-errors/close", {
+    method: "POST",
+    body: { id },
   })
 }

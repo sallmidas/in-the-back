@@ -11,6 +11,8 @@
     "lint": "oxlint",
     "test": "ITB_SCRYPT_N=1024 ITB_DISABLE_RATELIMIT=1 node --test test/*.test.mjs",
     "preview": "vite preview --host 127.0.0.1 --port 43173",
+    "records:import": "node scripts/import-public-records.mjs",
+    "records:dol": "node scripts/fetch-dol-records.mjs",
     "cap:sync": "npm run build && cap sync",
     "cap:add:android": "cap add android",
     "cap:add:ios": "cap add ios",

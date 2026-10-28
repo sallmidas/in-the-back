@@ -1,5 +1,6 @@
 import { type FormEvent, useEffect, useState } from "react"
 import { Link } from "react-router-dom"
+import { PublicRecordCard, PublicRecordFootnote } from "@/components/record/PublicRecordCard"
 import { ReportCard } from "@/components/report/ReportCard"
 import { RoomScore } from "@/components/room/RoomScore"
 import { Badge } from "@/components/ui/badge"
@@ -13,6 +14,7 @@ import {
   submitStoreClaim,
   type LiveReport,
   type LiveWorkplace,
+  type PublicRecord,
   type StoreClaim,
 } from "@/lib/api"
 import { useSession } from "@/lib/session"
@@ -291,7 +293,7 @@ export function StoreDashboardPage() {
   )
 }
 
-type StoreHomeStores = { workplace: LiveWorkplace; reports: LiveReport[] }[]
+type StoreHomeStores = { workplace: LiveWorkplace; reports: LiveReport[]; publicRecords?: PublicRecord[] }[]
 
 function ApprovedStore({ stores }: { stores: StoreHomeStores }) {
   const place = stores[0]
@@ -341,6 +343,23 @@ function ApprovedStore({ stores }: { stores: StoreHomeStores }) {
               if (!card) return null
               return <ReportCard key={report.id} report={card} workplace={workplace} showWorkplace={false} />
             })}
+          </div>
+        )}
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="font-heading text-2xl">Public records</h2>
+        <p className="text-sm text-muted-foreground">
+          Official records for this address. Not a worker report. Reports are anonymous.
+        </p>
+        {(place.publicRecords ?? []).length === 0 ? (
+          <p className="text-sm text-muted-foreground">No official record is linked to this address.</p>
+        ) : (
+          <div className="grid gap-3">
+            {(place.publicRecords ?? []).map((record) => (
+              <PublicRecordCard key={record.id} record={record} />
+            ))}
+            <PublicRecordFootnote />
           </div>
         )}
       </section>

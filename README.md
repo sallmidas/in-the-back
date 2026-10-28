@@ -48,7 +48,9 @@ npm run build
 ITB_STATIC=dist ITB_PORT=43173 npm start
 ```
 
-Hosting notes, including the persistent disk for `data/board.json`, are in [DEPLOY.md](DEPLOY.md).
+Hosting notes, including the persistent disk for `data/board.json` and public-record imports, are in [DEPLOY.md](DEPLOY.md).
+
+Public records are official files, separate from worker reports. Import a citations CSV with `npm run records:import -- --source ma-ag --file citations.csv`. OSHA and Wage and Hour need `DOL_API_KEY`, or a bulk CSV you already downloaded: `npm run records:dol -- --osha-csv osha.csv --whd-csv whd.csv`. Without a key and without those files, the DOL script writes nothing. Test fixtures are not loaded onto the board.
 
 ```bash
 npm run build    # production bundle into dist/
