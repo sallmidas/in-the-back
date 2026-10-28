@@ -5,7 +5,13 @@ import { INDUSTRY_LABELS, ROOM_LABELS, type Workplace } from "@/data/types"
 import { formatScore, scoreClass, scoreRailClass } from "@/lib/format"
 import { cn, focusRingClass } from "@/lib/utils"
 
-export function WorkplaceCard({ workplace }: { workplace: Workplace }) {
+export function WorkplaceCard({
+  workplace,
+  recordChip,
+}: {
+  workplace: Workplace
+  recordChip?: string
+}) {
   const score = overallScore(workplace)
   const weak = weakestRoom(workplace)
 
@@ -45,6 +51,13 @@ export function WorkplaceCard({ workplace }: { workplace: Workplace }) {
           </span>
         </p>
       </div>
+      {recordChip ? (
+        <p className="mt-3">
+          <span className="inline-flex rounded-md border border-border px-2 py-1 text-xs text-muted-foreground">
+            {recordChip}
+          </span>
+        </p>
+      ) : null}
       {workplace.blurb ? (
         <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-foreground/85">
           {workplace.blurb}

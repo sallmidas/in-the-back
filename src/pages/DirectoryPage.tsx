@@ -15,15 +15,18 @@ import {
 import { demoSeedEnabled } from "@/data/demo-flag"
 import { useBoard } from "@/lib/board"
 import {
-  INDUSTRIES,
-  INDUSTRY_LABELS,
   ROOM_KINDS,
   ROOM_LABELS,
-  isIndustry,
   isRoomKind,
-  type Industry,
   type RoomKind,
 } from "@/data/types"
+import {
+  DIRECTORY_SORTS,
+  RECORD_FILTERS,
+  RECORD_INDUSTRY_OPTIONS,
+  directoryTowns,
+  recordChip,
+} from "../../shared/directory.mjs"
 
 type Band = "all" | "struggling" | "mixed" | "solid"
 const BANDS: Band[] = ["all", "struggling", "mixed", "solid"]
@@ -37,21 +40,38 @@ export function DirectoryPage() {
   const board = useBoard()
   const [params, setParams] = useSearchParams()
   const query = params.get("q") ?? ""
-  const industryParam = params.get("industry")
+  const industry = params.get("industry") || "all"
   const roomParam = params.get("room")
-  const industry: Industry | "all" =
-    industryParam && isIndustry(industryParam) ? industryParam : "all"
   const room: RoomKind | "all" = roomParam && isRoomKind(roomParam) ? roomParam : "all"
   const band = asBand(params.get("band"))
+  const recordsFilter = params.get("records") || "all"
+  const sort = params.get("sort") || "name"
+  const town = params.get("town") || ""
+  const towns = directoryTowns(board.workplaces)
 
   const listed = board.workplaces.length
-  const results = board.filterWorkplaces({ query, industry, room, band })
-  const filtersOn = Boolean(query) || industry !== "all" || room !== "all" || band !== "all"
+  const results = board.filterWorkplaces({
+    query,
+    industry,
+    room,
+    band,
+    records: recordsFilter as "all" | "citations" | "good" | "none",
+    sort: sort as "name" | "recent" | "money" | "citations",
+    town,
+  })
+  const filtersOn =
+    Boolean(query) ||
+    industry !== "all" ||
+    room !== "all" ||
+    band !== "all" ||
+    recordsFilter !== "all" ||
+    sort !== "name" ||
+    Boolean(town)
 
   function patch(next: Record<string, string>) {
     const merged = new URLSearchParams(params)
     for (const [key, value] of Object.entries(next)) {
-      if (!value || value === "all") merged.delete(key)
+      if (!value || value === "all" || (key === "sort" && value === "name")) merged.delete(key)
       else merged.set(key, value)
     }
     setParams(merged, { replace: true })
@@ -111,9 +131,55 @@ export function DirectoryPage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All industries</SelectItem>
-              {INDUSTRIES.map((id) => (
-                <SelectItem key={id} value={id}>
-                  {INDUSTRY_LABELS[id]}
+              {RECORD_INDUSTRY_OPTIONS.map((option) => (
+                <SelectItem key={option.id} value={option.id}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label htmlFor="town">Town</Label>
+          <Select value={town || "all"} onValueChange={(value) => patch({ town: value })}>
+            <SelectTrigger id="town" className="mt-1.5 w-full">
+              <SelectValue placeholder="All towns" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All towns</SelectItem>
+              {towns.map((name) => (
+                <SelectItem key={name} value={name}>
+                  {name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label htmlFor="records">Public records</Label>
+          <Select value={recordsFilter} onValueChange={(value) => patch({ records: value })}>
+            <SelectTrigger id="records" className="mt-1.5 w-full">
+              <SelectValue placeholder="All" />
+            </SelectTrigger>
+            <SelectContent>
+              {RECORD_FILTERS.map((option) => (
+                <SelectItem key={option.id} value={option.id}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label htmlFor="sort">Sort</Label>
+          <Select value={sort} onValueChange={(value) => patch({ sort: value })}>
+            <SelectTrigger id="sort" className="mt-1.5 w-full">
+              <SelectValue placeholder="Name (A–Z)" />
+            </SelectTrigger>
+            <SelectContent>
+              {DIRECTORY_SORTS.map((option) => (
+                <SelectItem key={option.id} value={option.id}>
+                  {option.label}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -178,7 +244,11 @@ export function DirectoryPage() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">
           {results.map((workplace) => (
-            <WorkplaceCard key={workplace.id} workplace={workplace} />
+            <WorkplaceCard
+              key={workplace.id}
+              workplace={workplace}
+              recordChip={recordChip(workplace, board.publicRecords)}
+            />
           ))}
         </div>
       )}

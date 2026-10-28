@@ -1,12 +1,12 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react"
 import { mergeBoard } from "../../shared/merge-board.mjs"
 import {
-  filterWorkplaces as filterWorkplaceList,
   getReports,
   getWorkplaces,
   type DirectoryFilters,
   type ReportWithWorkplace,
 } from "@/data/catalog"
+import { filterAndSortWorkplaces } from "../../shared/directory.mjs"
 import { isIndustry, isRoomKind, type Report, type Workplace } from "@/data/types"
 import { getBoard, type BoardPayload, type OwnerAward, type PublicRecord } from "@/lib/api"
 
@@ -113,7 +113,8 @@ export function BoardProvider({ children }: { children: ReactNode }) {
         reports.filter((report) => report.workplaceId === workplaceId),
       recentReports: (limit = 8) => reports.slice(0, limit),
       disputedReports: () => reports.filter((report) => report.disputed),
-      filterWorkplaces: (filters) => filterWorkplaceList(workplaces, filters),
+      filterWorkplaces: (filters) =>
+        filterAndSortWorkplaces(workplaces, publicRecords, filters) as Workplace[],
     }
   }, [live, ready, error, refresh])
 
